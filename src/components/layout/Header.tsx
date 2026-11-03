@@ -63,23 +63,23 @@ export default function Header() {
   }, [citySelectorOpen]);
 
   return (
-    <header className="relative z-50 border-b border-black/10 bg-[#f7f3ea]">
-      <div className="bg-[#173fdb] py-2 text-center text-[11px] font-bold tracking-[0.16em] text-white uppercase sm:text-xs content-padding">
+    <header className="relative z-50 border-b border-black/10 bg-background">
+      <div className="bg-deep-accent py-2 text-center text-[11px] font-bold tracking-[0.16em] text-white uppercase sm:text-xs content-padding">
         Achetez près de chez vous • Discutez directement • Aucun frais de livraison
       </div>
       <div className="flex h-20 items-center gap-7 main-container">
         <Link href="/" className="shrink-0 text-[28px] font-black tracking-[-0.06em]" aria-label="Vestio home">
-          VESTIO<span className="text-[#ff5d39]">.</span>
+          VESTIO<span className="text-accent">.</span>
         </Link>
 
         <div className="relative hidden flex-1 lg:block">
-          <div className="flex items-center rounded-full border border-black/15 bg-white transition focus-within:border-[#173fdb] focus-within:ring-2 focus-within:ring-[#173fdb]/10">
+          <div className="flex items-center rounded-full border border-black/15 bg-white transition focus-within:border-deep-accent focus-within:ring-2 focus-within:ring-deep-accent/10">
             <div className="relative border-r border-black/10" ref={citySelectorRef}>
               <button 
                 onClick={() => setCitySelectorOpen(!citySelectorOpen)}
                 className="flex h-12 items-center gap-2 px-5 text-sm font-bold whitespace-nowrap hover:bg-black/5 rounded-l-full transition"
               >
-                <PinIcon className="h-4 w-4 text-[#ff5d39]" />
+                <PinIcon className="h-4 w-4 text-accent" />
                 {selectedCity}
                 <ChevronIcon className={`h-4 w-4 transition ${citySelectorOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -92,8 +92,8 @@ export default function Header() {
                         setSelectedCity('Toutes les villes');
                         setCitySelectorOpen(false);
                       }}
-                      className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-[#173fdb]/5 ${
-                        selectedCity === 'Toutes les villes' ? 'bg-[#173fdb]/10 font-bold text-[#173fdb]' : 'text-black/70'
+                      className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-deep-accent/5 ${
+                        selectedCity === 'Toutes les villes' ? 'bg-deep-accent/10 font-bold text-deep-accent' : 'text-black/70'
                       }`}
                     >
                       Toutes les villes
@@ -105,8 +105,8 @@ export default function Header() {
                           setSelectedCity(city.name);
                           setCitySelectorOpen(false);
                         }}
-                        className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-[#173fdb]/5 ${
-                          selectedCity === city.name ? 'bg-[#173fdb]/10 font-bold text-[#173fdb]' : 'text-black/70'
+                        className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-deep-accent/5 ${
+                          selectedCity === city.name ? 'bg-deep-accent/10 font-bold text-deep-accent' : 'text-black/70'
                         }`}
                       >
                         {city.name}
@@ -130,26 +130,26 @@ export default function Header() {
         </div>
 
         <nav className="ml-auto hidden items-center gap-6 lg:flex" aria-label="Actions principales">
-          <Link href="/welcome#how" className="text-sm font-semibold hover:text-[#173fdb]">Comment ça marche</Link>
-          <button className="flex items-center gap-2 text-sm font-semibold hover:text-[#173fdb]">
+          <Link href="/welcome#how" className="text-sm font-semibold hover:text-deep-accent">Comment ça marche</Link>
+          <button className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent">
             <HeartIcon className="h-5 w-5" /> Favoris
           </button>
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold hover:text-[#173fdb]" aria-label="Accueil">
+          <Link href="/" className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent" aria-label="Accueil">
             <HomeIcon className="h-5 w-5" />
           </Link>
           {isAuthenticated ? (
             <>
-              <Link href="/listings/new" className="rounded-full bg-[#ff5d39] px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#e94422] flex items-center gap-2">
+              <Link href="/listings/new" className="rounded-full bg-accent px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-90 flex items-center gap-2">
                 <UploadIcon className="h-4 w-4" /> Vendre
               </Link>
               <UserDropdown />
             </>
           ) : (
             <>
-              <Link href="/login" className="flex items-center gap-2 text-sm font-semibold hover:text-[#173fdb]">
+              <Link href="/login" className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent">
                 <UserIcon className="h-5 w-5" /> Se connecter
               </Link>
-              <Link href="/register" className="rounded-full bg-[#ff5d39] px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#e94422]">
+              <Link href="/register" className="rounded-full bg-accent px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-90">
                 Vendre
               </Link>
             </>
@@ -179,20 +179,20 @@ export default function Header() {
                 if (!event.currentTarget.contains(event.relatedTarget)) setMegaOpen(false);
               }}
             >
-              <button className="flex h-full items-center gap-1.5 text-[#173fdb]" aria-expanded={megaOpen}>
+              <button className="flex h-full items-center gap-1.5 text-deep-accent" aria-expanded={megaOpen}>
                 Toutes les catégories <ChevronIcon className={`h-4 w-4 transition ${megaOpen ? 'rotate-180' : ''}`} />
               </button>
               {megaOpen && (
                 loading ? <MegaMenuSkeleton /> : (
-                <div className="absolute top-full right-0 left-0 border-t border-black/10 bg-[#f7f3ea] shadow-[0_22px_50px_rgba(0,0,0,0.16)]">
+                <div className="absolute top-full right-0 left-0 border-t border-black/10 bg-background shadow-[0_22px_50px_rgba(0,0,0,0.16)]">
                   <div className="mx-auto grid max-w-[1440px] grid-cols-6 gap-8 py-10 content-padding">
                     {categories.map((parent, index) => (
                       <div key={parent.id} className={index < 5 ? 'border-r border-black/10 pr-4' : ''}>
-                        <p className="mb-4 text-base font-black tracking-tight normal-case text-[#151515]">{parent.name}</p>
+                        <p className="mb-4 text-base font-black tracking-tight normal-case text-primary">{parent.name}</p>
                         <ul className="space-y-2.5 text-[13px] font-medium tracking-normal normal-case text-black/60">
                           {parent.nestedCategories?.map((child) => (
                             <li key={child.id}>
-                              <a href="#shop" className="hover:text-[#173fdb] hover:underline">
+                              <a href="#shop" className="hover:text-deep-accent hover:underline">
                                 {child.name}
                               </a>
                             </li>
@@ -209,7 +209,7 @@ export default function Header() {
               <a 
                 key={parent.id} 
                 href="#shop" 
-                className="hover:text-[#173fdb]"
+                className="hover:text-deep-accent"
               >
                 {parent.name}
               </a>
@@ -219,7 +219,7 @@ export default function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="absolute top-full right-0 left-0 border-t border-black/10 bg-[#f7f3ea] p-5 shadow-xl lg:hidden">
+        <div className="absolute top-full right-0 left-0 border-t border-black/10 bg-background p-5 shadow-xl lg:hidden">
           <div className="mb-5 flex flex-col gap-3">
             <div className="relative">
               <button 
@@ -227,7 +227,7 @@ export default function Header() {
                 className="flex h-12 w-full items-center justify-between rounded-xl border border-black/15 bg-white px-4 text-sm font-bold"
               >
                 <span className="flex items-center gap-2">
-                  <PinIcon className="h-4 w-4 text-[#ff5d39]" />
+                  <PinIcon className="h-4 w-4 text-accent" />
                   {selectedCity}
                 </span>
                 <ChevronIcon className={`h-4 w-4 transition ${citySelectorOpen ? 'rotate-180' : ''}`} />
@@ -240,7 +240,7 @@ export default function Header() {
                       setSelectedCity('Toutes les villes');
                       setCitySelectorOpen(false);
                     }}
-                    className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-[#173fdb]/5"
+                    className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-deep-accent/5"
                   >
                     Toutes les villes
                   </button>
@@ -251,7 +251,7 @@ export default function Header() {
                         setSelectedCity(city.name);
                         setCitySelectorOpen(false);
                       }}
-                      className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-[#173fdb]/5"
+                      className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-deep-accent/5"
                     >
                       {city.name}
                     </button>
@@ -277,7 +277,7 @@ export default function Header() {
                 <Link 
                   href="/listings/new" 
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-[#ff5d39]"
+                  className="flex items-center gap-2 text-accent"
                 >
                   <UploadIcon className="h-5 w-5" /> Vendre un article
                 </Link>

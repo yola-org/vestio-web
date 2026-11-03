@@ -36,7 +36,7 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f3ea] text-[#151515] selection:bg-[#ff5d39] selection:text-white">
+    <div className="min-h-screen bg-background text-primary selection:bg-accent selection:text-white">
       <Header />
       <main>
         {isAuthenticated ? (

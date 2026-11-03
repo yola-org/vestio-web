@@ -9,33 +9,34 @@ This document provides context and rules for AI agents working on the Vestio pro
 
 ## 2. Color Palette
 
-The project uses a sophisticated palette with specific hex codes. Avoid using generic colors.
+The project uses a sophisticated palette defined as Tailwind CSS variables in `src/app/globals.css`. Always use the semantic variable names instead of hardcoded hex codes.
 
 ### Core Colors
-- **Main Background:** `#f7f3ea` (Cream/Off-white) - Use for page backgrounds.
-- **Primary Text:** `#151515` (Deep Black/Charcoal) - For all main readability.
-- **Accent (Primary Action):** `#ff5d39` (Burnt Orange) - For CTA buttons, selection background, and key highlights.
-- **Sub-Accent (High Contrast):** `#d8f05e` (Lime Green) - For secondary highlights, specifically on dark backgrounds.
-- **Muted Accent:** `#b8c7ba` (Sage Green) - For marquee backgrounds and softer sections.
-- **Deep Accent:** `#173fdb` (Royal Blue) - Used for high-impact sections like Call to Action.
+- **Main Background:** `var(--color-background)` (`#f7f3ea`) - Use `bg-background`.
+- **Primary Text:** `var(--color-primary)` (`#151515`) - Use `text-primary`.
+- **Accent (Primary Action):** `var(--color-accent)` (`#ff5d39`) - Use `bg-accent`, `text-accent`, etc.
+- **Sub-Accent (High Contrast):** `var(--color-sub-accent)` (`#d8f05e`) - Use `bg-sub-accent`.
+- **Muted Accent:** `var(--color-muted-accent)` (`#b8c7ba`) - Use `bg-muted-accent`.
+- **Deep Accent:** `var(--color-deep-accent)` (`#173fdb`) - Use `bg-deep-accent` or `text-deep-accent`.
 
-### Category/Tone Colors (Muted Earth Tones)
-Used for category backgrounds and specific UI elements:
-- Femme: `#e3b7a8` (Terracotta/Blush)
-- Homme: `#b8c7ba` (Sage)
-- Enfant: `#d3bd98` (Sand)
-- Chaussures: `#a9b7c0` (Slate Blue)
-- Sacs: `#c4a58e` (Tan)
-- Traditionnel: `#bcc3a1` (Olive)
+### Category Colors
+Used for category-specific UI elements (e.g., `bg-femme`):
+- Femme: `#e3b7a8` (`--color-femme`)
+- Homme: `#b8c7ba` (`--color-homme`)
+- Enfant: `#d3bd98` (`--color-enfant`)
+- Chaussures: `#a9b7c0` (`--color-chaussures`)
+- Sacs: `#c4a58e` (`--color-sacs`)
+- Traditionnel: `#bcc3a1` (`--color-traditionnel`)
 
 ## 3. Typography
-The project uses two primary Google Fonts:
-- **Display (Headings):** `Manrope` (font-weight 700-800).
+The project uses two primary Google Fonts defined in `@theme`:
+- **Display (Headings):** `Manrope` (`font-display`).
   - Used for `h1`, `h2`, `h3`, and big bold statements.
   - Often paired with `tracking-[-0.05em]` or tighter.
   - Used with `uppercase` and `font-black` for maximum impact.
-- **Sans (Body/System):** `DM Sans` (font-weight 400-700).
+- **Sans (Body/System):** `DM Sans` (`font-sans`).
   - Used for body text, descriptions, and UI elements.
+  - Set as default on `body`.
 
 ## 4. UI Patterns & Spacing
 

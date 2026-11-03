@@ -4,6 +4,22 @@
 @theme {
   --font-sans: 'DM Sans', sans-serif;
   --font-display: 'Manrope', sans-serif;
+
+  /* Core Colors */
+  --color-background: #f7f3ea;
+  --color-primary: #151515;
+  --color-accent: #ff5d39;
+  --color-sub-accent: #d8f05e;
+  --color-muted-accent: #b8c7ba;
+  --color-deep-accent: #173fdb;
+
+  /* Category colors */
+  --color-femme: #e3b7a8;
+  --color-homme: #b8c7ba;
+  --color-enfant: #d3bd98;
+  --color-chaussures: #a9b7c0;
+  --color-sacs: #c4a58e;
+  --color-traditionnel: #bcc3a1;
 }
 
 @layer base {
@@ -12,19 +28,25 @@
   }
 
   body {
-    background: #f7f3ea;
-    font-family: 'DM Sans', sans-serif;
+    background: var(--color-background);
+    color: var(--color-primary);
+    font-family: var(--font-sans);
   }
 
   h1,
   h2,
   h3 {
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font-display);
   }
 
   button,
   a {
     cursor: pointer;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
   }
 }
 

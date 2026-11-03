@@ -45,7 +45,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f3ea] text-[#151515]">
+    <div className="min-h-screen bg-background text-primary">
       <Header />
       <main className="py-20 main-container">
         <div className="mx-auto max-w-md bg-white p-8 shadow-sm rounded-2xl">
@@ -69,7 +69,7 @@ export default function LoginPage() {
                   setEmail(event.target.value);
                   setLoginError('');
                 }}
-                className={`w-full h-12 px-4 rounded-xl border ${loginError ? 'border-red-500' : 'border-black/15'} focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition`}
+                className={`w-full h-12 px-4 rounded-xl border ${loginError ? 'border-red-500' : 'border-black/15'} focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition`}
               />
             </div>
             <div>
@@ -88,10 +88,10 @@ export default function LoginPage() {
                   setPassword(event.target.value);
                   setLoginError('');
                 }}
-                className={`w-full h-12 px-4 rounded-xl border ${loginError ? 'border-red-500' : 'border-black/15'} focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition`}
+                className={`w-full h-12 px-4 rounded-xl border ${loginError ? 'border-red-500' : 'border-black/15'} focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition`}
               />
             </div>
-            <button disabled={isSubmitting} className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60">
+            <button disabled={isSubmitting} className="w-full bg-deep-accent text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-60">
               {isSubmitting ? 'Connexion...' : 'Se connecter'} <ArrowIcon className="h-5 w-5" />
             </button>
           </form>
@@ -103,7 +103,7 @@ export default function LoginPage() {
           
           <div className="mt-8 pt-8 border-t border-black/10 text-center">
             <p className="text-sm text-black/60 mb-4">Pas encore de compte ?</p>
-            <Link href="/register" className="inline-block text-[#ff5d39] font-bold hover:underline">
+            <Link href="/register" className="inline-block text-accent font-bold hover:underline">
               Rejoindre la communauté Vestio
             </Link>
           </div>

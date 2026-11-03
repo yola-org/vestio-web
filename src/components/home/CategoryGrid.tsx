@@ -39,7 +39,7 @@ export default function CategoryGrid() {
     <section className="py-20 main-container" id="shop">
       <div className="mb-10 flex items-end justify-between">
         <div>
-          <p className="mb-2 text-xs font-black tracking-[0.16em] text-[#ff5d39] uppercase">Trouvez votre prochain favori</p>
+          <p className="mb-2 text-xs font-black tracking-[0.16em] text-accent uppercase">Trouvez votre prochain favori</p>
           <h2 className="text-4xl font-black tracking-[-0.045em] sm:text-5xl">Parcourir par catégorie</h2>
         </div>
         <div className="flex gap-2">
