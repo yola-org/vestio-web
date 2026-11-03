@@ -7,11 +7,11 @@ export default function HowItWorks() {
       <div className="mx-auto w-full max-w-[1440px]">
         <div className="mb-20 grid gap-12 lg:grid-cols-2 lg:items-end">
           <div>
-            <span className="mb-4 inline-block text-xs font-black tracking-[0.2em] text-[#ff5d39] uppercase">
+            <span className="mb-4 inline-block text-xs font-black tracking-[0.2em] text-accent uppercase">
               Guide d'utilisation
             </span>
-            <h2 className="text-5xl leading-[0.95] font-black tracking-[-0.055em] text-[#151515] sm:text-7xl">
-              Comment ça<br />marche sur <span className="text-[#173fdb]">Vestio</span>.
+            <h2 className="text-5xl leading-[0.95] font-black tracking-[-0.055em] text-primary sm:text-7xl">
+              Comment ça<br />marche sur <span className="text-deep-accent">Vestio</span>.
             </h2>
           </div>
           <div className="max-w-xl lg:ml-auto">
@@ -29,7 +29,7 @@ export default function HowItWorks() {
               title: 'Vendez vos pépites',
               body: 'Prenez quelques belles photos de vos articles, ajoutez une description honnête et fixez votre prix. C\'est 100% gratuit et sans commission sur la mise en ligne.',
               icon: <CameraIcon className="h-10 w-10" />,
-              color: 'bg-[#f7f3ea]'
+              color: 'bg-background'
             },
             {
               number: '02',
@@ -51,17 +51,17 @@ export default function HowItWorks() {
                 <span className="text-4xl font-black italic tracking-tighter text-black/5">
                   {step.number}
                 </span>
-                <div className={`rounded-2xl ${step.color} p-5 text-[#173fdb] transition-transform duration-500 group-hover:scale-110`}>
+                <div className={`rounded-2xl ${step.color} p-5 text-deep-accent transition-transform duration-500 group-hover:scale-110`}>
                   {step.icon}
                 </div>
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-[#151515]">{step.title}</h3>
+              <h3 className="text-2xl font-black tracking-tight text-primary">{step.title}</h3>
               <p className="mt-4 text-base leading-7 text-black/50">{step.body}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-20 flex flex-col items-center justify-between gap-8 rounded-[2rem] bg-[#151515] p-10 md:flex-row md:p-16">
+        <div className="mt-20 flex flex-col items-center justify-between gap-8 rounded-[2rem] bg-primary p-10 md:flex-row md:p-16">
           <div className="max-w-xl text-center md:text-left">
             <h4 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
               Prêt à faire circuler la mode ?
@@ -71,7 +71,7 @@ export default function HowItWorks() {
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/register" className="flex items-center gap-3 rounded-full bg-[#ff5d39] px-8 py-4.5 text-sm font-bold text-white transition hover:scale-105 active:scale-95">
+            <Link href="/register" className="flex items-center gap-3 rounded-full bg-accent px-8 py-4.5 text-sm font-bold text-white transition hover:scale-105 active:scale-95">
               Commencer à vendre <ArrowIcon className="h-5 w-5" />
             </Link>
             <a href="#shop" className="rounded-full border-2 border-white/20 px-8 py-4.5 text-sm font-bold text-white transition hover:bg-white/10">

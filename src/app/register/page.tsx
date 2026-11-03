@@ -5,7 +5,7 @@ import { ArrowIcon } from '@/components/shared/Icons';
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-[#f7f3ea] text-[#151515]">
+    <div className="min-h-screen bg-background text-primary">
       <Header />
       <main className="py-20 main-container">
         <div className="mx-auto max-w-md bg-white p-8 shadow-sm rounded-2xl">
@@ -19,7 +19,7 @@ export default function RegisterPage() {
                 type="text" 
                 id="name" 
                 placeholder="Prénom Nom"
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
+                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
             </div>
             <div>
@@ -28,7 +28,7 @@ export default function RegisterPage() {
                 type="email" 
                 id="email" 
                 placeholder="votre@email.com"
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
+                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
             </div>
             <div>
@@ -37,17 +37,17 @@ export default function RegisterPage() {
                 type="password" 
                 id="password" 
                 placeholder="8 caractères minimum"
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
+                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
             </div>
-            <button className="w-full bg-[#ff5d39] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#e94422] transition">
+            <button className="w-full bg-accent text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition">
               Créer mon compte <ArrowIcon className="h-5 w-5" />
             </button>
           </form>
           
           <div className="mt-8 pt-8 border-t border-black/10 text-center">
             <p className="text-sm text-black/60 mb-4">Déjà membre ?</p>
-            <Link href="/login" className="inline-block text-[#173fdb] font-bold hover:underline">
+            <Link href="/login" className="inline-block text-deep-accent font-bold hover:underline">
               Se connecter à mon compte
             </Link>
           </div>
