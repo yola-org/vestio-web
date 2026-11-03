@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { SearchIcon, HeartIcon, UserIcon, MenuIcon, CloseIcon, ChevronIcon, PinIcon, HomeIcon, UploadIcon } from '@/components/shared/Icons';
 import UserDropdown from '@/components/layout/UserDropdown';
+import OnboardingStatus from '@/components/layout/OnboardingStatus';
 import { profileApi, callApi } from '@/lib/api';
 import { isAuthenticated as hasAuthSession } from '@/lib/auth';
 import Link from 'next/link';
@@ -142,6 +143,7 @@ export default function Header() {
               <Link href="/listings/new" className="rounded-full bg-accent px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-90 flex items-center gap-2">
                 <UploadIcon className="h-4 w-4" /> Vendre
               </Link>
+              <OnboardingStatus />
               <UserDropdown />
             </>
           ) : (
