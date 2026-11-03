@@ -58,7 +58,8 @@ export default function SellForm() {
           setCategories(data);
           // Only set first parent as selected if none is selected yet
           if (data.length > 0 && !selectedParentId) {
-            setSelectedParentId(data[0].id);
+            const firstParent = data.find(c => !c.parentId) || data[0];
+            setSelectedParentId(firstParent.id);
           }
         } 
       });
@@ -87,10 +88,15 @@ export default function SellForm() {
     });
   };
 
+  const allCategories = categories.flatMap(c => [c, ...(c.subCategories || [])]);
   const selectedParent = categories.find(c => c.id === selectedParentId);
-  const selectedCategory = categories.flatMap(c => [c, ...(c.nestedCategories || [])]).find(c => c.id === formData.categoryId);
-  
-  const availableSizes = sizes.find(s => s.id === (selectedCategory?.sizeGroup?.id || selectedCategory?.sizeGroupId))?.sizes || [];
+  const selectedCategory = allCategories.find(c => c.id === formData.categoryId);
+
+
+  const availableSizes = sizes.find(s => {
+    const sizeGroupId = selectedCategory?.sizeGroup?.id || selectedCategory?.sizeGroupId;
+    return s.id === sizeGroupId;
+  })?.sizes || [];
 
   const handleParentSelect = (parentId: string) => {
     setSelectedParentId(parentId);
@@ -176,7 +182,9 @@ export default function SellForm() {
         <div>
           <label className="block text-sm font-bold mb-4">Catégorie principale</label>
           <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+            {categories
+              .filter(c => !c.parentId)
+              .map((cat) => (
               <button
                 key={cat.id}
                 type="button"
@@ -194,11 +202,13 @@ export default function SellForm() {
           <input type="hidden" name="parentCategoryId" value={selectedParentId} required />
         </div>
 
-        {selectedParent && (selectedParent.nestedCategories?.length ?? 0) > 0 && (
+        {selectedParent && (
           <div>
             <label className="block text-sm font-bold mb-4">Sous-catégorie</label>
             <div className="flex flex-wrap gap-2">
-              {selectedParent.nestedCategories?.map((child) => (
+              {allCategories
+                .filter(c => c.parentId === selectedParent.id)
+                .map((child) => (
                 <button
                   key={child.id}
                   type="button"

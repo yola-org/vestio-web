@@ -11,8 +11,8 @@ export function categoryToString(category: Category, indent: number = 0): string
   const sizeGroupId = category.sizeGroup?.id || category.sizeGroupId;
   let result = `${spacing}- ${category.name} (ID: ${category.id}, sizeGroupId: ${sizeGroupId})\n`;
 
-  if (category.nestedCategories && category.nestedCategories.length > 0) {
-    category.nestedCategories.forEach((child: any) => {
+  if (category.subCategories && category.subCategories.length > 0) {
+    category.subCategories.forEach((child: any) => {
       result += categoryToString(child, indent + 1);
     });
   }

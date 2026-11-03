@@ -27,14 +27,14 @@ export default function CategoryFilter({
   };
 
   const isParentSelected = (parent: Category) => {
-    if (!parent.nestedCategories || parent.nestedCategories.length === 0) {
+    if (!parent.subCategories || parent.subCategories.length === 0) {
       return selectedCategoryIds.includes(parent.id);
     }
-    return parent.nestedCategories.every((child) => selectedCategoryIds.includes(child.id));
+    return parent.subCategories.every((child) => selectedCategoryIds.includes(child.id));
   };
 
   const handleParentToggle = (parent: Category) => {
-    const childrenIds = parent.nestedCategories?.map((c) => c.id) || [];
+    const childrenIds = parent.subCategories?.map((c) => c.id) || [];
     const idsToToggle = [parent.id, ...childrenIds];
     const currentlySelected = isParentSelected(parent);
     onSelectAll(idsToToggle, !currentlySelected);
@@ -44,7 +44,7 @@ export default function CategoryFilter({
     <div className="space-y-4">
       {categories.map((parent) => {
         const isExpanded = expandedParents[parent.id];
-        const hasChildren = parent.nestedCategories && parent.nestedCategories.length > 0;
+        const hasChildren = parent.subCategories && parent.subCategories.length > 0;
         const selected = isParentSelected(parent);
 
         return (
@@ -77,7 +77,7 @@ export default function CategoryFilter({
 
             {hasChildren && isExpanded && (
               <div className="ml-7 space-y-2 pt-1 border-l border-black/5 pl-4">
-                {parent.nestedCategories?.map((child) => (
+                {parent.subCategories?.map((child) => (
                   <label key={child.id} className="flex items-center gap-3 cursor-pointer group">
                     <input
                       type="checkbox"

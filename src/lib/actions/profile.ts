@@ -42,15 +42,26 @@ export async function getStaticDataAction(): Promise<ActionResult<StaticData>> {
 }
 
 export async function getProfileAction(): Promise<ActionResult<UserProfile>> {
-  return runAction(() => request<UserProfile>('/api/profile'));
+  return runAction(async () => {
+    const profile = await request<any>('/api/profile');
+    return {
+      ...profile,
+      cityId: profile.city?.id || profile.cityId || null,
+      cityName: profile.city?.name || profile.cityName || null,
+    };
+  });
 }
 
 export async function updateProfileAction(
   profile: Partial<UserProfile>
 ): Promise<ActionResult<UserProfile>> {
+  const payload = {
+    ...profile,
+    city: profile.cityId ? { id: profile.cityId } : undefined
+  };
   return runAction(() => request<UserProfile>('/api/profile', {
     method: 'PUT',
-    body: JSON.stringify(profile),
+    body: JSON.stringify(payload),
   }));
 }
 
@@ -62,7 +73,8 @@ export async function getPreferencesAction(): Promise<ActionResult<UserPreferenc
   return runAction(async () => {
     const prefs = await request<any>('/api/profile/preferences');
     
-    const rawCategoryIds = prefs.categoryIds || [];
+    // Normalize category IDs from backend (which might be objects or strings)
+    const rawCategoryIds = prefs.categoryIds || prefs.categories || [];
     const normalizedCategoryIds = Array.isArray(rawCategoryIds)
       ? rawCategoryIds.map((c: any) => typeof c === 'object' ? String(c.id) : String(c))
       : [];
