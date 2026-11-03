@@ -77,7 +77,7 @@ export interface Category {
   parentId?: string | null;
   sizeGroupId?: string | null;
   sizeGroup?: SizeGroup | null;
-  nestedCategories?: Category[];
+  subCategories?: Category[];
 }
 
 export interface CategoryGroup {

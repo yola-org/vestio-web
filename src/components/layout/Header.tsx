@@ -192,7 +192,7 @@ export default function Header() {
                       <div key={parent.id} className={index < 5 ? 'border-r border-black/10 pr-4' : ''}>
                         <p className="mb-4 text-base font-black tracking-tight normal-case text-primary">{parent.name}</p>
                         <ul className="space-y-2.5 text-[13px] font-medium tracking-normal normal-case text-black/60">
-                          {parent.nestedCategories?.map((child) => (
+                          {parent.subCategories?.map((child) => (
                             <li key={child.id}>
                               <a href="#shop" className="hover:text-deep-accent hover:underline">
                                 {child.name}

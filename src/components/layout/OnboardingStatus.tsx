@@ -47,10 +47,10 @@ export default function OnboardingStatus() {
   if (isCompleted) return null;
 
   const steps = [
-    { id: 'account', label: 'Créer un compte', completed: status.accountCreated },
-    { id: 'profile', label: 'Compléter mon profil', completed: status.additionalDataAdded },
+    { id: 'account', label: 'Créer un compte', completed: status.accountCreated, href: '/login' },
+    { id: 'profile', label: 'Compléter mon profil', completed: status.additionalDataAdded, href: '/settings' },
     { id: 'preferences', label: 'Mes préférences de style', completed: status.preferencesAdded },
-    { id: 'publish', label: 'Publier ma première pépite', completed: status.publishedSomething },
+    { id: 'publish', label: 'Publier ma première pépite', completed: status.publishedSomething, href: '/listings/new' },
   ];
 
   const completedCount = steps.filter(s => s.completed).length;
@@ -95,9 +95,9 @@ export default function OnboardingStatus() {
                   }`}>
                     {step.completed ? <CheckIcon className="h-3.5 w-3.5" /> : <span className="text-[10px] font-bold">{steps.indexOf(step) + 1}</span>}
                   </div>
-                  <span className={`text-sm font-medium ${step.completed ? 'text-black/40 line-through' : 'text-primary'}`}>
+                  <a href={step.href && !step.completed ? step.href : ""} className={`text-sm font-medium ${step.completed ? 'text-black/40 line-through' : 'text-primary'}`}>
                     {step.label}
-                  </span>
+                  </a>
                 </li>
               ))}
             </ul>

@@ -131,7 +131,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
                     <h3 className="text-xs font-black uppercase tracking-widest text-black/30">
                       {parent.name}
                     </h3>
-                    {(!parent.nestedCategories || parent.nestedCategories.length === 0) && (
+                    {(!parent.subCategories || parent.subCategories.length === 0) && (
                       <button
                         onClick={() => toggleCategory(String(parent.id))}
                         className={`px-3 py-1 rounded-full border text-[10px] font-bold tracking-wider uppercase transition-all ${
@@ -144,9 +144,9 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
                       </button>
                     )}
                   </div>
-                  {parent.nestedCategories && parent.nestedCategories.length > 0 && (
+                  {parent.subCategories && parent.subCategories.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {parent.nestedCategories.map((child) => {
+                      {parent.subCategories.map((child) => {
                         const isSelected = selectedCategoryIds.some(id => String(id) === String(child.id));
                         return (
                           <button
