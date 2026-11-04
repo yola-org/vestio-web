@@ -17,6 +17,47 @@
 - **Types/Interfaces**: PascalCase (`User`, `ApiError`, `ActionResult`)
 - **CSS Classes**: Use Tailwind utilities
 
+### File Organization Order
+Maintain a consistent order within files:
+
+1. **Imports** - External libraries first, then internal modules
+2. **Constants** - Module-level constants
+3. **Types and interfaces** - Type definitions
+4. **Main implementation** - Functions, classes, hooks, components
+5. **Exports** - Re-exports if not inline
+
+```typescript
+// 1. Imports
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+
+import { HeaderIcon } from '@/components/shared/Icons';
+import { callApi } from '@/lib/api/call';
+import { profileApi } from '@/lib/api';
+import type { User } from '@/types/api';
+
+// 2. Constants
+const MAX_ITEMS = 10;
+const API_TIMEOUT = 5000;
+
+// 3. Types and interfaces
+interface ComponentProps {
+  className?: string;
+  title: string;
+}
+
+type Status = 'idle' | 'loading' | 'error';
+
+// 4. Main implementation
+export default function Component({ className = '', title }: ComponentProps) {
+  // ...
+}
+
+// 5. Exports (if additional exports needed)
+export { Component };
+```
+
 ### Imports
 - Use path aliases (`@/components/...`, `@/lib/...`)
 - Group imports: React/Next, third-party, local components, utilities, types
