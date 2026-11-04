@@ -1,21 +1,32 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getTranslations } from 'next-intl/server';
 import NotificationProvider from '@/components/shared/NotificationProvider';
+import { localeDirection, type Locale } from '@/i18n/config';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Vestio',
-  description: 'La communauté marocaine où chaque dressing trouve une nouvelle histoire.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata');
 
-export default function RootLayout({
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = (await getLocale()) as Locale;
+
   return (
-    <html lang="fr">
+    <html lang={locale} dir={localeDirection(locale)}>
       <body>
-        <NotificationProvider>{children}</NotificationProvider>
+        <NextIntlClientProvider>
+          <NotificationProvider>{children}</NotificationProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

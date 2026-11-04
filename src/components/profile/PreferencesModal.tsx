@@ -6,6 +6,7 @@ import { CloseIcon } from '@/components/shared/Icons';
 import { Category } from '@/types/api';
 import PreferencesModalSkeleton from '@/components/profile/PreferencesModalSkeleton';
 import { useNotifications } from '@/components/shared/NotificationProvider';
+import { useTranslations } from 'next-intl';
 
 interface PreferencesModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface PreferencesModalProps {
 
 export default function PreferencesModal({ isOpen, onClose }: PreferencesModalProps) {
   const { notify } = useNotifications();
+  const t = useTranslations();
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -61,7 +63,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
     
     await result.handle({
       onSuccess: () => {
-        notify.success('Vos préférences ont été enregistrées avec succès.');
+        notify.success(t('preferences.success'));
         onClose();
       }
     });
@@ -78,8 +80,8 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
       >
         <div className="flex items-center justify-between p-6 border-b border-black/5">
           <div>
-            <h2 className="text-2xl font-bold text-black">Mes Préférences</h2>
-            <p className="text-sm text-black/60 mt-1">Sélectionnez vos styles et catégories favoris.</p>
+            <h2 className="text-2xl font-bold text-black">{t('preferences.title')}</h2>
+            <p className="text-sm text-black/60 mt-1">{t('preferences.subtitle')}</p>
           </div>
           <button 
             onClick={onClose}
@@ -98,14 +100,14 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <h3 className="text-xs font-black uppercase tracking-widest text-black/30">
-                    Genre
+                    {t('preferences.gender')}
                   </h3>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { id: 'FEMALE', name: 'Femme' },
-                    { id: 'MALE', name: 'Homme' },
-                    { id: 'UNISEX', name: 'Mixte' }
+                    { id: 'FEMALE', name: t('preferences.genders.FEMALE') },
+                    { id: 'MALE', name: t('preferences.genders.MALE') },
+                    { id: 'UNISEX', name: t('preferences.genders.UNISEX') }
                   ].map((g) => {
                     const isSelected = String(selectedGender) === String(g.id);
                     return (
@@ -140,7 +142,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
                             : 'border-black/10 text-black/40 hover:border-black/20'
                         }`}
                       >
-                        {selectedCategoryIds.some(id => String(id) === String(parent.id)) ? 'Sélectionné' : 'Sélectionner'}
+                        {selectedCategoryIds.some(id => String(id) === String(parent.id)) ? t('preferences.selected') : t('preferences.select')}
                       </button>
                     )}
                   </div>
@@ -159,7 +161,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
                             }`}
                           >
                             {isSelected && (
-                              <div className="flex items-center justify-center -ml-1">
+                              <div className="flex items-center justify-center -ms-1">
                                 <CloseIcon className="h-3.5 w-3.5" />
                               </div>
                             )}
@@ -180,7 +182,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
             onClick={onClose}
             className="px-6 py-2.5 rounded-full text-sm font-bold text-black/60 hover:text-black transition"
           >
-            Annuler
+            {t('preferences.cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -188,7 +190,7 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
             className="bg-[#173fdb] text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-[#173fdb]/20 hover:bg-[#1234b5] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving && <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
-            Enregistrer
+            {t('preferences.save')}
           </button>
         </div>
       </div>

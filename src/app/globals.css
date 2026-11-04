@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -72,3 +72,25 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Arabic typography and right-to-left adjustments */
+html[lang='ar'] body {
+  font-family: 'Cairo', var(--font-sans);
+}
+
+html[lang='ar'] h1,
+html[lang='ar'] h2,
+html[lang='ar'] h3,
+html[lang='ar'] h4 {
+  font-family: 'Cairo', var(--font-display);
+}
+
+html[dir='rtl'] [class*='tracking-'] {
+  letter-spacing: 0;
+}
+
+/* Mirror forward-pointing arrows in RTL without fighting translate utilities. */
+html[dir='rtl'] [data-icon='arrow'] {
+  scale: -1 1;
+}
+

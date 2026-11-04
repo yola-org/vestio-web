@@ -76,7 +76,7 @@ export default function CategoryFilter({
             </div>
 
             {hasChildren && isExpanded && (
-              <div className="ml-7 space-y-2 pt-1 border-l border-black/5 pl-4">
+              <div className="ms-7 space-y-2 pt-1 border-s border-black/5 ps-4">
                 {parent.subCategories?.map((child) => (
                   <label key={child.id} className="flex items-center gap-3 cursor-pointer group">
                     <input

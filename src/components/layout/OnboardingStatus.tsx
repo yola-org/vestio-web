@@ -4,8 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { RocketIcon, CheckIcon, CloseIcon } from '@/components/shared/Icons';
 import { profileApi, callApi } from '@/lib/api';
 import { OnboardingStatus as OnboardingStatusType } from '@/types/api';
+import { useTranslations } from 'next-intl';
 
 export default function OnboardingStatus() {
+  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<OnboardingStatusType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,10 +49,10 @@ export default function OnboardingStatus() {
   if (isCompleted) return null;
 
   const steps = [
-    { id: 'account', label: 'Créer un compte', completed: status.accountCreated, href: '/login' },
-    { id: 'profile', label: 'Compléter mon profil', completed: status.additionalDataAdded, href: '/settings' },
-    { id: 'preferences', label: 'Mes préférences de style', completed: status.preferencesAdded },
-    { id: 'publish', label: 'Publier ma première pépite', completed: status.publishedSomething, href: '/listings/new' },
+    { id: 'account', label: t('onboarding.steps.account'), completed: status.accountCreated, href: '/login' },
+    { id: 'profile', label: t('onboarding.steps.profile'), completed: status.additionalDataAdded, href: '/settings' },
+    { id: 'preferences', label: t('onboarding.steps.preferences'), completed: status.preferencesAdded },
+    { id: 'publish', label: t('onboarding.steps.publish'), completed: status.publishedSomething, href: '/listings/new' },
   ];
 
   const completedCount = steps.filter(s => s.completed).length;
@@ -61,27 +63,27 @@ export default function OnboardingStatus() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative flex h-10 w-10 items-center justify-center rounded-full bg-deep-accent/10 text-deep-accent transition hover:bg-deep-accent/20 active:scale-95"
-        aria-label="Onboarding status"
+        aria-label={t('onboarding.ariaLabel')}
       >
         <RocketIcon className={`h-5 w-5 ${progress > 0 ? 'animate-bounce-subtle' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-3 w-72 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full end-0 mt-3 w-72 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="bg-deep-accent p-5 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black tracking-tight text-lg">Votre voyage Vestio</h3>
+              <h3 className="font-black tracking-tight text-lg">{t('onboarding.title')}</h3>
               <button onClick={() => setIsOpen(false)}>
                 <CloseIcon className="h-5 w-5 opacity-60 hover:opacity-100" />
               </button>
             </div>
             <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
               <div 
-                className="absolute top-0 left-0 h-full bg-sub-accent transition-all duration-1000" 
+                className="absolute top-0 start-0 h-full bg-sub-accent transition-all duration-1000" 
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-2 text-xs font-bold opacity-80 uppercase tracking-wider">{progress}% complété</p>
+            <p className="mt-2 text-xs font-bold opacity-80 uppercase tracking-wider">{t('onboarding.progress', { progress })}</p>
           </div>
           
           <div className="p-4">
@@ -104,7 +106,7 @@ export default function OnboardingStatus() {
             
             <div className="mt-6 rounded-xl bg-background p-4 text-center">
               <p className="text-[13px] font-medium text-black/60 leading-relaxed">
-                Complétez ces étapes pour booster votre visibilité et vendre plus vite !
+                {t('onboarding.hint')}
               </p>
             </div>
           </div>

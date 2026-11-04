@@ -9,9 +9,11 @@ import { profileApi, callApi, listingsApi, Listing } from '@/lib/api';
 import ListingGrid from '@/components/shared/ListingGrid';
 import { UserProfile } from '@/types/api';
 import { SettingsIcon, CameraIcon } from '@/components/shared/Icons';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function ProfilePage() {
+  const t = useTranslations();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,9 +49,9 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-[#f7f3ea]">
         <Header />
         <main className="main-container py-20 text-center">
-          <h1 className="text-2xl font-bold mb-4">Profil non trouvé</h1>
+          <h1 className="text-2xl font-bold mb-4">{t('profile.notFound')}</h1>
           <Link href="/login" className="text-[#173fdb] font-bold hover:underline">
-            Veuillez vous connecter
+            {t('profile.pleaseLogin')}
           </Link>
         </main>
         <Footer />
@@ -71,7 +73,7 @@ export default function ProfilePage() {
                   firstName={profile.firstName} 
                   lastName={profile.lastName} 
                   size="xl"
-                  alt={`${profile.firstName} ${profile.lastName}`} 
+                  alt={t('profile.avatarAlt', { name: `${profile.firstName} ${profile.lastName}` })} 
                 />
               </div>
               <button className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-black/5 hover:bg-[#f7f3ea] transition">
@@ -88,21 +90,21 @@ export default function ProfilePage() {
                   href="/settings" 
                   className="flex items-center gap-2 px-4 py-2 rounded-full border border-black/10 text-sm font-bold hover:bg-black/5 transition"
                 >
-                  <SettingsIcon className="h-4 w-4" /> Modifier le profil
+                  <SettingsIcon className="h-4 w-4" /> {t('profile.editProfile')}
                 </Link>
               </div>
               <p className="text-black/60 font-medium mb-4 max-w-2xl">
-                {profile.bio || "Aucune bio renseignée. Ajoutez-en une pour vous présenter à la communauté !"}
+                {profile.bio || t('profile.noBio')}
               </p>
               <div className="flex gap-6 text-sm">
                 <div>
-                  <span className="font-bold">{listings.length}</span> <span className="text-black/50">articles</span>
+                  <span className="font-bold">{listings.length}</span> <span className="text-black/50">{t('profile.statsListings')}</span>
                 </div>
                 <div>
-                  <span className="font-bold">0</span> <span className="text-black/50">abonnés</span>
+                  <span className="font-bold">0</span> <span className="text-black/50">{t('profile.statsFollowers')}</span>
                 </div>
                 <div>
-                  <span className="font-bold">0</span> <span className="text-black/50">abonnements</span>
+                  <span className="font-bold">0</span> <span className="text-black/50">{t('profile.statsFollowing')}</span>
                 </div>
               </div>
             </div>
@@ -113,13 +115,13 @@ export default function ProfilePage() {
         <div className="mb-8 border-b border-black/10">
           <div className="flex gap-8">
             <button className="pb-4 text-sm font-bold border-b-2 border-[#173fdb] text-[#173fdb]">
-              Articles ({listings.length})
+              {t('profile.tabListings', { count: listings.length })}
             </button>
             <button className="pb-4 text-sm font-bold text-black/40 hover:text-black transition">
-              Avis (0)
+              {t('profile.tabReviews', { count: 0 })}
             </button>
             <button className="pb-4 text-sm font-bold text-black/40 hover:text-black transition">
-              À propos
+              {t('profile.tabAbout')}
             </button>
           </div>
         </div>
@@ -129,7 +131,7 @@ export default function ProfilePage() {
           listings={listings} 
           isLoading={false} 
           columns="grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-          emptyMessage="Vous n'avez pas encore d'articles en vente."
+          emptyMessage={t('profile.emptyListings')}
         />
         
         {listings.length === 0 && (
@@ -138,7 +140,7 @@ export default function ProfilePage() {
               href="/listings/new" 
               className="inline-block bg-[#ff5d39] text-white px-8 py-4 rounded-full font-bold hover:bg-[#e94422] transition"
             >
-              Vendre mon premier article
+              {t('profile.sellFirst')}
             </Link>
           </div>
         )}

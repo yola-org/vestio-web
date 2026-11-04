@@ -1,93 +1,102 @@
-# vestio-web
+# Vestio Web
 
+Vestio is a Moroccan community marketplace for second-hand and new fashion. Built with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, and next-intl for internationalization (French/Arabic with RTL support).
 
+## Tech Stack
 
-## Getting started
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **UI**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with custom design tokens in `src/app/globals.css`
+- **i18n**: [next-intl](https://next-intl-docs.vercel.app/) (FR/AR, RTL support)
+- **Carousel**: [Embla Carousel](https://www.embla-carousel.com/)
+- **Formatting/Linting**: [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Getting Started
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Prerequisites
+- Node.js 18+ (recommended 20+)
+- pnpm/npm/yarn - check `package-lock.json`/`pnpm-lock.yaml` (project has both; use your preferred package manager consistently)
 
-## Add your files
+### Installation
+```bash
+# Install dependencies
+npm install
+# or
+pnpm install
+# or
+yarn install
+```
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### Environment Variables
+Create a `.env.local` file with at least:
+```env
+API_URL=http://localhost:8080
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+The API base URL is resolved as `process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'` (see `src/lib/api/request.ts`).
+
+### Development
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000).
+
+### Build
+```bash
+npm run build
+npm run start
+```
+
+### Lint/Format
+```bash
+npm run lint
+npm run format
+```
+
+## Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/tech1212145/vestio-web.git
-git branch -M main
-git push -uf origin main
+src/
+├── app/                    # Next.js App Router (pages/layouts)
+├── components/             # UI components
+│   ├── layout/            # Header, Footer, navigation
+│   ├── home/              # Landing page sections
+│   ├── shared/            # Reusable components (Icons)
+│   └── ...
+├── constants/             # App constants (auth cookies, etc.)
+├── i18n/                  # Internationalization config & dictionaries
+├── lib/                   # Core utilities and integrations
+│   ├── api/               # API client layer (request, call wrapper, errors)
+│   ├── actions/           # Server actions
+│   ├── api.ts             # API facade exports
+│   ├── auth.ts            # Client auth helpers
+│   └── category-utils.ts  # Category utilities
+└── types/                 # TypeScript type definitions
 ```
 
-## Integrate with your tools
+## Documentation
 
-* [Set up project integrations](https://gitlab.com/tech1212145/vestio-web/-/settings/integrations)
+Comprehensive documentation is available in the [`docs/`](./docs) directory:
 
-## Collaborate with your team
+- [Architecture Overview](./docs/ARCHITECTURE.md) - App structure, patterns, and design system
+- [API Layer](./docs/api/API_LAYER.md) - HTTP client, error handling, auth flow
+- [Authentication](./docs/modules/AUTH.md) - Auth state, cookies, flows
+- [Internationalization (i18n)](./docs/modules/I18N.md) - next-intl setup, locales, RTL
+- [Components Guide](./docs/components/COMPONENTS.md) - Component patterns and usage
+- [Server Actions](./docs/modules/ACTIONS.md) - Server actions patterns
+- [Best Practices](./docs/guides/BEST_PRACTICES.md) - Coding standards and guidelines
+- [Development Guide](./docs/guides/DEVELOPMENT.md) - Setup, workflows, tips
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Also see [AI_GUIDELINES.md](./AI_GUIDELINES.md) for design system and AI agent guidelines.
 
-## Test and Deploy
+## Features
 
-Use the built-in continuous integration in GitLab.
-
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- **Multi-language**: French and Arabic with automatic RTL layout for Arabic
+- **Authentication**: Cookie-based auth with refresh token handling
+- **Marketplace**: Browse listings, categories, cities
+- **Responsive Design**: Mobile-first with Tailwind CSS v4
+- **Server Components**: Leverages Next.js App Router for optimal performance
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+See [Best Practices](./docs/guides/BEST_PRACTICES.md) for coding standards. Follow the patterns established in the codebase and refer to [AI_GUIDELINES.md](./AI_GUIDELINES.md) for design system rules.
