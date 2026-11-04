@@ -7,7 +7,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ArrowIcon } from '@/components/shared/Icons';
 import { authApi, callApi } from '@/lib/api';
-import { notifyAuthChanged } from '@/lib/auth';
+import { markAuthenticated, notifyAuthChanged } from '@/lib/auth';
 import { useNotifications } from '@/components/shared/NotificationProvider';
 import { useTranslations } from 'next-intl';
 import {ApiCallError} from "@/lib/api/call.ts";
@@ -32,6 +32,7 @@ export default function LoginPage() {
 
     await result.handle({
       onSuccess: () => {
+        markAuthenticated();
         notifyAuthChanged();
         notify.success(t('auth.login.success'));
         router.push('/');

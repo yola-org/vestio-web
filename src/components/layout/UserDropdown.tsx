@@ -14,7 +14,7 @@ import {
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import PreferencesModal from '@/components/profile/PreferencesModal';
 import { authApi, callApi, profileApi } from '@/lib/api';
-import { notifyAuthChanged } from '@/lib/auth';
+import { clearAuthTracking, notifyAuthChanged } from '@/lib/auth';
 import { UserProfile } from '@/types/api';
 import { useTranslations } from 'next-intl';
 
@@ -56,6 +56,7 @@ export default function UserDropdown() {
     const result = await callApi(authApi.logout());
     await result.handle({
       onSuccess: () => {
+        clearAuthTracking();
         notifyAuthChanged();
         router.push('/login');
       }

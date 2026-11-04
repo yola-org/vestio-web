@@ -24,86 +24,61 @@ import type { ActionResult } from '@/lib/api/action-result';
 import { Category, City, Listing, ListingInput, LoginRequest, SignupRequest, UserPreferences, UserProfile } from '@/types/api';
 
 /**
- * Unwraps a server action result, throwing an error if the action failed.
- * This is used to provide a consistent API interface where server actions
- * return promises that throw on error, similar to direct API calls.
- * 
- * @template T - Type of successful response data
- * @param result - Promise of ActionResult from a server action
- * @returns Promise resolving to the data on success
- * @throws {Error} With code and status attached if action fails
- * @internal
- */
-async function unwrap<T>(result: Promise<ActionResult<T>>): Promise<T> {
-  const response = await result;
-  if (!response.success) {
-    const error = new Error(response.error) as Error & { code?: string; status?: number };
-    error.code = response.code;
-    error.status = response.status;
-    throw error;
-  }
-  return response.data;
-}
-
-/**
- * Authentication API - uses server actions wrapped with unwrap()
- * All methods throw errors on failure
+ * Authentication API - server actions
  */
 export const authApi = {
   /** Login with credentials */
-  login: (credentials: LoginRequest) => unwrap(loginAction(credentials)),
+  login: (credentials: LoginRequest) => loginAction(credentials),
   /** Sign up new user */
-  signup: (credentials: SignupRequest) => unwrap(signupAction(credentials)),
+  signup: (credentials: SignupRequest) => signupAction(credentials),
   /** Logout current session */
-  logout: () => unwrap(logoutAction()),
+  logout: () => logoutAction(),
 };
 
 /**
- * Listings API - uses server actions wrapped with unwrap()
- * All methods throw errors on failure, use with callApi() in client components
+ * Listings API - server actions
  */
 export const listingsApi = {
   /** Get paginated listings */
-  list: (page = 0, size = 12) => unwrap(getListingsAction(page, size)),
+  list: (page = 0, size = 12) => getListingsAction(page, size),
   /** Get single listing by ID */
-  get: (id: string) => unwrap(getListingAction(id)),
+  get: (id: string) => getListingAction(id),
   /** Create new listing */
-  create: (listing: ListingInput) => unwrap(createListingAction(listing)),
+  create: (listing: ListingInput) => createListingAction(listing),
   /** Update existing listing */
-  update: (id: string, listing: ListingInput) => unwrap(updateListingAction(id, listing)),
+  update: (id: string, listing: ListingInput) => updateListingAction(id, listing),
   /** Delete listing */
-  delete: (id: string) => unwrap(deleteListingAction(id)),
+  delete: (id: string) => deleteListingAction(id),
 };
 
 /**
- * Profile and metadata API - uses server actions wrapped with unwrap()
- * All methods throw errors on failure, use with callApi() in client components
+ * Profile and metadata API - server actions
  */
 export const profileApi = {
   /** Get current user profile */
-  get: () => unwrap(getProfileAction()),
+  get: () => getProfileAction(),
   /** Update user profile */
-  update: (profile: Partial<UserProfile>) => unwrap(updateProfileAction(profile)),
+  update: (profile: Partial<UserProfile>) => updateProfileAction(profile),
   /** Get onboarding status */
-  getOnboardingStatus: () => unwrap(getOnboardingStatusAction()),
+  getOnboardingStatus: () => getOnboardingStatusAction(),
   /** Get user preferences */
-  getPreferences: () => unwrap(getPreferencesAction()),
+  getPreferences: () => getPreferencesAction(),
   /** Update user preferences */
-  updatePreferences: (preferences: UserPreferences) => unwrap(updatePreferencesAction(preferences)),
+  updatePreferences: (preferences: UserPreferences) => updatePreferencesAction(preferences),
   /** Get all categories */
-  getCategories: () => unwrap(getCategoriesAction()),
+  getCategories: () => getCategoriesAction(),
   /** Get category groups */
-  getCategoryGroups: () => unwrap(getCategoryGroupsAction()),
+  getCategoryGroups: () => getCategoryGroupsAction(),
   /** Get all cities */
-  getCities: () => unwrap(getCitiesAction()),
+  getCities: () => getCitiesAction(),
   /** Get all sizes */
-  getSizes: () => unwrap(getSizesAction()),
+  getSizes: () => getSizesAction(),
   /** Get all conditions */
-  getConditions: () => unwrap(getConditionsAction()),
+  getConditions: () => getConditionsAction(),
   /** Get contact types */
-  getContactTypes: () => unwrap(getContactTypesAction()),
+  getContactTypes: () => getContactTypesAction(),
   /** Get static data bundle */
-  getStaticData: () => unwrap(getStaticDataAction()),
+  getStaticData: () => getStaticDataAction(),
 };
 
 export type { Listing };

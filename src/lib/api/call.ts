@@ -2,6 +2,10 @@ import { createTranslator } from 'next-intl';
 import { getApiErrorDetails } from '@/lib/api/errors';
 import { defaultLocale, isLocale, LOCALE_COOKIE } from '@/i18n/config';
 import { getDictionary } from '@/i18n/dictionaries';
+import { AUTH_INDICATOR_COOKIE } from '@/constants/auth';
+import { clearAuthTracking, wasAuthenticated } from '@/lib/auth';
+
+const PUBLIC_PATHS = ['/welcome', '/login', '/register'];
 
 /**
  * Handler function for custom error messages based on error details
@@ -19,6 +23,8 @@ export type CallApiOptions = {
   /** If true, suppresses error notifications (default: false) */
   silent?: boolean;
 };
+
+const AUTH_INDICATOR_COOKIE_NAME = AUTH_INDICATOR_COOKIE;
 
 /**
  * Gets fallback error message from i18n based on current locale from cookies
@@ -87,9 +93,10 @@ export interface ApiResult<T> {
  * Client-side API call wrapper with error handling.
  * Automatically handles 401 (logout), shows notifications for errors (unless silent),
  * and provides a fluent handle() API for callbacks.
+ * Supports both raw promises and ActionResult from server actions.
  * 
  * @template T - Expected response type
- * @param apiCall - Promise from an API function call
+ * @param apiCall - Promise from an API function call or Promise<ActionResult<T>>
  * @param options - Configuration for error handling
  * @returns Promise resolving to ApiResult
  * 
@@ -104,20 +111,9 @@ export interface ApiResult<T> {
  *   onError: (error) => console.error(error.message),
  * });
  * ```
- * 
- * @example
- * ```typescript
- * // With custom error handling
- * const result = await callApi(authApi.login(data), {
- *   errors: {
- *     INVALID_CREDENTIALS: 'Email or password is incorrect',
- *   },
- *   silent: false,
- * });
- * ```
  */
 export async function callApi<T>(
-  apiCall: Promise<T>,
+  apiCall: Promise<T> | Promise<any>,
   options: CallApiOptions = {}
 ): Promise<ApiResult<T>> {
   let data: T | null = null;
@@ -125,8 +121,19 @@ export async function callApi<T>(
   let success = false;
 
   try {
-    data = await apiCall;
-    success = true;
+    const result = await apiCall;
+    // Check if it's an ActionResult
+    if (result && typeof result === 'object' && 'success' in result && ('data' in result || 'error' in result)) {
+      if (result.success) {
+        data = result.data as T;
+        success = true;
+      } else {
+        throw new ApiCallError(result.error || getFallbackErrorMessage(), result.code, result.status);
+      }
+    } else {
+      data = result as T;
+      success = true;
+    }
   } catch (err) {
     const details = getApiErrorDetails(err);
     const codeHandler = details.code === undefined ? undefined : options.errors?.[details.code];
@@ -139,13 +146,9 @@ export async function callApi<T>(
     error = new ApiCallError(message, details.code, details.status);
 
     if (details.status === 401 && typeof window !== 'undefined') {
-      if (!hasCustomHandler) {
-        localStorage.clear();
-        window.dispatchEvent(new Event('vestio:auth-changed'));
-        window.location.href = '/login';
-      } else {
-        window.dispatchEvent(new Event('vestio:auth-changed'));
-      }
+      localStorage.clear();
+      clearAuthTracking();
+      window.dispatchEvent(new Event('vestio:auth-changed'));
     }
 
     if (!hasCustomHandler && details.status === 500) {
