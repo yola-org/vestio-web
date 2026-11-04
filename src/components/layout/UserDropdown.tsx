@@ -16,8 +16,10 @@ import PreferencesModal from '@/components/profile/PreferencesModal';
 import { authApi, callApi, profileApi } from '@/lib/api';
 import { notifyAuthChanged } from '@/lib/auth';
 import { UserProfile } from '@/types/api';
+import { useTranslations } from 'next-intl';
 
 export default function UserDropdown() {
+  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -62,10 +64,10 @@ export default function UserDropdown() {
   };
 
   const menuItems = [
-    { label: 'Mon Profil', href: '/profile', icon: UserIcon },
-    { label: 'Préférences', onClick: () => setIsPreferencesOpen(true), icon: SettingsIcon },
-    { label: 'Aide & FAQ', href: '/help', icon: HelpIcon },
-    { label: 'Contactez-nous', href: '/contact', icon: ContactIcon },
+    { label: t('userMenu.profile'), href: '/profile', icon: UserIcon },
+    { label: t('userMenu.preferences'), onClick: () => setIsPreferencesOpen(true), icon: SettingsIcon },
+    { label: t('userMenu.help'), href: '/help', icon: HelpIcon },
+    { label: t('userMenu.contact'), href: '/contact', icon: ContactIcon },
   ];
 
   return (
@@ -85,9 +87,9 @@ export default function UserDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl z-50 animate-in fade-in zoom-in duration-200">
+        <div className="absolute end-0 mt-2 w-64 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl z-50 animate-in fade-in zoom-in duration-200">
           <div className="border-b border-black/5 p-4 bg-[#f7f3ea]/30">
-            <p className="text-xs font-bold uppercase tracking-wider text-black/40">Mon compte</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-black/40">{t('userMenu.account')}</p>
             {profile && (
               <p className="mt-1 text-sm font-bold truncate">
                 {profile.firstName} {profile.lastName}
@@ -126,10 +128,10 @@ export default function UserDropdown() {
           <div className="border-t border-black/5 py-2">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+              className="flex w-full items-center gap-3 px-4 py-3 text-start text-sm font-semibold text-red-600 transition hover:bg-red-50"
             >
               <LogOutIcon className="h-5 w-5 opacity-70" />
-              Se déconnecter
+              {t('userMenu.logout')}
             </button>
           </div>
         </div>

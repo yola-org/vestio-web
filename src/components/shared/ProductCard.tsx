@@ -2,6 +2,7 @@
 
 import { HeartIcon, PinIcon } from '@/components/shared/Icons';
 import { Listing } from '@/types/api';
+import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {
   product: Listing | {
@@ -18,11 +19,12 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, isSaved, onToggleSave }: ProductCardProps) {
+  const t = useTranslations();
   // Helper to handle both mock data and real API Listing
   const displaySize = 'sizeNames' in product ? (product.sizeNames?.join(', ') || '') : (product as any).size || '';
-  const displayPrice = typeof product.price === 'number' ? `${product.price} DH` : product.price;
+  const displayPrice = typeof product.price === 'number' ? `${product.price} ${t('common.currency')}` : product.price;
   const displayCity = 'cityNames' in product ? (product.cityNames?.join(', ') || '') : (product as any).city;
-  const displaySeller = 'userId' in product ? (product as any).seller || 'Vendeur' : (product as any).seller;
+  const displaySeller = 'userId' in product ? (product as any).seller || t('common.seller') : (product as any).seller;
   const displayImage = (product as any).image || 'https://images.unsplash.com/photo-1511556820780-d912e42b4980?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=900';
   return (
     <article className="group">
@@ -32,21 +34,21 @@ export default function ProductCard({ product, isSaved, onToggleSave }: ProductC
           alt={product.title} 
           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" 
         />
-        <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black uppercase backdrop-blur">
-          Seconde main
+        <span className="absolute top-3 start-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black uppercase backdrop-blur">
+          {t('common.secondHand')}
         </span>
         <button
           onClick={onToggleSave}
-          className={`absolute top-3 right-3 rounded-full p-2.5 backdrop-blur transition ${
+          className={`absolute top-3 end-3 rounded-full p-2.5 backdrop-blur transition ${
             isSaved ? 'bg-[#ff5d39] text-white' : 'bg-white/90 hover:bg-white'
           }`}
-          aria-label={isSaved ? `Retirer ${product.title} des favoris` : `Ajouter ${product.title} aux favoris`}
+          aria-label={isSaved ? t('productCard.removeFavorite', { title: product.title }) : t('productCard.addFavorite', { title: product.title })}
         >
           <HeartIcon className={`h-5 w-5 ${isSaved ? 'fill-current' : ''}`} />
         </button>
         
         {product.colors && product.colors.length > 0 && (
-          <div className="absolute bottom-3 left-3 flex gap-1.5">
+          <div className="absolute bottom-3 start-3 flex gap-1.5">
             {product.colors.map((color, index) => (
               <span 
                 key={index}

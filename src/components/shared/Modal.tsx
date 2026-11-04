@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { CloseIcon } from './Icons';
+import { useTranslations } from 'next-intl';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const t = useTranslations();
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
           <button 
             onClick={onClose}
             className="p-1 rounded-full hover:bg-black/5 transition"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
           >
             <CloseIcon className="h-6 w-6" />
           </button>

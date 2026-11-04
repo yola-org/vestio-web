@@ -6,14 +6,16 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ArrowIcon } from '@/components/shared/Icons';
-import {authApi, callApi} from '@/lib/api';
+import { authApi, callApi } from '@/lib/api';
 import { notifyAuthChanged } from '@/lib/auth';
 import { useNotifications } from '@/components/shared/NotificationProvider';
+import { useTranslations } from 'next-intl';
 import {ApiCallError} from "@/lib/api/call.ts";
 
 export default function LoginPage() {
   const router = useRouter();
   const { notify } = useNotifications();
+  const t = useTranslations();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,13 +27,13 @@ export default function LoginPage() {
     setLoginError('');
 
     const result = await callApi(authApi.login({ email, password }), {
-      errors: { ERR_UNAUTHORIZED: 'Email ou mot de passe incorrect.' },
+      errors: { ERR_UNAUTHORIZED: t('auth.login.invalidCredentials') },
     });
 
     await result.handle({
       onSuccess: () => {
         notifyAuthChanged();
-        notify.success('Connexion réussie. Bienvenue sur Vestio !');
+        notify.success(t('auth.login.success'));
         router.push('/');
       },
       onError: (error : ApiCallError) => {
@@ -49,17 +51,17 @@ export default function LoginPage() {
       <Header />
       <main className="py-20 main-container">
         <div className="mx-auto max-w-md bg-white p-8 shadow-sm rounded-2xl">
-          <h1 className="text-4xl font-black tracking-tight mb-2">Bon retour !</h1>
-          <p className="text-black/60 mb-8">Connectez-vous pour accéder à votre dressing et vos favoris.</p>
+          <h1 className="text-4xl font-black tracking-tight mb-2">{t('auth.login.title')}</h1>
+          <p className="text-black/60 mb-8">{t('auth.login.subtitle')}</p>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-bold mb-2" htmlFor="email">Email</label>
+              <label className="block text-sm font-bold mb-2" htmlFor="email">{t('auth.register.email')}</label>
               <input 
                 type="email" 
                 id="email" 
                 name="email"
-                placeholder="votre@email.com"
+                placeholder={t('auth.register.emailPlaceholder')}
                 autoComplete="email"
                 required
                 value={email}
@@ -73,7 +75,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2" htmlFor="password">Mot de passe</label>
+              <label className="block text-sm font-bold mb-2" htmlFor="password">{t('auth.register.password')}</label>
               <input 
                 type="password" 
                 id="password" 
@@ -92,7 +94,7 @@ export default function LoginPage() {
               />
             </div>
             <button disabled={isSubmitting} className="w-full bg-deep-accent text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-60">
-              {isSubmitting ? 'Connexion...' : 'Se connecter'} <ArrowIcon className="h-5 w-5" />
+              {isSubmitting ? t('auth.login.submitting') : t('auth.login.submit')} <ArrowIcon className="h-5 w-5" />
             </button>
           </form>
           {loginError && (
@@ -102,9 +104,9 @@ export default function LoginPage() {
           )}
           
           <div className="mt-8 pt-8 border-t border-black/10 text-center">
-            <p className="text-sm text-black/60 mb-4">Pas encore de compte ?</p>
+            <p className="text-sm text-black/60 mb-4">{t('auth.login.noAccount')}</p>
             <Link href="/register" className="inline-block text-accent font-bold hover:underline">
-              Rejoindre la communauté Vestio
+              {t('auth.login.join')}
             </Link>
           </div>
         </div>

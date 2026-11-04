@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { runAction, ActionResult } from '@/lib/api/action-result.ts';
 import { request } from '@/lib/api/request.ts';
 import { AUTH_TOKEN_COOKIE, AUTH_REFRESH_TOKEN_COOKIE, AUTH_ID_TOKEN_COOKIE, AUTH_INDICATOR_COOKIE } from '@/constants/auth';
+import { getTranslations } from 'next-intl/server';
 import { JwtResponse, LoginRequest, SignupRequest } from '@/types/api.ts';
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
@@ -17,7 +18,8 @@ export async function loginAction(credentials: LoginRequest): Promise<ActionResu
     );
 
     if (!data || !data.accessToken) {
-      throw new Error('Le serveur n’a pas retourné de jeton de connexion.');
+      const t = await getTranslations();
+      throw new Error(t('errors.authTokenMissing'));
     }
 
     const cookieStore = await cookies();

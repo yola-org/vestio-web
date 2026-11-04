@@ -3,6 +3,7 @@
 import ProductCard from './ProductCard';
 import { Listing } from '@/types/api';
 import { ListingGridSkeleton } from './ListingSkeletons';
+import { useTranslations } from 'next-intl';
 
 interface ListingGridProps {
   listings: Listing[];
@@ -17,10 +18,12 @@ export default function ListingGrid({
   listings = [],
   isLoading = false,
   columns = 'grid-cols-2 lg:grid-cols-4',
-  emptyMessage = "Aucun article trouvé.",
+  emptyMessage,
   savedIds = [],
   onToggleSave
 }: ListingGridProps) {
+  const t = useTranslations();
+
   if (isLoading) {
     return <ListingGridSkeleton count={8} columns={columns} />;
   }
@@ -28,7 +31,7 @@ export default function ListingGrid({
   if (!listings || listings.length === 0) {
     return (
       <div className="py-20 text-center bg-white rounded-[2rem] border-2 border-dashed border-black/10">
-        <p className="text-black/40 font-medium">{emptyMessage}</p>
+        <p className="text-black/40 font-medium">{emptyMessage ?? t('listings.empty')}</p>
       </div>
     );
   }

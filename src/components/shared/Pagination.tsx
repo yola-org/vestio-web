@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronIcon } from './Icons';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface PaginationProps {
   currentPage: number;
@@ -15,6 +16,9 @@ export default function Pagination({
   onPageChange,
   isLoading = false
 }: PaginationProps) {
+  const t = useTranslations();
+  const isRtl = useLocale() === 'ar';
+
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -25,9 +29,9 @@ export default function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 transition hover:bg-black/5 disabled:opacity-30 disabled:hover:bg-transparent"
-        aria-label="Page précédente"
+        aria-label={t('common.pagePrevious')}
       >
-        <ChevronIcon className="h-5 w-5 rotate-90" />
+        <ChevronIcon className={`h-5 w-5 ${isRtl ? '-rotate-90' : 'rotate-90'}`} />
       </button>
 
       <div className="flex items-center gap-1">
@@ -51,9 +55,9 @@ export default function Pagination({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || isLoading}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 transition hover:bg-black/5 disabled:opacity-30 disabled:hover:bg-transparent"
-        aria-label="Page suivante"
+        aria-label={t('common.pageNext')}
       >
-        <ChevronIcon className="h-5 w-5 -rotate-90" />
+        <ChevronIcon className={`h-5 w-5 ${isRtl ? 'rotate-90' : '-rotate-90'}`} />
       </button>
     </div>
   );

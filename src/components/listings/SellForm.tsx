@@ -5,24 +5,11 @@ import { useRouter } from 'next/navigation';
 import { CameraIcon, ChevronIcon, CheckIcon } from '@/components/shared/Icons';
 import { profileApi, listingsApi, callApi } from '@/lib/api';
 import { Category, City, SizeGroup, Condition, ContactType, ListingInput } from '@/types/api';
-
-const CONDITIONS: { value: Condition; label: string; description: string }[] = [
-  { value: 'NEW_WITH_TAG', label: 'Neuf avec étiquette', description: 'Article jamais porté, avec étiquettes d\'origine.' },
-  { value: 'NEW_WITHOUT_TAG', label: 'Neuf sans étiquette', description: 'Article jamais porté, sans étiquettes.' },
-  { value: 'VERY_GOOD', label: 'Très bon état', description: 'Article peu porté, sans défauts.' },
-  { value: 'GOOD', label: 'Bon état', description: 'Article porté, avec de légères traces d\'usure.' },
-  { value: 'SATISFACTORY', label: 'Satisfaisant', description: 'Article bien porté, peut avoir des défauts mineurs.' },
-];
-
-const CONTACT_TYPES: { value: ContactType; label: string }[] = [
-  { value: 'WHATSAPP', label: 'WhatsApp' },
-  { value: 'PHONE', label: 'Téléphone' },
-  { value: 'CHAT', label: 'Chat interne' },
-  { value: 'EMAIL', label: 'Email' },
-];
+import { useTranslations } from 'next-intl';
 
 export default function SellForm() {
   const router = useRouter();
+  const t = useTranslations();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
@@ -42,6 +29,41 @@ export default function SellForm() {
   });
 
   const [selectedParentId, setSelectedParentId] = useState<string>('');
+
+  const CONDITIONS: { value: Condition; label: string; description: string }[] = [
+    {
+      value: 'NEW_WITH_TAG',
+      label: t('conditions.NEW_WITH_TAG.label'),
+      description: t('conditions.NEW_WITH_TAG.description'),
+    },
+    {
+      value: 'NEW_WITHOUT_TAG',
+      label: t('conditions.NEW_WITHOUT_TAG.label'),
+      description: t('conditions.NEW_WITHOUT_TAG.description'),
+    },
+    {
+      value: 'VERY_GOOD',
+      label: t('conditions.VERY_GOOD.label'),
+      description: t('conditions.VERY_GOOD.description'),
+    },
+    {
+      value: 'GOOD',
+      label: t('conditions.GOOD.label'),
+      description: t('conditions.GOOD.description'),
+    },
+    {
+      value: 'SATISFACTORY',
+      label: t('conditions.SATISFACTORY.label'),
+      description: t('conditions.SATISFACTORY.description'),
+    },
+  ];
+
+  const CONTACT_TYPES: { value: ContactType; label: string }[] = [
+    { value: 'WHATSAPP', label: t('sell.contactTypes.WHATSAPP') },
+    { value: 'PHONE', label: t('sell.contactTypes.PHONE') },
+    { value: 'CHAT', label: t('sell.contactTypes.CHAT') },
+    { value: 'EMAIL', label: t('sell.contactTypes.EMAIL') },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,21 +165,21 @@ export default function SellForm() {
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f7f3ea] text-[#ff5d39]">
           <CameraIcon className="h-10 w-10" />
         </div>
-        <h3 className="mt-4 text-lg font-bold">Ajouter des photos</h3>
-        <p className="mt-1 text-sm text-black/50">Jusqu'à 10 photos. La première sera la photo principale.</p>
+        <h3 className="mt-4 text-lg font-bold">{t('sell.photosTitle')}</h3>
+        <p className="mt-1 text-sm text-black/50">{t('sell.photosHint')}</p>
         <button type="button" className="mt-6 rounded-full bg-[#173fdb] px-8 py-3 text-sm font-bold text-white transition hover:bg-[#173fdb]/90">
-          Sélectionner des fichiers
+          {t('sell.selectFiles')}
         </button>
       </section>
 
       {/* Main Details */}
       <section className="rounded-2xl border border-black/10 bg-white p-8 space-y-6">
         <div>
-          <label className="block text-sm font-bold mb-2">Titre de l'annonce</label>
+          <label className="block text-sm font-bold mb-2">{t('sell.listingTitle')}</label>
           <input
             required
             type="text"
-            placeholder="Ex: Sac en cuir vintage Mango"
+            placeholder={t('sell.listingTitlePlaceholder')}
             className="w-full rounded-xl border border-black/15 px-4 py-3 outline-none focus:border-[#173fdb] transition"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -165,11 +187,11 @@ export default function SellForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-bold mb-2">Description</label>
+          <label className="block text-sm font-bold mb-2">{t('sell.description')}</label>
           <textarea
             required
             rows={5}
-            placeholder="Décrivez votre article (matière, état, défauts éventuels...)"
+            placeholder={t('sell.descriptionPlaceholder')}
             className="w-full rounded-xl border border-black/15 px-4 py-3 outline-none focus:border-[#173fdb] transition"
             value={formData.description || ''}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -180,7 +202,7 @@ export default function SellForm() {
       {/* Categories & Attributes */}
       <section className="rounded-2xl border border-black/10 bg-white p-8 space-y-8">
         <div>
-          <label className="block text-sm font-bold mb-4">Catégorie principale</label>
+          <label className="block text-sm font-bold mb-4">{t('sell.mainCategory')}</label>
           <div className="flex flex-wrap gap-2">
             {categories
               .filter(c => !c.parentId)
@@ -204,7 +226,7 @@ export default function SellForm() {
 
         {selectedParent && (
           <div>
-            <label className="block text-sm font-bold mb-4">Sous-catégorie</label>
+            <label className="block text-sm font-bold mb-4">{t('sell.subcategory')}</label>
             <div className="flex flex-wrap gap-2">
               {allCategories
                 .filter(c => c.parentId === selectedParent.id)
@@ -228,10 +250,10 @@ export default function SellForm() {
         )}
 
         <div>
-          <label className="block text-sm font-bold mb-4">Taille / Pointure</label>
+          <label className="block text-sm font-bold mb-4">{t('sell.size')}</label>
           <div className="flex flex-wrap gap-2">
             {!formData.categoryId ? (
-              <div className="text-sm text-black/30 italic py-2">Sélectionnez d'abord une sous-catégorie</div>
+              <div className="text-sm text-black/30 italic py-2">{t('sell.selectSubcategoryFirst')}</div>
             ) : availableSizes.length > 0 ? (
               availableSizes.map((size) => (
                 <button
@@ -248,14 +270,14 @@ export default function SellForm() {
                 </button>
               ))
             ) : (
-              <div className="text-sm text-black/30 italic py-2">Aucune taille disponible pour cette catégorie</div>
+              <div className="text-sm text-black/30 italic py-2">{t('sell.noSizes')}</div>
             )}
           </div>
           <input type="hidden" name="sizeIds" value={formData.sizeIds?.join(',') || ''} required={formData.categoryId ? availableSizes.length > 0 : false} />
         </div>
 
         <div>
-          <label className="block text-sm font-bold mb-4">État de l'article</label>
+          <label className="block text-sm font-bold mb-4">{t('sell.condition')}</label>
           <div className="space-y-3">
             {CONDITIONS.map((cond) => (
               <label 
@@ -285,7 +307,7 @@ export default function SellForm() {
       <section className="rounded-2xl border border-black/10 bg-white p-8 space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-bold mb-2">Prix (DH)</label>
+            <label className="block text-sm font-bold mb-2">{t('sell.price', { currency: t('common.currency') })}</label>
             <div className="relative">
               <input
                 required
@@ -296,12 +318,12 @@ export default function SellForm() {
                 value={formData.price || ''}
                 onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-black/40">DH</span>
+              <span className="absolute end-4 top-1/2 -translate-y-1/2 text-sm font-bold text-black/40">{t('common.currency')}</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-4">Villes</label>
+            <label className="block text-sm font-bold mb-4">{t('sell.cities')}</label>
             <div className="flex flex-wrap gap-2">
               {cities.map((city) => (
                 <button
@@ -324,7 +346,7 @@ export default function SellForm() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-bold mb-2">Quantité disponible</label>
+            <label className="block text-sm font-bold mb-2">{t('sell.quantity')}</label>
             <input
               required
               type="number"
@@ -336,11 +358,11 @@ export default function SellForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">Contact préféré</label>
+            <label className="block text-sm font-bold mb-2">{t('sell.contact')}</label>
             <div className="relative">
               <select
                 required
-                className="w-full appearance-none rounded-xl border border-black/15 bg-white px-4 py-3 pr-10 outline-none focus:border-[#173fdb] transition"
+                className="w-full appearance-none rounded-xl border border-black/15 bg-white px-4 py-3 pe-10 outline-none focus:border-[#173fdb] transition"
                 value={formData.contactTypes?.[0] || ''}
                 onChange={(e) => setFormData({ ...formData, contactTypes: [e.target.value as ContactType] })}
               >
@@ -348,7 +370,7 @@ export default function SellForm() {
                   <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
               </select>
-              <ChevronIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none text-black/40" />
+              <ChevronIcon className="absolute end-4 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none text-black/40" />
             </div>
           </div>
         </div>
@@ -357,14 +379,14 @@ export default function SellForm() {
       {/* Submit */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4">
         <p className="text-xs text-black/50 max-w-sm">
-          En publiant cette annonce, vous acceptez nos <a href="#" className="underline">Conditions Générales de Vente</a> et notre <a href="#" className="underline">Politique de Confidentialité</a>.
+          {t('sell.termsPrefix')} <a href="#" className="underline">{t('sell.termsLink')}</a> {t('sell.termsJoin')} <a href="#" className="underline">{t('sell.privacyLink')}</a>{t('sell.termsSuffix')}
         </p>
         <button
           type="submit"
           disabled={submitting}
           className="rounded-full bg-[#ff5d39] px-12 py-4 text-base font-black text-white shadow-lg shadow-[#ff5d39]/20 transition hover:-translate-y-1 hover:bg-[#e94422] disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {submitting ? 'Publication...' : 'Publier l\'annonce'}
+          {submitting ? t('sell.submitting') : t('sell.submit')}
         </button>
       </div>
     </form>

@@ -5,14 +5,23 @@ import { Category } from '@/types/api';
 import { getCategoriesAction } from '@/lib/actions/profile';
 import CategoryFilter from './CategoryFilter';
 import Skeleton from '@/components/shared/Skeleton';
+import { useTranslations } from 'next-intl';
+
+const CONDITION_VALUES = [
+  'NEW_WITH_TAG',
+  'NEW_WITHOUT_TAG',
+  'VERY_GOOD',
+  'GOOD',
+  'SATISFACTORY',
+] as const;
 
 export default function FilterPanel() {
+  const t = useTranslations();
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Unique'];
-  const conditions = ['Neuf avec étiquette', 'Neuf', 'Très bon état', 'Bon état', 'Satisfaisant'];
 
   useEffect(() => {
     async function loadCategories() {
@@ -54,7 +63,7 @@ export default function FilterPanel() {
   return (
     <aside className="w-full shrink-0 lg:w-64 space-y-8">
       <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">Catégories</h3>
+        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">{t('filters.categories')}</h3>
         {loading ? (
           <div className="space-y-3 px-1">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -72,24 +81,24 @@ export default function FilterPanel() {
       </div>
 
       <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">Prix (DH)</h3>
+        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">{t('filters.price', { currency: t('common.currency') })}</h3>
         <div className="flex items-center gap-3">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('filters.min')}
             className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-[#173fdb]"
           />
           <span className="text-black/30">—</span>
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('filters.max')}
             className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-[#173fdb]"
           />
         </div>
       </div>
 
       <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">Taille</h3>
+        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">{t('filters.size')}</h3>
         <div className="flex flex-wrap gap-2">
           {sizes.map((size) => (
             <button
@@ -103,12 +112,12 @@ export default function FilterPanel() {
       </div>
 
       <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">État</h3>
+        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">{t('filters.condition')}</h3>
         <div className="space-y-2">
-          {conditions.map((cond) => (
+          {CONDITION_VALUES.map((cond) => (
             <label key={cond} className="flex items-center gap-3 cursor-pointer group">
               <input type="checkbox" className="h-4 w-4 rounded border-black/15 text-[#173fdb] focus:ring-[#173fdb]" />
-              <span className="text-sm font-medium text-black/70 group-hover:text-[#173fdb]">{cond}</span>
+              <span className="text-sm font-medium text-black/70 group-hover:text-[#173fdb]">{t(`conditions.${cond}.short`)}</span>
             </label>
           ))}
         </div>
@@ -118,7 +127,7 @@ export default function FilterPanel() {
         onClick={resetFilters}
         className="w-full rounded-xl bg-black py-3 text-xs font-bold text-white transition hover:bg-black/80"
       >
-        Réinitialiser les filtres
+        {t('filters.reset')}
       </button>
     </aside>
   );

@@ -29,7 +29,10 @@ export const UserIcon = (props: IconProps) => (
   <Icon {...props}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></Icon>
 );
 export const ArrowIcon = (props: IconProps) => (
-  <Icon {...props}><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
+  <Icon {...props} data-icon="arrow"><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
+);
+export const GlobeIcon = (props: IconProps) => (
+  <Icon {...props}><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z" /></Icon>
 );
 export const ChevronIcon = (props: IconProps) => (
   <Icon {...props}><path d="m8 10 4 4 4-4" /></Icon>

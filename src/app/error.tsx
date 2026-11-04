@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ErrorPage({
   error,
@@ -11,6 +12,7 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   const router = useRouter();
+  const t = useTranslations();
 
   useEffect(() => {
     // Log the error to an error reporting service
@@ -27,11 +29,11 @@ export default function ErrorPage({
         </div>
         
         <h1 className="text-3xl font-black mb-4 tracking-tight">
-          {is404 ? 'Page ou ressource introuvable' : 'Oups ! Quelque chose s\'est mal passé'}
+          {is404 ? t('errors.notFoundTitle') : t('errors.genericTitle')}
         </h1>
         
         <p className="text-black/50 font-medium max-w-md mx-auto mb-8">
-          {error.message || 'Une erreur inattendue est survenue. Notre équipe technique a été informée.'}
+          {error.message || t('errors.genericMessage')}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -39,13 +41,13 @@ export default function ErrorPage({
             onClick={() => reset()}
             className="px-8 py-3 bg-[#173fdb] text-white rounded-full font-bold hover:-translate-y-1 transition shadow-lg shadow-[#173fdb]/20"
           >
-            Réessayer
+            {t('errors.retry')}
           </button>
           <button
             onClick={() => router.push('/')}
             className="px-8 py-3 bg-black/5 text-black rounded-full font-bold hover:bg-black/10 transition"
           >
-            Retour à l'accueil
+            {t('errors.backHome')}
           </button>
         </div>
       </div>

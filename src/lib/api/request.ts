@@ -2,21 +2,46 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 import { ErrorResponse } from '@/types/api';
+import { getTranslations } from 'next-intl/server';
 import { AUTH_TOKEN_COOKIE, AUTH_REFRESH_TOKEN_COOKIE, AUTH_ID_TOKEN_COOKIE, AUTH_INDICATOR_COOKIE } from '@/constants/auth';
 
+/**
+ * Base URL for API requests.
+ * Resolved from environment variables with fallback to localhost.
+ * @see {@link https://nextjs.org/docs/app/building-your-application/configuring/environment-variables}
+ */
 const BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-const DEFAULT_ERROR_MESSAGE = 'An error occurred. Please try again.';
-
+/**
+ * Custom error class for API errors.
+ * Extends the standard Error and implements the ErrorResponse interface
+ * from the API for consistent error handling.
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   await request('/endpoint');
+ * } catch (error) {
+ *   if (error instanceof ApiError) {
+ *     console.log(error.status, error.message, error.validationErrors);
+ *   }
+ * }
+ * ```
+ */
 export class ApiError extends Error implements ErrorResponse {
+  /** Timestamp when the error occurred */
   timestamp: string;
+  /** HTTP status code */
   status: number;
+  /** Error type/name from API */
   error: string;
+  /** API endpoint path where error occurred */
   path: string;
+  /** Validation errors if any (field-specific errors) */
   validationErrors: ErrorResponse['validationErrors'];
 
   constructor(data: ErrorResponse) {
-    super(data.message || data.error || DEFAULT_ERROR_MESSAGE);
+    super(data.message || data.error || 'An error occurred. Please try again.');
     this.name = 'ApiError';
     this.timestamp = data.timestamp;
     this.status = data.status;
@@ -26,6 +51,33 @@ export class ApiError extends Error implements ErrorResponse {
   }
 }
 
+/**
+ * Core HTTP request function for server-side API calls.
+ * Handles authentication, content-type, error parsing, and logging.
+ * This function is server-only and should not be used in client components.
+ * 
+ * @template T - Expected return type of the API response
+ * @param endpoint - API endpoint path (e.g., '/users/me', '/listings')
+ * @param options - Standard Fetch API RequestInit options
+ * @param includeAuth - Whether to include authentication token (default: true)
+ * @returns Promise resolving to typed API response
+ * @throws {ApiError} When the API returns a non-OK response
+ * 
+ * @example
+ * ```typescript
+ * // GET request
+ * const user = await request<User>('/users/me');
+ * 
+ * // POST request
+ * const listing = await request<Listing>('/listings', {
+ *   method: 'POST',
+ *   body: JSON.stringify(data),
+ * });
+ * 
+ * // Request without auth
+ * const publicData = await request<Data>('/public', {}, false);
+ * ```
+ */
 export async function request<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -83,6 +135,9 @@ export async function request<T>(
   }
 
   if (!response.ok) {
+    const t = await getTranslations();
+    const fallbackMessage = t('errors.apiFallback');
+
     if (response.status === 401) {
       const cookieStore = await cookies();
       cookieStore.delete(AUTH_TOKEN_COOKIE);
@@ -95,13 +150,13 @@ export async function request<T>(
       typeof responseData === 'object' && responseData !== null
         ? {
             ...(responseData as ErrorResponse),
-            message: (responseData as ErrorResponse).message || DEFAULT_ERROR_MESSAGE,
+            message: (responseData as ErrorResponse).message || fallbackMessage,
           }
         : {
             timestamp: new Date().toISOString(),
             status: response.status,
             error: response.statusText || 'Error',
-            message: typeof responseData === 'string' && responseData ? responseData : DEFAULT_ERROR_MESSAGE,
+            message: typeof responseData === 'string' && responseData ? responseData : fallbackMessage,
             path: endpoint,
             validationErrors: [],
           };

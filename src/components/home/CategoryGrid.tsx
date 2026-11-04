@@ -5,8 +5,10 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { ArrowIcon, ChevronIcon } from '@/components/shared/Icons';
 import { profileApi, callApi } from '@/lib/api';
 import { Category } from '@/types/api';
+import { useTranslations } from 'next-intl';
 
 export default function CategoryGrid() {
+  const t = useTranslations();
   const [categories, setCategories] = useState<Category[]>([]);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
@@ -39,21 +41,21 @@ export default function CategoryGrid() {
     <section className="py-20 main-container" id="shop">
       <div className="mb-10 flex items-end justify-between">
         <div>
-          <p className="mb-2 text-xs font-black tracking-[0.16em] text-accent uppercase">Trouvez votre prochain favori</p>
-          <h2 className="text-4xl font-black tracking-[-0.045em] sm:text-5xl">Parcourir par catégorie</h2>
+          <p className="mb-2 text-xs font-black tracking-[0.16em] text-accent uppercase">{t('home.categories.eyebrow')}</p>
+          <h2 className="text-4xl font-black tracking-[-0.045em] sm:text-5xl">{t('home.categories.title')}</h2>
         </div>
         <div className="flex gap-2">
           <button
             onClick={scrollPrev}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white transition hover:bg-black/5 active:scale-95"
-            aria-label="Précédent"
+            aria-label={t('common.previous')}
           >
             <ChevronIcon className="h-6 w-6 rotate-90" />
           </button>
           <button
             onClick={scrollNext}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white transition hover:bg-black/5 active:scale-95"
-            aria-label="Suivant"
+            aria-label={t('common.next')}
           >
             <ChevronIcon className="h-6 w-6 -rotate-90" />
           </button>
