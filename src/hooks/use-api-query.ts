@@ -34,12 +34,12 @@ export interface UseApiQueryResult<T> extends UseApiActionResult<[], T> {
  * ```ts
  * const { data: categories, loading } = useApiQuery(
  *   profileApi.getCategories,
- *   { silent: true, loading: false } // uses the component's own skeleton
+ *   { critical: true, loading: false } // must-have data: failure shows a severe error and goes to /500
  * );
  *
  * const { data: listings, loading } = useApiQuery(
  *   () => listingsApi.list(page - 1, limit),
- *   { deps: [page, limit], silent: true }
+ *   { deps: [page, limit] }
  * );
  * ```
  */

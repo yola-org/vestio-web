@@ -17,7 +17,7 @@ const CONDITION_VALUES = [
 
 export default function FilterPanel() {
   const t = useTranslations();
-  const { data, loading } = useApiQuery(getCategoriesAction, { silent: true, loading: false });
+  const { data, loading } = useApiQuery(getCategoriesAction, { critical: true, loading: false });
   const categories = data ?? [];
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 

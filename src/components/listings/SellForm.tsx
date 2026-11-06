@@ -63,9 +63,9 @@ export default function SellForm() {
     { value: 'EMAIL', label: t('sell.contactTypes.EMAIL') },
   ];
 
-  const citiesQuery = useApiQuery(profileApi.getCities, { silent: true, loading: false });
+  const citiesQuery = useApiQuery(profileApi.getCities, { critical: true, loading: false });
   const categoriesQuery = useApiQuery(profileApi.getCategories, {
-    silent: true,
+    critical: true,
     loading: false,
     onSuccess: (data) => {
       // Only set first parent as selected if none is selected yet
@@ -75,7 +75,7 @@ export default function SellForm() {
       }
     },
   });
-  const sizesQuery = useApiQuery(profileApi.getSizes, { silent: true, loading: false });
+  const sizesQuery = useApiQuery(profileApi.getSizes, { critical: true, loading: false });
 
   const { formAction, pending: submitting } = useApiForm(() => listingsApi.create(formData as ListingInput), {
     loading: false,

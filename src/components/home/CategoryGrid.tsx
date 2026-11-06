@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 
 export default function CategoryGrid() {
   const t = useTranslations();
-  const { data } = useApiQuery(profileApi.getCategories, { silent: true });
+  const { data } = useApiQuery(profileApi.getCategories, { critical: true });
   // Only show root categories in the grid
   const categories = (data ?? []).filter((category) => !category.parentId);
   const [emblaRef, emblaApi] = useEmblaCarousel({

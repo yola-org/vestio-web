@@ -1,6 +1,6 @@
-import {FALLBACK_ERROR_MESSAGE, getApiError} from '@/lib/api/errors';
+import { getApiError } from '@/lib/api/errors';
 import { isApiResult, type ApiCallOptions, type ApiError, type ApiErrorConfig, type ApiResult } from '@/lib/api/result';
-import { clearAuthTracking } from '@/lib/auth';
+import { clearAuthTracking, isAuthenticated, wasAuthenticated } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 
 export type {
@@ -28,8 +28,10 @@ function messageFor(error: ApiError, config?: ApiErrorConfig): ApiError {
  * It reuses the exact same result shape, options, fallback message and error
  * structure as `runAction`, and adds client-only behavior:
  * - runs `onSuccess` / `onError` callbacks from the options
- * - 401: clears local auth state and notifies listeners
- * - dispatches an error notification (unless `silent` or a custom handler exists)
+ * - 401: clears local auth state and notifies listeners; if the user was
+ *   logged in, an error notification asks them to log in again
+ * - dispatches an error notification (unless a custom handler exists):
+ *   - `critical: true` calls navigate to the `/500` error page afterwards
  * - logs unhandled errors
  *
  * @example
@@ -83,6 +85,11 @@ export async function callApi<T>(
     logger.error('CLIENT_ACTION', failure);
   }
 
+  // Snapshot before clearing local state - used to tell logged-in users
+  // that their session expired instead of failing silently.
+  const wasLoggedIn =
+    typeof window !== 'undefined' && (isAuthenticated() || wasAuthenticated());
+
   if (failure.status === 401 && typeof window !== 'undefined') {
     localStorage.clear();
     clearAuthTracking();
@@ -97,12 +104,31 @@ export async function callApi<T>(
     }
   }
 
-  if (!hasCustomHandler && !options.silent && failure.status !== 401 && typeof window !== 'undefined') {
-    window.dispatchEvent(
-      new CustomEvent('vestio:notification', {
-        detail: { type: 'error', message: FALLBACK_ERROR_MESSAGE },
-      })
-    );
+  if (!hasCustomHandler && typeof window !== 'undefined') {
+    if (failure.status === 401) {
+      // Guests keep a silent 401; logged-in users get asked to re-authenticate.
+      if (wasLoggedIn) {
+        window.dispatchEvent(
+          new CustomEvent('vestio:notification', {
+            detail: { type: 'error', key: 'errors.sessionExpired' },
+          })
+        );
+      }
+    } else if (options.critical) {
+      // Must-have data failed: severe notification, then head to the 500 page.
+      window.dispatchEvent(
+        new CustomEvent('vestio:notification', {
+          detail: { type: 'error', key: 'errors.criticalMessage' },
+        })
+      );
+      window.location.replace('/500');
+    } else {
+      window.dispatchEvent(
+        new CustomEvent('vestio:notification', {
+          detail: { type: 'error', key: 'errors.genericMessage' },
+        })
+      );
+    }
   }
 
   await options.onError?.(failure);

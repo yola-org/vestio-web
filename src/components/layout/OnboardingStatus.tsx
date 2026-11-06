@@ -10,9 +10,7 @@ export default function OnboardingStatus() {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { data: status, loading } = useApiQuery(profileApi.getOnboardingStatus, {
-    silent: true,
-  });
+  const { data: status, loading } = useApiQuery(profileApi.getOnboardingStatus);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

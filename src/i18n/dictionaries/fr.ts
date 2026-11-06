@@ -308,6 +308,8 @@ const fr = {
     retry: 'Réessayer',
     backHome: 'Retour à l’accueil',
     networkError: 'Une erreur réseau est survenue. Veuillez réessayer ou actualiser la page.',
+    sessionExpired: 'Votre session a expiré. Veuillez vous reconnecter.',
+    criticalMessage: 'Une erreur critique est survenue. Nos équipes ont été informées.',
   },
   loading: {
     message: 'Chargement en cours...',

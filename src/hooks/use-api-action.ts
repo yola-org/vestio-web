@@ -99,7 +99,7 @@ export function useApiAction<TArgs extends unknown[], T>(
     try {
       const result = await callApi(actionRef.current(...args), {
         errors: opts.errors,
-        silent: opts.silent,
+        critical: opts.critical,
         onSuccess: async (value) => {
           if (!isLatest()) return;
           setData(value);

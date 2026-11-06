@@ -11,6 +11,7 @@ import {
 
 import { ApiError } from '@/lib/api/api-error';
 import { getApiError } from '@/lib/api/errors';
+import { logger } from '@/lib/logger';
 
 export { ApiError } from '@/lib/api/api-error';
 
@@ -108,6 +109,9 @@ export async function request<T>(
   options: RequestInit = {},
   includeAuth = true
 ): Promise<T> {
+  const startTime = Date.now();
+  const method = (options.method ?? 'GET').toUpperCase();
+
   const headers = new Headers(options.headers);
 
   headers.set('Accept', 'application/json, text/plain');
@@ -133,26 +137,35 @@ export async function request<T>(
       next: options.next ?? { revalidate: 0 },
     });
   } catch (error: unknown) {
-    if (isNetworkError(error)) {
-      throw new ApiError({
-        timestamp: new Date().toISOString(),
-        status: 503,
-        error: 'NETWORK_ERROR',
-        message: error instanceof Error ? error.message : 'Network request failed.',
-        path: endpoint,
-        validationErrors: [],
-      });
-    }
-    throw getApiError(error);
+    const durationMs = Date.now() - startTime;
+    const apiError = isNetworkError(error)
+      ? new ApiError({
+          timestamp: new Date().toISOString(),
+          status: 503,
+          error: 'NETWORK_ERROR',
+          message: error instanceof Error ? error.message : 'Network request failed.',
+          path: endpoint,
+          validationErrors: [],
+        })
+      : getApiError(error);
+    logger.error('API_REQUEST', apiError, { method, durationMs });
+    throw apiError;
   }
 
   if (response.status === 204) {
+    logger.info('API_REQUEST', 'no content', {
+      method, path: endpoint, status: response.status, durationMs: Date.now() - startTime,
+    });
     return undefined as T;
   }
 
   const responseData = await parseResponse(response);
+  const durationMs = Date.now() - startTime;
 
   if (response.ok) {
+    logger.info('API_REQUEST', 'ok', {
+      method, path: endpoint, status: response.status, durationMs,
+    });
     return responseData as T;
   }
 
@@ -162,10 +175,20 @@ export async function request<T>(
     }
   }
 
-  throw ApiError.createApiError(
+  const apiError = ApiError.createApiError(
     responseData,
     response.status,
     response.statusText,
     endpoint
   );
+
+  // 5xx, and 404/410 (missing route - e.g. contract drift after a backend
+  // version bump) are logged as errors; other 4xx are client noise.
+  if (response.status >= 500 || response.status === 404 || response.status === 410) {
+    logger.error('API_REQUEST', apiError, { method, durationMs });
+  } else {
+    logger.warn('API_REQUEST', apiError, { method, durationMs });
+  }
+
+  throw apiError;
 }

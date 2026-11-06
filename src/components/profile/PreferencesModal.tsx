@@ -21,14 +21,13 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const categoriesQuery = useApiQuery(profileApi.getCategories, {
-    silent: true,
+    critical: true,
     loading: false,
     enabled: isOpen,
     deps: [isOpen],
   });
 
   const preferencesQuery = useApiQuery(profileApi.getPreferences, {
-    silent: true,
     loading: false,
     enabled: isOpen,
     deps: [isOpen],

@@ -9,6 +9,8 @@ type Notification = {
   id: number;
   message: string;
   type: NotificationType;
+  /** Translation key to render instead of the raw message (e.g. 'errors.sessionExpired') */
+  key?: string;
 };
 
 type NotificationContextValue = {
@@ -29,11 +31,11 @@ export default function NotificationProvider({ children }: { children: ReactNode
     setNotifications((current) => current.filter((notification) => notification.id !== id));
   }, []);
 
-  const push = useCallback((type: NotificationType, message: string) => {
+  const push = useCallback((type: NotificationType, message: string, key?: string) => {
     const id = Date.now() + Math.random();
     setNotifications((current) => {
       // Last write wins - keep only the most recent notification
-      return [{ id, message, type }];
+      return [{ id, message, type, key }];
     });
     window.setTimeout(() => dismiss(id), 5000);
   }, [dismiss]);
@@ -46,9 +48,9 @@ export default function NotificationProvider({ children }: { children: ReactNode
 
   useEffect(() => {
     const handleNotification = (event: Event) => {
-      const detail = (event as CustomEvent<{ type: NotificationType; message: string }>).detail;
-      if (detail?.message && ['success', 'error', 'info'].includes(detail.type)) {
-        push(detail.type, detail.message);
+      const detail = (event as CustomEvent<{ type: NotificationType; message?: string; key?: string }>).detail;
+      if (detail?.type && ['success', 'error', 'info'].includes(detail.type) && (detail.message || detail.key)) {
+        push(detail.type, detail.message ?? '', detail.key);
       }
     };
 
@@ -72,7 +74,7 @@ export default function NotificationProvider({ children }: { children: ReactNode
                   : 'border-blue-200 text-blue-800'
             }`}
           >
-            <p className="text-sm font-medium">{notification.type == 'error' ? t('errors.genericMessage') : notification.message}</p>
+            <p className="text-sm font-medium">{notification.type == 'error' ? t(notification.key ?? 'errors.genericMessage') : notification.message}</p>
             <button
               type="button"
               className="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"

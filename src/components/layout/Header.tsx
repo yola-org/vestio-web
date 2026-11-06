@@ -21,8 +21,8 @@ export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const citySelectorRef = useRef<HTMLDivElement>(null);
 
-  const citiesQuery = useApiQuery(profileApi.getCities, { silent: true, loading: false });
-  const categoriesQuery = useApiQuery(profileApi.getCategories, { silent: true, loading: false });
+  const citiesQuery = useApiQuery(profileApi.getCities, { critical: true, loading: false });
+  const categoriesQuery = useApiQuery(profileApi.getCategories, { critical: true, loading: false });
 
   const cities = citiesQuery.data ?? [];
   const categories = categoriesQuery.data ?? [];

@@ -22,7 +22,7 @@ export default function ProductGrid({ title, subtitle, limit = 12, compact = fal
 
   const { data, loading } = useApiQuery(
     () => listingsApi.list(currentPage - 1, limit),
-    { deps: [currentPage, limit], silent: true, loading: false }
+    { deps: [currentPage, limit], loading: false }
   );
 
   const listings: Listing[] = data?.content ?? [];

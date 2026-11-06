@@ -1,7 +1,5 @@
 import { ApiError } from '@/lib/api/api-error';
 
-export const FALLBACK_ERROR_MESSAGE = 'An unexpected error occurred.';
-
 /**
  * Extracts normalized error details from any thrown/returned error value.
  */
