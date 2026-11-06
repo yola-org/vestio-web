@@ -5,11 +5,11 @@ import { SearchIcon, HeartIcon, UserIcon, MenuIcon, CloseIcon, ChevronIcon, PinI
 import UserDropdown from '@/components/layout/UserDropdown';
 import OnboardingStatus from '@/components/layout/OnboardingStatus';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
-import { profileApi, callApi } from '@/lib/api';
+import { profileApi } from '@/lib/api';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { isAuthenticated as hasAuthSession } from '@/lib/auth';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Category, City } from '@/types/api';
 import { HeaderNavSkeleton, MegaMenuSkeleton } from '@/components/layout/HeaderSkeletons';
 
 export default function Header() {
@@ -19,29 +19,14 @@ export default function Header() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [citySelectorOpen, setCitySelectorOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [cities, setCities] = useState<City[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const citySelectorRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchHeaderData = async () => {
-      setLoading(true);
-      const [citiesResult, categoriesResult] = await Promise.all([
-        callApi(profileApi.getCities(), { silent: true }),
-        callApi(profileApi.getCategories(), { silent: true }),
-      ]);
+  const citiesQuery = useApiQuery(profileApi.getCities, { silent: true, loading: false });
+  const categoriesQuery = useApiQuery(profileApi.getCategories, { silent: true, loading: false });
 
-      await Promise.all([
-        citiesResult.handle({ onSuccess: (data) => setCities(data) }),
-        categoriesResult.handle({ onSuccess: (data) => setCategories(data) }),
-      ]);
-
-      setLoading(false);
-    };
-
-    fetchHeaderData();
-  }, []);
+  const cities = citiesQuery.data ?? [];
+  const categories = categoriesQuery.data ?? [];
+  const loading = citiesQuery.loading || categoriesQuery.loading;
 
   useEffect(() => {
     const updateAuthentication = () => setIsAuthenticated(hasAuthSession());

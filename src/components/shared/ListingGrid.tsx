@@ -1,7 +1,7 @@
 'use client';
 
 import ProductCard from './ProductCard';
-import { Listing } from '@/types/api';
+import type { Listing } from '@/lib/api/schemas';
 import { ListingGridSkeleton } from './ListingSkeletons';
 import { useTranslations } from 'next-intl';
 

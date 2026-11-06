@@ -1,33 +1,22 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ArrowIcon, ChevronIcon } from '@/components/shared/Icons';
-import { profileApi, callApi } from '@/lib/api';
-import { Category } from '@/types/api';
+import { profileApi } from '@/lib/api';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { useTranslations } from 'next-intl';
 
 export default function CategoryGrid() {
   const t = useTranslations();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data } = useApiQuery(profileApi.getCategories, { silent: true });
+  // Only show root categories in the grid
+  const categories = (data ?? []).filter((category) => !category.parentId);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: true,
   });
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const result = await callApi(profileApi.getCategories(), { silent: true });
-      await result.handle({
-        onSuccess: (data) => {
-          // Only show root categories in the grid
-          setCategories(data.filter(cat => !cat.parentId));
-        },
-      });
-    };
-    fetchCategories();
-  }, []);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();

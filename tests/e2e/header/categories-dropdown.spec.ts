@@ -1,13 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { HeaderComponent } from '../../pages/HeaderComponent';
-import { mockProfileEndpoints } from '../../helpers/api-mock';
+
 
 test.describe('Header Categories Dropdown', () => {
   let header: HeaderComponent;
 
   test.beforeEach(async ({ page }) => {
     header = new HeaderComponent(page);
-    await mockProfileEndpoints(page);
     await page.goto('/');
   });
 

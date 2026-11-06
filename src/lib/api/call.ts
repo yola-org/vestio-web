@@ -1,106 +1,111 @@
-import { createTranslator } from 'next-intl';
-import { getApiErrorDetails } from '@/lib/api/errors';
-import { defaultLocale, isLocale, LOCALE_COOKIE } from '@/i18n/config';
-import { getDictionary } from '@/i18n/dictionaries';
+import {FALLBACK_ERROR_MESSAGE, getApiError} from '@/lib/api/errors';
+import { isApiResult, type ApiCallOptions, type ApiError, type ApiErrorConfig, type ApiResult } from '@/lib/api/result';
 import { clearAuthTracking } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
-export type ApiErrorHandler = (details: { code?: string; status?: number; message?: string }) => string;
+export type {
+  ApiCallOptions,
+  ApiErrorAction,
+  ApiErrorConfig,
+  ApiError,
+  ApiErrorHandler,
+  ApiResult,
+} from '@/lib/api/result';
+export { isApiResult } from '@/lib/api/result';
 
-export type CallApiOptions = {
-  errors?: Partial<Record<string, string | ApiErrorHandler>>;
-  silent?: boolean;
-};
-
-function getFallbackErrorMessage(): string {
-  let locale = defaultLocale;
-
-  if (typeof document !== 'undefined') {
-    const cookie = document.cookie
-      .split('; ')
-      .find((entry) => entry.startsWith(`${LOCALE_COOKIE}=`));
-    const value = cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : undefined;
-
-    if (isLocale(value)) {
-      locale = value;
-    }
-  }
-
-  return createTranslator({ locale, messages: getDictionary(locale) })('errors.apiFallback');
+function messageFor(error: ApiError, config?: ApiErrorConfig): ApiError {
+  if (typeof config === 'string') return error.withMessage(config);
+  if (typeof config === 'function') return error.withMessage(config(error));
+  if (config?.message === undefined) return error;
+  return error.withMessage(
+    typeof config.message === 'function' ? config.message(error) : config.message
+  );
 }
 
-export class ApiCallError extends Error {
-  code?: string;
-  status?: number;
-
-  constructor(message: string, code?: string, status?: number) {
-    super(message);
-    this.name = 'ApiCallError';
-    this.code = code;
-    this.status = status;
-  }
-}
-
-export interface ApiResult<T> {
-  data: T | null;
-  error: ApiCallError | null;
-  success: boolean;
-  handle: (handlers: {
-    onSuccess?: (data: T) => void | Promise<void>;
-    onError?: (error: ApiCallError) => void | Promise<void>;
-  }) => Promise<ApiResult<T>>;
-}
-
-export async function callApi<T>(apiCall: Promise<T>, options: CallApiOptions = {}): Promise<ApiResult<T>> {
-  let data: T | null = null;
-  let error: ApiCallError | null = null;
-  let success = false;
+/**
+ * Client-side wrapper around a server action (or any promise).
+ *
+ * It reuses the exact same result shape, options, fallback message and error
+ * structure as `runAction`, and adds client-only behavior:
+ * - runs `onSuccess` / `onError` callbacks from the options
+ * - 401: clears local auth state and notifies listeners
+ * - dispatches an error notification (unless `silent` or a custom handler exists)
+ * - logs unhandled errors
+ *
+ * @example
+ * ```ts
+ * await callApi(authApi.login(credentials), {
+ *   errors: {
+ *     ERR_UNAUTHORIZED: {
+ *       message: t('auth.login.invalidCredentials'),
+ *       action: (error) => setLoginError(error.message),
+ *     },
+ *   },
+ *   onSuccess: () => router.push('/'),
+ * });
+ * ```
+ */
+export function callApi<T>(
+  apiCall: Promise<ApiResult<T>>,
+  options?: ApiCallOptions<T>
+): Promise<ApiResult<T>>;
+export function callApi<T>(
+  apiCall: Promise<T>,
+  options?: ApiCallOptions<T>
+): Promise<ApiResult<T>>;
+export async function callApi<T>(
+  apiCall: Promise<ApiResult<T>> | Promise<T>,
+  options: ApiCallOptions<T> = {}
+): Promise<ApiResult<T>> {
+  let failure: ApiError;
 
   try {
-    data = await apiCall;
-    success = true;
-  } catch (err) {
-    const details = getApiErrorDetails(err);
-    const codeHandler = details.code === undefined ? undefined : options.errors?.[details.code];
-    const hasCustomHandler = codeHandler !== undefined;
-    const message =
-      typeof codeHandler === 'function'
-        ? codeHandler(details)
-        : codeHandler ?? details.message ?? getFallbackErrorMessage();
-
-    error = new ApiCallError(message, details.code, details.status);
-
-    if (details.status === 401 && typeof window !== 'undefined') {
-      localStorage.clear();
-      clearAuthTracking();
-      window.dispatchEvent(new Event('vestio:auth-changed'));
+    const value = await apiCall;
+    if (isApiResult<T>(value)) {
+      if (value.success) {
+        await options.onSuccess?.(value.data);
+        return value;
+      }
+      failure = getApiError(value.error);
+    } else {
+      await options.onSuccess?.(value);
+      return { success: true, data: value };
     }
+  } catch (error) {
+    failure = getApiError(error);
+  }
 
-    if (!hasCustomHandler && details.status === 500) {
-      throw error;
-    }
+  const config = options.errors?.[failure.code];
+  failure = messageFor(failure, config);
+  const hasCustomHandler = config !== undefined;
 
-    if (!hasCustomHandler && !options.silent && details.status !== 401 && typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new CustomEvent('vestio:notification', {
-          detail: { type: 'error', message },
-        })
-      );
+  if (!hasCustomHandler) {
+    logger.error('CLIENT_ACTION', failure);
+  }
+
+  if (failure.status === 401 && typeof window !== 'undefined') {
+    localStorage.clear();
+    clearAuthTracking();
+    window.dispatchEvent(new Event('vestio:auth-changed'));
+  }
+
+  if (config && typeof config === 'object' && config.action) {
+    try {
+      await config.action(failure);
+    } catch (actionError) {
+      logger.error('CLIENT_ERROR_HANDLER', actionError, { code: failure.code });
     }
   }
 
-  const result: ApiResult<T> = {
-    data,
-    error,
-    success,
-    handle: async (handlers) => {
-      if (success && handlers.onSuccess) {
-        await handlers.onSuccess(data!);
-      } else if (!success && handlers.onError) {
-        await handlers.onError(error!);
-      }
-      return result;
-    },
-  };
+  if (!hasCustomHandler && !options.silent && failure.status !== 401 && typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('vestio:notification', {
+        detail: { type: 'error', message: FALLBACK_ERROR_MESSAGE },
+      })
+    );
+  }
 
-  return result;
+  await options.onError?.(failure);
+
+  return { success: false, error: failure };
 }

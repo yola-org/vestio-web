@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { mockAuthEndpoints, mockProfileEndpoints, setupAuthenticatedSession } from '../../helpers/api-mock';
+import { setupAuthenticatedSession } from '../../helpers/api-mock';
 
 test.describe('Profile Page', () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuthEndpoints(page);
-    await mockProfileEndpoints(page);
     await setupAuthenticatedSession(page);
   });
 

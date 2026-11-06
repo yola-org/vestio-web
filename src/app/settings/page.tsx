@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState, FormEvent } from 'react';
+import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { profileApi, callApi } from '@/lib/api';
-import { UserProfile } from '@/types/api';
+import { profileApi } from '@/lib/api';
+import { useApiForm } from '@/hooks/use-api-form';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { ArrowIcon, UserIcon } from '@/components/shared/Icons';
+import Button from '@/components/shared/Button';
 import { useNotifications } from '@/components/shared/NotificationProvider';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -14,9 +16,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const { notify } = useNotifications();
   const t = useTranslations();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [firstName, setFirstName] = useState('');
@@ -24,47 +23,31 @@ export default function SettingsPage() {
   const [bio, setBio] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const result = await callApi(profileApi.get());
-      await result.handle({
-        onSuccess: (data) => {
-          setProfile(data);
-          setFirstName(data.firstName);
-          setLastName(data.lastName);
-          setBio(data.bio || '');
-          setPhoneNumber(data.phoneNumber || '');
-        },
-      });
-      setIsLoading(false);
-    };
+  const { loading: isLoading } = useApiQuery(profileApi.get, {
+    loading: false,
+    onSuccess: (data) => {
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      setBio(data.bio || '');
+      setPhoneNumber(data.phoneNumber || '');
+    },
+  });
 
-    fetchProfile();
-  }, []);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const result = await callApi(profileApi.update({
-      firstName,
-      lastName,
-      bio,
-      phoneNumber
-    }));
-    
-    await result.handle({
-      onSuccess: () => {
-        notify.success(t('settings.success'));
-        router.push('/profile');
-      },
-      onError: () => {
-        notify.error(t('settings.error'));
-      }
-    });
-
-    setIsSubmitting(false);
-  };
+  const { formAction, pending } = useApiForm((formData) => profileApi.update({
+    firstName: String(formData.get('firstName') ?? ''),
+    lastName: String(formData.get('lastName') ?? ''),
+    bio: String(formData.get('bio') ?? ''),
+    phoneNumber: String(formData.get('phoneNumber') ?? ''),
+  }), {
+    loading: false,
+    onSuccess: () => {
+      notify.success(t('settings.success'));
+      router.push('/profile');
+    },
+    onError: () => {
+      notify.error(t('settings.error'));
+    },
+  });
 
   if (isLoading) {
     return (
@@ -91,13 +74,14 @@ export default function SettingsPage() {
               <UserIcon className="h-5 w-5 text-[#173fdb]" /> {t('settings.personalInfo')}
             </h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form action={formAction} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold mb-2" htmlFor="firstName">{t('settings.firstName')}</label>
                   <input
                     type="text"
                     id="firstName"
+                    name="firstName"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
@@ -109,6 +93,7 @@ export default function SettingsPage() {
                   <input
                     type="text"
                     id="lastName"
+                    name="lastName"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
@@ -121,6 +106,7 @@ export default function SettingsPage() {
                 <label className="block text-sm font-bold mb-2" htmlFor="bio">{t('settings.bio')}</label>
                 <textarea
                   id="bio"
+                  name="bio"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder={t('settings.bioPlaceholder')}
@@ -133,6 +119,7 @@ export default function SettingsPage() {
                 <input
                   type="tel"
                   id="phone"
+                  name="phoneNumber"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder={t('settings.phonePlaceholder')}
@@ -141,12 +128,13 @@ export default function SettingsPage() {
               </div>
 
               <div className="pt-4">
-                <button
-                  disabled={isSubmitting}
+                <Button
+                  type="submit"
+                  loading={pending}
                   className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSubmitting ? t('settings.submitting') : t('settings.submit')} <ArrowIcon className="h-5 w-5" />
-                </button>
+                  {t('settings.submit')} <ArrowIcon className="h-5 w-5" />
+                </Button>
               </div>
             </form>
           </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { HeartIcon, PinIcon } from '@/components/shared/Icons';
-import { Listing } from '@/types/api';
+import type { Listing } from '@/lib/api/schemas';
 import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {

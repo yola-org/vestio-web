@@ -1,19 +1,22 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { runAction, ActionResult } from '@/lib/api/action-result.ts';
+import { runAction, type ApiResult } from '@/lib/api/action-result.ts';
 import { request } from '@/lib/api/request.ts';
 import { AUTH_TOKEN_COOKIE, AUTH_REFRESH_TOKEN_COOKIE, AUTH_ID_TOKEN_COOKIE, AUTH_INDICATOR_COOKIE } from '@/constants/auth';
 import { getTranslations } from 'next-intl/server';
-import { JwtResponse, LoginRequest, SignupRequest } from '@/types/api.ts';
+import type { JwtResponse, LoginInput, SignupInput } from '@/lib/api/schemas';
+import { LoginInputSchema, SignupInputSchema } from '@/lib/api/schemas';
+import { parseInput } from '@/lib/api/validation';
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
-export async function loginAction(credentials: LoginRequest): Promise<ActionResult<null>> {
+export async function loginAction(credentials: LoginInput): Promise<ApiResult<null>> {
   return runAction(async () => {
+    const input = parseInput(LoginInputSchema, credentials);
     const data = await request<JwtResponse>(
       '/api/auth/login',
-      { method: 'POST', body: JSON.stringify(credentials) },
+      { method: 'POST', body: JSON.stringify(input) },
       false
     );
 
@@ -65,16 +68,17 @@ export async function loginAction(credentials: LoginRequest): Promise<ActionResu
   });
 }
 
-export async function signupAction(credentials: SignupRequest): Promise<ActionResult<string>> {
-  return runAction(() =>
-    request<string>('/api/auth/signup', {
+export async function signupAction(credentials: SignupInput): Promise<ApiResult<string>> {
+  return runAction(() => {
+    const input = parseInput(SignupInputSchema, credentials);
+    return request<string>('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify(credentials),
-    }, false)
-  );
+      body: JSON.stringify(input),
+    }, false);
+  });
 }
 
-export async function logoutAction(): Promise<ActionResult<null>> {
+export async function logoutAction(): Promise<ApiResult<null>> {
   return runAction(async () => {
     const cookieStore = await cookies();
     cookieStore.delete(AUTH_TOKEN_COOKIE);

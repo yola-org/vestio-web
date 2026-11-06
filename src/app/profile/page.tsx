@@ -1,44 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import ProfileSkeleton from '@/components/profile/ProfileSkeleton';
-import { profileApi, callApi, listingsApi, Listing } from '@/lib/api';
+import { profileApi, listingsApi } from '@/lib/api';
+import { useApiQuery } from '@/hooks/use-api-query';
 import ListingGrid from '@/components/shared/ListingGrid';
-import { UserProfile } from '@/types/api';
 import { SettingsIcon, CameraIcon } from '@/components/shared/Icons';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function ProfilePage() {
   const t = useTranslations();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const profileQuery = useApiQuery(profileApi.get, { loading: false });
+  const listingsQuery = useApiQuery(() => listingsApi.list(0, 50), { loading: false });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      
-      // Fetch profile
-      const profileResult = await callApi(profileApi.get());
-      await profileResult.handle({
-        onSuccess: (data) => setProfile(data),
-      });
-
-      // Fetch user listings (in a real app we'd filter by user id, here we just list all for demo)
-      const listingsResult = await callApi(listingsApi.list(0, 50));
-      await listingsResult.handle({
-        onSuccess: (data) => setListings(data?.content || []),
-      });
-
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, []);
+  const profile = profileQuery.data;
+  const listings = listingsQuery.data?.content ?? [];
+  const isLoading = profileQuery.loading || listingsQuery.loading;
 
   if (isLoading) {
     return <ProfileSkeleton />;

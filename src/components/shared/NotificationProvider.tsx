@@ -31,7 +31,10 @@ export default function NotificationProvider({ children }: { children: ReactNode
 
   const push = useCallback((type: NotificationType, message: string) => {
     const id = Date.now() + Math.random();
-    setNotifications((current) => [...current, { id, message, type }]);
+    setNotifications((current) => {
+      // Last write wins - keep only the most recent notification
+      return [{ id, message, type }];
+    });
     window.setTimeout(() => dismiss(id), 5000);
   }, [dismiss]);
 
@@ -69,7 +72,7 @@ export default function NotificationProvider({ children }: { children: ReactNode
                   : 'border-blue-200 text-blue-800'
             }`}
           >
-            <p className="text-sm font-medium">{notification.message}</p>
+            <p className="text-sm font-medium">{notification.type == 'error' ? t('errors.genericMessage') : notification.message}</p>
             <button
               type="button"
               className="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"

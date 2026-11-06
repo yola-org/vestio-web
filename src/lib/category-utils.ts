@@ -1,4 +1,4 @@
-import {Category} from "@/types/api.ts";
+import type { Category } from '@/lib/api/schemas';
 
 /**
  * Converts a category and its subcategories into a formatted tree string.

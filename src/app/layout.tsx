@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getTranslations } from 'next-intl/server';
 import NotificationProvider from '@/components/shared/NotificationProvider';
+import GlobalLoadingProvider from '@/components/shared/GlobalLoadingProvider';
 import { localeDirection, type Locale } from '@/i18n/config';
 import './globals.css';
 
@@ -25,7 +26,9 @@ export default async function RootLayout({
     <html lang={locale} dir={localeDirection(locale)}>
       <body>
         <NextIntlClientProvider>
-          <NotificationProvider>{children}</NotificationProvider>
+          <GlobalLoadingProvider>
+            <NotificationProvider>{children}</NotificationProvider>
+          </GlobalLoadingProvider>
         </NextIntlClientProvider>
       </body>
     </html>
