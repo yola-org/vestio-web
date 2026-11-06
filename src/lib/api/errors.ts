@@ -1,17 +1,26 @@
-export function getApiErrorDetails(error: unknown): { code?: string; status?: number; message?: string } {
-  if (typeof error !== 'object' || error === null) {
-    return {};
+import { ApiError } from '@/lib/api/api-error';
+
+export const FALLBACK_ERROR_MESSAGE = 'An unexpected error occurred.';
+
+/**
+ * Extracts normalized error details from any thrown/returned error value.
+ */
+export function getApiError(error: unknown): ApiError {
+  if (error instanceof ApiError) {
+    return error;
   }
 
-  const code = 'code' in error && typeof error.code === 'string'
-    ? error.code
-    : 'error' in error && typeof error.error === 'string'
-      ? error.error
-      : undefined;
-  const status = 'status' in error && typeof error.status === 'number' ? error.status : undefined;
-  const message = 'message' in error && typeof error.message === 'string' && error.message.trim()
-    ? error.message
-    : undefined;
+  // Server Actions serialize class instances into plain objects.
+  if (ApiError.isErrorResponse(error)) {
+    return new ApiError(error);
+  }
 
-  return { code, status, message };
+  return new ApiError({
+    timestamp: new Date().toISOString(),
+    status: 500,
+    error: 'ERR_UNEXPECTED',
+    message: error instanceof Error ? error.message : String(error || 'Unknown error'),
+    path: '',
+    validationErrors: [],
+  });
 }

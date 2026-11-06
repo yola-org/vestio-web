@@ -13,28 +13,26 @@ import {
 } from '@/components/shared/Icons';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import PreferencesModal from '@/components/profile/PreferencesModal';
-import { authApi, callApi, profileApi } from '@/lib/api';
+import { authApi, profileApi } from '@/lib/api';
+import { useApiAction } from '@/hooks/use-api-action';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { clearAuthTracking, notifyAuthChanged } from '@/lib/auth';
-import { UserProfile } from '@/types/api';
 import { useTranslations } from 'next-intl';
 
 export default function UserDropdown() {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const result = await callApi(profileApi.get());
-      await result.handle({
-        onSuccess: (data) => setProfile(data),
-      });
-    };
-    fetchProfile();
-  }, []);
+  const { data: profile } = useApiQuery(profileApi.get);
+  const logout = useApiAction(authApi.logout, {
+    onSuccess: () => {
+      clearAuthTracking();
+      notifyAuthChanged();
+      router.push('/login');
+    },
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,15 +51,9 @@ export default function UserDropdown() {
   }, [isOpen]);
 
   const handleLogout = async () => {
-    const result = await callApi(authApi.logout());
-    await result.handle({
-      onSuccess: () => {
-        clearAuthTracking();
-        notifyAuthChanged();
-        router.push('/login');
-      }
-    });
+    await logout.execute();
     setIsOpen(false);
+    router.push('/login');
   };
 
   const menuItems = [
@@ -76,6 +68,7 @@ export default function UserDropdown() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 rounded-full p-1 transition hover:bg-black/5"
+        aria-label={t('userMenu.account')}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >

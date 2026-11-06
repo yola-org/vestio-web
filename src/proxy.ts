@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { AUTH_INDICATOR_COOKIE } from './constants/auth';
 import { isPublicPath } from './constants/routes';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Allow public paths

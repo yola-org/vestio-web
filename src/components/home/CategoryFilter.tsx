@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronIcon } from '@/components/shared/Icons';
-import { Category } from '@/types/api';
+import type { Category } from '@/lib/api/schemas';
 
 interface CategoryFilterProps {
   categories: Category[];

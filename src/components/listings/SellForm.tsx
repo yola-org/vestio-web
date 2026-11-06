@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CameraIcon, ChevronIcon, CheckIcon } from '@/components/shared/Icons';
-import { profileApi, listingsApi, callApi } from '@/lib/api';
-import { Category, City, SizeGroup, Condition, ContactType, ListingInput } from '@/types/api';
+import { profileApi, listingsApi } from '@/lib/api';
+import { useApiForm } from '@/hooks/use-api-form';
+import { useApiQuery } from '@/hooks/use-api-query';
+import type { Condition, ContactType, ListingInput } from '@/lib/api/schemas';
 import { useTranslations } from 'next-intl';
+import Button from '@/components/shared/Button';
 
 export default function SellForm() {
   const router = useRouter();
   const t = useTranslations();
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [cities, setCities] = useState<City[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [sizes, setSizes] = useState<SizeGroup[]>([]);
   
   const [formData, setFormData] = useState<Partial<ListingInput>>({
     title: '',
@@ -65,51 +63,31 @@ export default function SellForm() {
     { value: 'EMAIL', label: t('sell.contactTypes.EMAIL') },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const [citiesRes, categoriesRes, sizesRes] = await Promise.all([
-        callApi(profileApi.getCities(), { silent: true }),
-        callApi(profileApi.getCategories(), { silent: true }),
-        callApi(profileApi.getSizes(), { silent: true }),
-      ]);
-
-      citiesRes.handle({ onSuccess: (data) => setCities(data) });
-      categoriesRes.handle({ 
-        onSuccess: (data) => {
-          setCategories(data);
-          // Only set first parent as selected if none is selected yet
-          if (data.length > 0 && !selectedParentId) {
-            const firstParent = data.find(c => !c.parentId) || data[0];
-            setSelectedParentId(firstParent.id);
-          }
-        } 
-      });
-      sizesRes.handle({ onSuccess: (data) => setSizes(data) });
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.categoryId) return;
-    setSubmitting(true);
-
-    const result = await callApi(listingsApi.create(formData as ListingInput));
-    
-    result.handle({
-      onSuccess: () => {
-        router.push('/');
-      },
-      onError: () => {
-        setSubmitting(false);
+  const citiesQuery = useApiQuery(profileApi.getCities, { silent: true, loading: false });
+  const categoriesQuery = useApiQuery(profileApi.getCategories, {
+    silent: true,
+    loading: false,
+    onSuccess: (data) => {
+      // Only set first parent as selected if none is selected yet
+      if (data.length > 0 && !selectedParentId) {
+        const firstParent = data.find((category) => !category.parentId) || data[0];
+        setSelectedParentId(firstParent.id);
       }
-    });
-  };
+    },
+  });
+  const sizesQuery = useApiQuery(profileApi.getSizes, { silent: true, loading: false });
 
+  const { formAction, pending: submitting } = useApiForm(() => listingsApi.create(formData as ListingInput), {
+    loading: false,
+    onSuccess: () => {
+      router.push('/');
+    },
+  });
+
+  const cities = citiesQuery.data ?? [];
+  const categories = categoriesQuery.data ?? [];
+  const sizes = sizesQuery.data ?? [];
+  const loading = citiesQuery.loading || categoriesQuery.loading || sizesQuery.loading;
   const allCategories = categories.flatMap(c => [c, ...(c.subCategories || [])]);
   const selectedParent = categories.find(c => c.id === selectedParentId);
   const selectedCategory = allCategories.find(c => c.id === formData.categoryId);
@@ -159,7 +137,7 @@ export default function SellForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-8">
+    <form action={formAction} className="mx-auto max-w-3xl space-y-8">
       {/* Photo Upload Placeholder */}
       <section className="rounded-2xl border-2 border-dashed border-black/10 bg-white p-10 text-center transition hover:border-[#173fdb]/30">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f7f3ea] text-[#ff5d39]">
@@ -381,13 +359,13 @@ export default function SellForm() {
         <p className="text-xs text-black/50 max-w-sm">
           {t('sell.termsPrefix')} <a href="#" className="underline">{t('sell.termsLink')}</a> {t('sell.termsJoin')} <a href="#" className="underline">{t('sell.privacyLink')}</a>{t('sell.termsSuffix')}
         </p>
-        <button
+        <Button
           type="submit"
-          disabled={submitting}
+          loading={submitting}
           className="rounded-full bg-[#ff5d39] px-12 py-4 text-base font-black text-white shadow-lg shadow-[#ff5d39]/20 transition hover:-translate-y-1 hover:bg-[#e94422] disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {submitting ? t('sell.submitting') : t('sell.submit')}
-        </button>
+          {t('sell.submit')}
+        </Button>
       </div>
     </form>
   );

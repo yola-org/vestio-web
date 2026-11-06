@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { profileApi, callApi } from '@/lib/api';
+import { useState } from 'react';
+import { profileApi } from '@/lib/api';
+import { useApiAction } from '@/hooks/use-api-action';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { CloseIcon } from '@/components/shared/Icons';
-import { Category } from '@/types/api';
 import PreferencesModalSkeleton from '@/components/profile/PreferencesModalSkeleton';
 import { useNotifications } from '@/components/shared/NotificationProvider';
 import { useTranslations } from 'next-intl';
@@ -18,33 +19,36 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
   const t = useTranslations();
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadData();
-    }
-  }, [isOpen]);
+  const categoriesQuery = useApiQuery(profileApi.getCategories, {
+    silent: true,
+    loading: false,
+    enabled: isOpen,
+    deps: [isOpen],
+  });
 
-  const loadData = async () => {
-    setLoading(true);
-    const [treeResult, prefsResult] = await Promise.all([
-      callApi(profileApi.getCategories(), { silent: true }),
-      callApi(profileApi.getPreferences(), { silent: true })
-    ]);
+  const preferencesQuery = useApiQuery(profileApi.getPreferences, {
+    silent: true,
+    loading: false,
+    enabled: isOpen,
+    deps: [isOpen],
+    onSuccess: (data) => {
+      setSelectedCategoryIds(data?.categoryIds || []);
+      setSelectedGender(data?.gender || null);
+    },
+  });
 
-    await treeResult.handle({ onSuccess: (data) => setCategories(data) });
-    await prefsResult.handle({ 
-      onSuccess: (data) => {
-        setSelectedCategoryIds(data?.categoryIds || []);
-        setSelectedGender(data?.gender || null);
-      }
-    });
-    
-    setLoading(false);
-  };
+  const updatePreferences = useApiAction(profileApi.updatePreferences, {
+    loading: false,
+    onSuccess: () => {
+      notify.success(t('preferences.success'));
+      onClose();
+    },
+  });
+
+  const categories = categoriesQuery.data ?? [];
+  const loading = categoriesQuery.loading || preferencesQuery.loading;
+  const saving = updatePreferences.loading;
 
   const toggleCategory = (id: string) => {
     setSelectedCategoryIds(prev => 
@@ -55,26 +59,20 @@ export default function PreferencesModal({ isOpen, onClose }: PreferencesModalPr
   };
 
   const handleSave = async () => {
-    setSaving(true);
-    const result = await callApi(profileApi.updatePreferences({ 
+    await updatePreferences.execute({
       categoryIds: selectedCategoryIds,
-      gender: selectedGender
-    }));
-    
-    await result.handle({
-      onSuccess: () => {
-        notify.success(t('preferences.success'));
-        onClose();
-      }
+      gender: selectedGender,
     });
-    setSaving(false);
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('preferences.title')}
         className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >

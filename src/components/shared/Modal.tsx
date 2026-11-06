@@ -39,8 +39,11 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
         onClick={onClose}
       />
-      <div 
+      <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden bg-[#f7f3ea] shadow-2xl flex flex-col"
       >
         <div className="flex items-center justify-between p-5 border-b border-black/10">

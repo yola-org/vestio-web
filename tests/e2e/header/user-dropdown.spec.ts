@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { HeaderComponent } from '../../pages/HeaderComponent';
-import { mockAuthEndpoints, mockProfileEndpoints, setupAuthenticatedSession } from '../../helpers/api-mock';
+import { setupAuthenticatedSession } from '../../helpers/api-mock';
 
 test.describe('User Dropdown', () => {
   let header: HeaderComponent;
 
   test.beforeEach(async ({ page }) => {
     header = new HeaderComponent(page);
-    await mockAuthEndpoints(page);
-    await mockProfileEndpoints(page);
     await setupAuthenticatedSession(page);
     await page.goto('/');
   });

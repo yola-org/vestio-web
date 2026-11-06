@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
-import { mockAuthEndpoints, mockProfileEndpoints } from '../../helpers/api-mock';
+
 import { testUser } from '../../fixtures/users';
 
 test.describe('Login', () => {
@@ -8,8 +8,6 @@ test.describe('Login', () => {
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
-    await mockAuthEndpoints(page);
-    await mockProfileEndpoints(page);
   });
 
   test('should display login form', async ({ page }) => {
@@ -31,10 +29,8 @@ test.describe('Login', () => {
   test('should login successfully with valid credentials', async ({ page }) => {
     await loginPage.goto();
     await loginPage.login(testUser.email, testUser.password);
-    
-    // Give time for submission
-    await page.waitForTimeout(2000);
-    // Just check that form was submitted
-    expect(page.url()).toContain('localhost:3000');
+
+    // On success the page redirects away from /login.
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
   });
 });

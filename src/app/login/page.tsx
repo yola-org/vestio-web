@@ -1,16 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ArrowIcon } from '@/components/shared/Icons';
-import { authApi, callApi } from '@/lib/api';
+import Button from '@/components/shared/Button';
+import { authApi } from '@/lib/api';
+import { useApiForm } from '@/hooks/use-api-form';
 import { markAuthenticated, notifyAuthChanged } from '@/lib/auth';
 import { useNotifications } from '@/components/shared/NotificationProvider';
 import { useTranslations } from 'next-intl';
-import {ApiCallError} from "@/lib/api/call.ts";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,34 +19,26 @@ export default function LoginPage() {
   const t = useTranslations();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setLoginError('');
-
-    const result = await callApi(authApi.login({ email, password }), {
-      errors: { ERR_UNAUTHORIZED: t('auth.login.invalidCredentials') },
-    });
-
-    await result.handle({
-      onSuccess: () => {
-        markAuthenticated();
-        notifyAuthChanged();
-        notify.success(t('auth.login.success'));
-        router.push('/');
+  const { formAction, pending } = useApiForm((formData) => authApi.login({
+    email: String(formData.get('email') ?? ''),
+    password: String(formData.get('password') ?? ''),
+  }), {
+    loading: false,
+    errors: {
+      ERR_UNAUTHORIZED: {
+        message: t('auth.login.invalidCredentials'),
+        action: (error) => setLoginError(error.message),
       },
-      onError: (error : ApiCallError) => {
-        if (error.code === 'ERR_UNAUTHORIZED') {
-          setLoginError(error.message);
-        }
-      }
-    });
-    
-    setIsSubmitting(false);
-  };
+    },
+    onSuccess: (data) => {
+      markAuthenticated();
+      notifyAuthChanged();
+      notify.success(t('auth.login.success'));
+      router.push('/');
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background text-primary">
@@ -55,7 +48,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-black tracking-tight mb-2">{t('auth.login.title')}</h1>
           <p className="text-black/60 mb-8">{t('auth.login.subtitle')}</p>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5" action={formAction} onChange={() => setLoginError('')}>
             <div>
               <label className="block text-sm font-bold mb-2" htmlFor="email">{t('auth.register.email')}</label>
               <input 
@@ -94,9 +87,13 @@ export default function LoginPage() {
                 className={`w-full h-12 px-4 rounded-xl border ${loginError ? 'border-red-500' : 'border-black/15'} focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition`}
               />
             </div>
-            <button disabled={isSubmitting} className="w-full bg-deep-accent text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-60">
-              {isSubmitting ? t('auth.login.submitting') : t('auth.login.submit')} <ArrowIcon className="h-5 w-5" />
-            </button>
+            <Button
+              type="submit"
+              loading={pending}
+              className="w-full bg-deep-accent text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {t('auth.login.submit')} <ArrowIcon className="h-5 w-5" />
+            </Button>
           </form>
           {loginError && (
             <p id="login-error" role="alert" className="mt-4 text-sm font-medium text-red-700">

@@ -1,27 +1,23 @@
 import { test, expect } from '@playwright/test';
-import { mockAuthEndpoints, mockProfileEndpoints, setupAuthenticatedSession } from '../../helpers/api-mock';
+import { setupAuthenticatedSession } from '../../helpers/api-mock';
 
 test.describe('Preferences Modal', () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuthEndpoints(page);
-    await mockProfileEndpoints(page);
     await setupAuthenticatedSession(page);
     await page.goto('/');
   });
 
   test('should open preferences modal from user dropdown', async ({ page }) => {
-    await page.waitForTimeout(1000);
-    const userButton = page.locator('button[aria-haspopup="true"]').last();
-    if (await userButton.isVisible()) {
-      await userButton.click();
-      await page.waitForTimeout(300);
-      const prefsButton = page.locator('button').filter({ hasText: /préférences|preferences/i }).first();
-      if (await prefsButton.isVisible()) {
-        await prefsButton.click();
-        await page.waitForTimeout(300);
-        const modal = page.locator('[role="dialog"], .modal').first();
-        await expect(modal).toBeVisible();
-      }
-    }
+    // The authenticated header is rendered client-side once auth resolves.
+    const userButton = page.getByRole('button', { name: 'Mon compte' });
+    await expect(userButton).toBeVisible({ timeout: 10_000 });
+    await userButton.click();
+
+    const prefsButton = page.getByRole('button', { name: /préférences/i });
+    await expect(prefsButton).toBeVisible();
+    await prefsButton.click();
+
+    const modal = page.getByRole('dialog');
+    await expect(modal).toBeVisible();
   });
 });

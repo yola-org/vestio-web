@@ -189,6 +189,7 @@ const fr = {
       password: 'Mot de passe',
       passwordPlaceholder: '8 caractères minimum',
       submit: 'Créer mon compte',
+      success: 'Compte créé avec succès. Vous pouvez maintenant vous connecter.',
       alreadyMember: 'Déjà membre ?',
       loginLink: 'Se connecter à mon compte',
     },
@@ -302,10 +303,11 @@ const fr = {
     genericTitle: 'Oups ! Quelque chose s’est mal passé',
     genericMessage:
       'Une erreur inattendue est survenue. Notre équipe technique a été informée.',
-    apiFallback: 'Une erreur est survenue. Veuillez réessayer.',
+    apiFallback: "Une erreur s'est produite. Veuillez réessayer ou actualiser la page.",
     authTokenMissing: 'Le serveur n’a pas retourné de jeton de connexion.',
     retry: 'Réessayer',
     backHome: 'Retour à l’accueil',
+    networkError: 'Une erreur réseau est survenue. Veuillez réessayer ou actualiser la page.',
   },
   loading: {
     message: 'Chargement en cours...',

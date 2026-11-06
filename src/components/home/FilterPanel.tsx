@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Category } from '@/types/api';
+import { useState } from 'react';
 import { getCategoriesAction } from '@/lib/actions/profile';
+import { useApiQuery } from '@/hooks/use-api-query';
 import CategoryFilter from './CategoryFilter';
 import Skeleton from '@/components/shared/Skeleton';
 import { useTranslations } from 'next-intl';
@@ -17,22 +17,11 @@ const CONDITION_VALUES = [
 
 export default function FilterPanel() {
   const t = useTranslations();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data, loading } = useApiQuery(getCategoriesAction, { silent: true, loading: false });
+  const categories = data ?? [];
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Unique'];
-
-  useEffect(() => {
-    async function loadCategories() {
-      const result = await getCategoriesAction();
-      if (result.success) {
-        setCategories(result.data);
-      }
-      setLoading(false);
-    }
-    loadCategories();
-  }, []);
 
   const handleToggleCategory = (id: string) => {
     setSelectedCategoryIds((prev) =>

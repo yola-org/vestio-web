@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowIcon } from '@/components/shared/Icons';
-import { listingsApi, callApi, Listing } from '@/lib/api';
+import { listingsApi, Listing } from '@/lib/api';
+import { useApiQuery } from '@/hooks/use-api-query';
 import ListingGrid from '@/components/shared/ListingGrid';
 import Pagination from '@/components/shared/Pagination';
 import { useTranslations } from 'next-intl';
@@ -16,26 +17,16 @@ interface ProductGridProps {
 
 export default function ProductGrid({ title, subtitle, limit = 12, compact = false }: ProductGridProps) {
   const t = useTranslations();
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [saved, setSaved] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      setLoading(true);
-      const result = await callApi(listingsApi.list(currentPage - 1, limit), { silent: true });
-      await result.handle({
-        onSuccess: (data) => {
-          setListings(data?.content || []);
-          setTotalPages(data?.totalPages || 0);
-        },
-      });
-      setLoading(false);
-    };
-    fetchListings();
-  }, [currentPage, limit]);
+  const { data, loading } = useApiQuery(
+    () => listingsApi.list(currentPage - 1, limit),
+    { deps: [currentPage, limit], silent: true, loading: false }
+  );
+
+  const listings: Listing[] = data?.content ?? [];
+  const totalPages = data?.totalPages ?? 0;
 
   const toggleSaved = (id: string) => {
     setSaved((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);

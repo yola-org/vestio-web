@@ -2,28 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { RocketIcon, CheckIcon, CloseIcon } from '@/components/shared/Icons';
-import { profileApi, callApi } from '@/lib/api';
-import { OnboardingStatus as OnboardingStatusType } from '@/types/api';
+import { profileApi } from '@/lib/api';
+import { useApiQuery } from '@/hooks/use-api-query';
 import { useTranslations } from 'next-intl';
 
 export default function OnboardingStatus() {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<OnboardingStatusType | null>(null);
-  const [loading, setLoading] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      const result = await callApi(profileApi.getOnboardingStatus(), { silent: true });
-      await result.handle({
-        onSuccess: (data) => setStatus(data),
-      });
-      setLoading(false);
-    };
-
-    fetchStatus();
-  }, []);
+  const { data: status, loading } = useApiQuery(profileApi.getOnboardingStatus, {
+    silent: true,
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

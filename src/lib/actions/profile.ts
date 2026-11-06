@@ -1,23 +1,48 @@
 'use server';
 
-import { runAction, ActionResult } from '@/lib/api/action-result.ts';
+import { z } from 'zod';
+
+import { runAction, type ApiResult } from '@/lib/api/action-result.ts';
 import { request } from '@/lib/api/request.ts';
 import { conditions, contactTypes } from '@/constants/data.ts';
-import {
+import type {
   Category,
   CategoryGroup,
   City,
   OnboardingStatus,
   StaticData,
-  UserPreferences,
+  UserPreferencesInput,
   UserProfile,
   Condition,
   ContactType,
   SizeGroup,
-} from '@/types/api.ts';
-import { categoriesToString } from '@/lib/category-utils';
+} from '@/lib/api/schemas';
+import {
+  ProfileUpdateInputSchema,
+  UserPreferencesInputSchema,
+  UserProfileSchema,
+} from '@/lib/api/schemas';
+import { parseInput } from '@/lib/api/validation';
 
-export async function getStaticDataAction(): Promise<ActionResult<StaticData>> {
+/** Raw backend profile payload: UserProfile fields plus the nested city object. */
+const ProfileResponseSchema = UserProfileSchema.extend({
+  city: z.object({ id: z.string(), name: z.string() }).nullish(),
+});
+
+type ProfileResponse = z.infer<typeof ProfileResponseSchema>;
+
+/** Raw backend preferences payload: category refs may be ids or nested objects. */
+const CategoryRefSchema = z.union([z.string(), z.object({ id: z.string() })]);
+
+const PreferencesResponseSchema = z.object({
+  gender: z.string().nullish(),
+  categoryIds: z.array(CategoryRefSchema).nullish(),
+  categories: z.array(CategoryRefSchema).nullish(),
+});
+
+type PreferencesResponse = z.infer<typeof PreferencesResponseSchema>;
+
+export async function getStaticDataAction(): Promise<ApiResult<StaticData>> {
   return runAction(async () => {
     const [categories, cities, sizes] = await Promise.all([
       request<Category[]>('/api/categories', { next: { revalidate: 0 } }),
@@ -29,21 +54,18 @@ export async function getStaticDataAction(): Promise<ActionResult<StaticData>> {
       categories,
       cities,
       sizes,
-      conditions: conditions as unknown as Condition[],
-      contactTypes: contactTypes as unknown as ContactType[],
+      conditions: [...conditions],
+      contactTypes: [...contactTypes],
       listingStatuses: [],
     };
 
-    console.log('Static Data (Categories):\n', categoriesToString(data.categories));
-    console.log('Raw Static Categories Payload:', JSON.stringify(data.categories, null, 2));
-    console.log('Raw Static Sizes Payload:', JSON.stringify(data.sizes, null, 2));
     return data;
   });
 }
 
-export async function getProfileAction(): Promise<ActionResult<UserProfile>> {
+export async function getProfileAction(): Promise<ApiResult<UserProfile>> {
   return runAction(async () => {
-    const profile = await request<any>('/api/profile');
+    const profile = await request<ProfileResponse>('/api/profile');
     return {
       ...profile,
       cityId: profile.city?.id || profile.cityId || null,
@@ -54,31 +76,30 @@ export async function getProfileAction(): Promise<ActionResult<UserProfile>> {
 
 export async function updateProfileAction(
   profile: Partial<UserProfile>
-): Promise<ActionResult<UserProfile>> {
-  const payload = {
-    ...profile,
-    city: profile.cityId ? { id: profile.cityId } : undefined
-  };
-  return runAction(() => request<UserProfile>('/api/profile', {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  }));
+): Promise<ApiResult<UserProfile>> {
+  return runAction(() => {
+    const input = parseInput(ProfileUpdateInputSchema, profile);
+    return request<UserProfile>('/api/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ ...input, city: input.cityId ? { id: input.cityId } : undefined }),
+    });
+  });
 }
 
-export async function getOnboardingStatusAction(): Promise<ActionResult<OnboardingStatus>> {
+export async function getOnboardingStatusAction(): Promise<ApiResult<OnboardingStatus>> {
   return runAction(() => request<OnboardingStatus>('/api/profile/onboarding-status'));
 }
 
-export async function getPreferencesAction(): Promise<ActionResult<UserPreferences>> {
+export async function getPreferencesAction(): Promise<ApiResult<UserPreferencesInput>> {
   return runAction(async () => {
-    const prefs = await request<any>('/api/profile/preferences');
-    
+    const prefs = await request<PreferencesResponse>('/api/profile/preferences');
+
     // Normalize category IDs from backend (which might be objects or strings)
     const rawCategoryIds = prefs.categoryIds || prefs.categories || [];
     const normalizedCategoryIds = Array.isArray(rawCategoryIds)
-      ? rawCategoryIds.map((c: any) => typeof c === 'object' ? String(c.id) : String(c))
+      ? rawCategoryIds.map((c) => (typeof c === 'object' ? String(c.id) : String(c)))
       : [];
-    
+
     return {
       categoryIds: normalizedCategoryIds,
       gender: prefs.gender || null
@@ -87,16 +108,16 @@ export async function getPreferencesAction(): Promise<ActionResult<UserPreferenc
 }
 
 export async function updatePreferencesAction(
-  preferences: UserPreferences
-): Promise<ActionResult<null>> {
-  const payload = {
-    gender: preferences.gender,
-    categoryIds: preferences.categoryIds,
-    // The backend expects objects { id: UUID } for categories
-    categories: (preferences.categoryIds || []).map(id => ({ id }))
-  };
-
+  preferences: UserPreferencesInput
+): Promise<ApiResult<null>> {
   return runAction(async () => {
+    const input = parseInput(UserPreferencesInputSchema, preferences);
+    const payload = {
+      gender: input.gender,
+      categoryIds: input.categoryIds,
+    // The backend expects objects { id: UUID } for categories
+      categories: input.categoryIds.map(id => ({ id })),
+    };
     await request<void>('/api/profile/preferences', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -105,33 +126,31 @@ export async function updatePreferencesAction(
   });
 }
 
-export async function getCategoriesAction(): Promise<ActionResult<Category[]>> {
+export async function getCategoriesAction(): Promise<ApiResult<Category[]>> {
   return runAction(async () => {
     const categories = await request<Category[]>('/api/categories', { next: { revalidate: 0 } });
     return categories;
   });
 }
 
-export async function getSizesAction(): Promise<ActionResult<SizeGroup[]>> {
+export async function getSizesAction(): Promise<ApiResult<SizeGroup[]>> {
   return runAction(async () => {
     const sizes = await request<SizeGroup[]>('/api/sizes', { next: { revalidate: 0 } });
-    console.log('API Sizes Response (Size Groups):', sizes.length);
-    sizes.forEach(g => console.log(`Group: ${g.name} (ID: ${g.id}), Sizes count: ${g.sizes.length}`));
     return sizes;
   });
 }
 
-export async function getCategoryGroupsAction(): Promise<ActionResult<CategoryGroup[]>> {
+export async function getCategoryGroupsAction(): Promise<ApiResult<CategoryGroup[]>> {
   return runAction(() => request<CategoryGroup[]>('/api/categories/groups', { next: { revalidate: 0 } }));
 }
 
-export async function getCitiesAction(): Promise<ActionResult<City[]>> {
+export async function getCitiesAction(): Promise<ApiResult<City[]>> {
   return runAction(() => request<City[]>('/api/cities', { next: { revalidate: 0 } }));
 }
-export async function getConditionsAction(): Promise<ActionResult<Condition[]>> {
-  return runAction(async () => conditions as unknown as Condition[]);
+export async function getConditionsAction(): Promise<ApiResult<Condition[]>> {
+  return runAction(async () => [...conditions]);
 }
 
-export async function getContactTypesAction(): Promise<ActionResult<ContactType[]>> {
-  return runAction(async () => contactTypes as unknown as ContactType[]);
+export async function getContactTypesAction(): Promise<ApiResult<ContactType[]>> {
+  return runAction(async () => [...contactTypes]);
 }
