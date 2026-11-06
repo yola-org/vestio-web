@@ -1,0 +1,67 @@
+stages:
+  - lint
+  - typecheck
+  - test
+  - build
+
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - node_modules/
+    - .next/cache/
+
+lint:
+  stage: lint
+  image: node:20
+  script:
+    - npm install
+    - npm run lint || true
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+typecheck:
+  stage: typecheck
+  image: node:20
+  script:
+    - npm install
+    - npx tsc --noEmit
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+build:
+  stage: build
+  image: node:20
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 hour
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+test:e2e:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.48.0-jammy
+  script:
+    - npm install
+    - npx playwright install --with-deps chromium
+    - npm run test:e2e
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 1 week
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
