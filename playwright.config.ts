@@ -62,6 +62,16 @@ export default defineConfig({
       reuseExistingServer: !isCI,
       timeout: 30 * 1000,
     },
-    appServer,
-  ],
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+      env: {
+        ...process.env,
+        API_URL: 'http://localhost:8081',
+        NEXT_PUBLIC_API_URL: 'http://localhost:8081',
+      },
+    },
+  ]
 });
