@@ -1,15 +1,10 @@
+import { ConditionSchema, ContactTypeSchema } from "@/lib/api/schemas"
+
 export const heroImage =
   "https://images.unsplash.com/photo-1750981089377-2883600c08b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=85&w=1600"
 
-export const conditions = [
-  "NEW_WITH_TAG",
-  "NEW_WITHOUT_TAG",
-  "VERY_GOOD",
-  "GOOD",
-  "SATISFACTORY",
-] as const
-
-export const contactTypes = ["WHATSAPP", "PHONE", "CHAT", "EMAIL"] as const
+export const conditions = ConditionSchema.options
+export const contactTypes = ContactTypeSchema.options
 
 export const products = [
   {

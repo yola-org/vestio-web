@@ -48,23 +48,27 @@ function normalizeListingsResponse(
   }
 }
 
-function toListingPayload(listing: ListingInput) {
-  return {
-    ...listing,
-    cities: (listing.cityIds ?? []).map((id) => ({ id })),
-    category: listing.categoryId ? { id: listing.categoryId } : null,
-    sizes: (listing.sizeIds ?? []).map((id) => ({ id })),
-  }
-}
-
 export async function getListingsAction(
   page = 0,
   size = 12,
 ): Promise<ApiResult<PaginatedResponse<Listing>>> {
   return runAction(async () => {
-    const response = await request<PaginatedResponse<ListingResponse>>(
-      `/api/listings?page=${page}&size=${size}`,
-    )
+    const response =
+      await request<ListingResponse[] | PaginatedResponse<ListingResponse>>(
+        `/api/listings?page=${page}&size=${size}`,
+      )
+
+    if (Array.isArray(response)) {
+      return {
+        content: response
+          .slice(page * size, (page + 1) * size)
+          .map(normalizeListing),
+        totalElements: response.length,
+        totalPages: Math.ceil(response.length / size),
+        number: page,
+        size,
+      }
+    }
 
     return normalizeListingsResponse(response)
   })
@@ -89,7 +93,7 @@ export async function createListingAction(
     const input = parseInput(ListingInputSchema, listing)
     return request<Listing>("/api/listings", {
       method: "POST",
-      body: JSON.stringify(toListingPayload(input)),
+      body: JSON.stringify(input),
     })
   })
 }
@@ -102,7 +106,7 @@ export async function updateListingAction(
     const input = parseInput(ListingInputSchema, listing)
     return request<Listing>(`/api/listings/${encodeURIComponent(id)}`, {
       method: "PUT",
-      body: JSON.stringify(toListingPayload(input)),
+      body: JSON.stringify(input),
     })
   })
 }
@@ -117,4 +121,16 @@ export async function deleteListingAction(
 
     return null
   })
+}
+
+export async function replaceListingAssetsAction(
+  id: string,
+  images: FormData,
+): Promise<ApiResult<Listing>> {
+  return runAction(() =>
+    request<Listing>(`/api/listings/${encodeURIComponent(id)}/assets`, {
+      method: "PUT",
+      body: images,
+    }),
+  )
 }

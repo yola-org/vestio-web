@@ -139,12 +139,12 @@ const fr = {
     reset: "Réinitialiser les filtres",
   },
   conditions: {
-    NEW_WITH_TAG: {
+    NEW_WITH_TAGS: {
       label: "Neuf avec étiquette",
       short: "Neuf avec étiquette",
       description: "Article jamais porté, avec étiquettes d’origine.",
     },
-    NEW_WITHOUT_TAG: {
+    NEW_WITHOUT_TAGS: {
       label: "Neuf sans étiquette",
       short: "Neuf",
       description: "Article jamais porté, sans étiquettes.",
@@ -173,6 +173,11 @@ const fr = {
     login: {
       title: "Bon retour !",
       subtitle: "Connectez-vous pour accéder à votre dressing et vos favoris.",
+      termsPrefix: "En publiant cette annonce, vous acceptez nos",
+      termsLink: "Conditions Générales de Vente",
+      termsJoin: "et notre",
+      privacyLink: "Politique de Confidentialité",
+      termsSuffix: ".",
       submit: "Se connecter",
       submitting: "Connexion...",
       invalidCredentials: "Email ou mot de passe incorrect.",
@@ -231,8 +236,46 @@ const fr = {
   sell: {
     pageTitle: "Vendre un article",
     pageSubtitle: "Donnez une seconde vie à vos vêtements en quelques clics.",
-    photosTitle: "Ajouter des photos",
-    photosHint: "Jusqu’à 10 photos. La première sera la photo principale.",
+    steps: {
+      photos: "Photos",
+      details: "Détails",
+      category: "Catégorie",
+      sale: "Vente",
+      review: "Aperçu",
+    },
+    headings: {
+      photos: "Ajoutez vos photos",
+      details: "Décrivez votre article",
+      category: "Classez votre article",
+      sale: "Fixez vos conditions de vente",
+      review: "Aperçu de votre annonce",
+    },
+    progress: "Étapes de publication",
+    next: "Continuer",
+    back: "Retour",
+    coverPhoto: "Photo principale",
+    removePhoto: "Supprimer {name}",
+    loading: "Chargement du formulaire",
+    successTitle: "Annonce envoyée",
+    successBody: "Vos photos ont été reçues. Leur traitement est en cours.",
+    home: "Retour à l’accueil",
+    validation: {
+      photosRequired: "Ajoutez au moins une photo pour continuer.",
+      photosInvalid:
+        "Ajoutez jusqu’à 10 fichiers JPG, PNG ou WebP de 10 Mo chacun, pour un total de 49 Mo.",
+      titleRequired: "Saisissez le titre de votre annonce.",
+      categoryRequired:
+        "Sélectionnez une catégorie et une sous-catégorie si elle est proposée.",
+      priceInvalid: "Saisissez un prix supérieur à zéro.",
+      quantityInvalid:
+        "Saisissez une quantité entière entre 1 et 2 147 483 647.",
+      citiesRequired: "Sélectionnez au moins une ville.",
+      publishError: "Impossible d’enregistrer votre annonce. Réessayez.",
+      uploadError:
+        "Votre annonce est enregistrée. Réessayez d’envoyer les photos pour terminer.",
+    },
+    photosHint:
+      "Glissez-déposez jusqu’à 10 photos ici. La première sera la photo principale.",
     selectFiles: "Sélectionner des fichiers",
     listingTitle: "Titre de l’annonce",
     listingTitlePlaceholder: "Ex: Sac en cuir vintage Mango",
@@ -248,18 +291,12 @@ const fr = {
     price: "Prix ({currency})",
     cities: "Villes",
     quantity: "Quantité disponible",
-    contact: "Contact préféré",
+    contact: "Mode de remise",
     contactTypes: {
-      WHATSAPP: "WhatsApp",
-      PHONE: "Téléphone",
-      CHAT: "Chat interne",
-      EMAIL: "Email",
+      MEETUP: "Remise en main propre",
+      DELIVERY: "Livraison",
+      PARCEL: "Envoi par colis",
     },
-    termsPrefix: "En publiant cette annonce, vous acceptez nos",
-    termsLink: "Conditions Générales de Vente",
-    termsJoin: "et notre",
-    privacyLink: "Politique de Confidentialité",
-    termsSuffix: ".",
     submit: "Publier l’annonce",
     submitting: "Publication...",
   },
