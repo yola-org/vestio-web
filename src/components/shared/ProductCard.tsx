@@ -1,6 +1,5 @@
 "use client"
 // Helper to handle both mock data and real API Listing
-
 import { HeartIcon, PinIcon } from "@/components/shared/Icons"
 import type { Listing } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"

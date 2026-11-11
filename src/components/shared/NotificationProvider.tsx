@@ -1,7 +1,6 @@
 "use client"
 /** Translation key to render instead of the raw message (e.g. 'errors.sessionExpired') */
 // Last write wins - keep only the most recent notification
-
 import {
   createContext,
   ReactNode,
@@ -42,19 +41,13 @@ export default function NotificationProvider({
 
   const dismiss = useCallback((id: number) => {
     setNotifications((current) =>
-      current.filter(
-        (notification) =>
-          notification.id !==
-          id,
-      ),
+      current.filter((notification) => notification.id !== id),
     )
   }, [])
 
   const push = useCallback(
     (type: NotificationType, message: string, key?: string) => {
-      const id =
-        Date.now() +
-        Math.random()
+      const id = Date.now() + Math.random()
       setNotifications((current) => {
         return [{ id, message, type, key }]
       })

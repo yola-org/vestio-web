@@ -1,6 +1,5 @@
 "use client"
 // Only show root categories in the grid
-
 import React, { useCallback } from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ArrowIcon, ChevronIcon } from "@/components/shared/Icons"

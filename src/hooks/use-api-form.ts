@@ -6,7 +6,6 @@
  * Connects a form's `action` directly to a Server Action while preserving the
  * shared API error handling and a React `pending` state for submit buttons.
  */
-
 import { useActionState, useEffect, useRef } from "react"
 import { useGlobalLoading } from "@/components/shared/GlobalLoadingProvider"
 import { callApi } from "@/lib/api/call"

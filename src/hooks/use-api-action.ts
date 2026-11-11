@@ -72,15 +72,9 @@ export function useApiAction<TArgs extends unknown[], T>(
     optionsRef.current = options
   })
 
-  const [data, setData] = useState<T | null>(
-    options.initialData ??
-      null,
-  )
+  const [data, setData] = useState<T | null>(options.initialData ?? null)
   const [error, setError] = useState<ApiError | null>(null)
-  const [loading, setLoading] = useState(
-    options.initialLoading ??
-      false,
-  )
+  const [loading, setLoading] = useState(options.initialLoading ?? false)
 
   const requestIdRef = useRef(0)
   useEffect(

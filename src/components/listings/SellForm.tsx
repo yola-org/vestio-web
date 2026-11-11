@@ -2,7 +2,6 @@
 // Only set first parent as selected if none is selected yet
 // Reset subcategory and sizes when parent changes
 /* Photo Upload Placeholder */ /* Main Details */ /* Categories & Attributes */ /* Pricing & Location */ /* Submit */
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { CameraIcon, ChevronIcon, CheckIcon } from "@/components/shared/Icons"
@@ -31,7 +30,11 @@ export default function SellForm() {
 
   const [selectedParentId, setSelectedParentId] = useState<string>("")
 
-  const CONDITIONS: { value: Condition label: string description: string }[] = [
+  const CONDITIONS: {
+    value: Condition
+    label: string
+    description: string
+  }[] = [
     {
       value: "NEW_WITH_TAG",
       label: t("conditions.NEW_WITH_TAG.label"),
@@ -59,7 +62,10 @@ export default function SellForm() {
     },
   ]
 
-  const CONTACT_TYPES: { value: ContactType label: string }[] = [
+  const CONTACT_TYPES: {
+    value: ContactType
+    label: string
+  }[] = [
     { value: "WHATSAPP", label: t("sell.contactTypes.WHATSAPP") },
     { value: "PHONE", label: t("sell.contactTypes.PHONE") },
     { value: "CHAT", label: t("sell.contactTypes.CHAT") },
@@ -74,14 +80,9 @@ export default function SellForm() {
     critical: true,
     loading: false,
     onSuccess: (data) => {
-      if (
-        data.length >
-          0 &&
-        !selectedParentId
-      ) {
+      if (data.length > 0 && !selectedParentId) {
         const firstParent =
-          data.find((category) => !category.parentId) ||
-          data[0]
+          data.find((category) => !category.parentId) || data[0]
         setSelectedParentId(firstParent.id)
       }
     },
@@ -101,44 +102,26 @@ export default function SellForm() {
     },
   )
 
-  const cities =
-    citiesQuery.data ??
-    []
-  const categories =
-    categoriesQuery.data ??
-    []
-  const sizes =
-    sizesQuery.data ??
-    []
+  const cities = citiesQuery.data ?? []
+  const categories = categoriesQuery.data ?? []
+  const sizes = sizesQuery.data ?? []
   const loading =
     citiesQuery.loading || categoriesQuery.loading || sizesQuery.loading
   const allCategories = categories.flatMap((c) => [
     c,
-    ...(c.subCategories ||
-      []),
+    ...(c.subCategories || []),
   ])
-  const selectedParent = categories.find(
-    (c) =>
-      c.id ===
-      selectedParentId,
-  )
+  const selectedParent = categories.find((c) => c.id === selectedParentId)
   const selectedCategory = allCategories.find(
-    (c) =>
-      c.id ===
-      formData.categoryId,
+    (c) => c.id === formData.categoryId,
   )
 
   const availableSizes =
     sizes.find((s) => {
       const sizeGroupId =
-        selectedCategory?.sizeGroup?.id ||
-        selectedCategory?.sizeGroupId
-      return (
-        s.id ===
-        sizeGroupId
-      )
-    })?.sizes ||
-    []
+        selectedCategory?.sizeGroup?.id || selectedCategory?.sizeGroupId
+      return s.id === sizeGroupId
+    })?.sizes || []
 
   const handleParentSelect = (parentId: string) => {
     setSelectedParentId(parentId)

@@ -1,7 +1,6 @@
 "use client"
 // Add all IDs that aren't already there
 // Remove all IDs in the list
-
 import { useState } from "react"
 import { getCategoriesAction } from "@/lib/actions/profile"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -23,22 +22,14 @@ export default function FilterPanel() {
     critical: true,
     loading: false,
   })
-  const categories =
-    data ??
-    []
+  const categories = data ?? []
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL", "Unique"]
 
   const handleToggleCategory = (id: string) => {
     setSelectedCategoryIds((prev) =>
-      prev.includes(id)
-        ? prev.filter(
-            (i) =>
-              i !==
-              id,
-          )
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     )
   }
 

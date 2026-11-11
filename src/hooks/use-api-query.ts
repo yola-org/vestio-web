@@ -53,9 +53,7 @@ export function useApiQuery<T>(
 
   const { execute, ...state } = useApiAction(action, {
     ...actionOptions,
-    initialLoading:
-      actionOptions.initialLoading ??
-      enabled,
+    initialLoading: actionOptions.initialLoading ?? enabled,
   })
 
   const enabledRef = useRef(enabled)

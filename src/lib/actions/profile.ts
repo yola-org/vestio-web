@@ -104,18 +104,13 @@ export async function getPreferencesAction(): Promise<ApiResult<UserPreferencesI
     const rawCategoryIds = prefs.categoryIds || prefs.categories || []
     const normalizedCategoryIds = Array.isArray(rawCategoryIds)
       ? rawCategoryIds.map((c) =>
-          typeof c ===
-          "object"
-            ? String(c.id)
-            : String(c),
+          typeof c === "object" ? String(c.id) : String(c),
         )
       : []
 
     return {
       categoryIds: normalizedCategoryIds,
-      gender:
-        prefs.gender ||
-        null,
+      gender: prefs.gender || null,
     }
   })
 }

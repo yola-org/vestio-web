@@ -9,7 +9,10 @@ export { ApiError } from "@/lib/api/api-error"
  * It is intentionally a plain discriminated union: no class instances and
  * no methods, so it can be returned from a Server Action unchanged.
  */
-export type ApiResult<T,> = { success: true data: T } | {
+export type ApiResult<T,> = {
+  success: true
+  data: T
+} | {
   success: false
   error: ApiError
 }

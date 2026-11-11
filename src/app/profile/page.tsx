@@ -1,5 +1,4 @@
 "use client" /* Profile Header Card */ /* Content Tabs */ /* Listings Grid */
-
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
