@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 export default function ServerErrorPage() {
   return (
@@ -8,7 +8,8 @@ export default function ServerErrorPage() {
           <h1 className="text-6xl font-black tracking-tight">500</h1>
           <h2 className="text-2xl font-bold">Erreur du serveur</h2>
           <p className="text-gray-600">
-            Une partie essentielle de la page est indisponible. Nos équipes ont été informées. Veuillez réessayer plus tard.
+            Une partie essentielle de la page est indisponible. Nos équipes ont
+            été informées. Veuillez réessayer plus tard.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -27,5 +28,5 @@ export default function ServerErrorPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

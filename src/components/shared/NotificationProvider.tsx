@@ -1,84 +1,126 @@
-'use client';
+"use client"
+/** Translation key to render instead of the raw message (e.g. 'errors.sessionExpired') */
+// Last write wins - keep only the most recent notification
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
+import { useTranslations } from "next-intl"
 
-type NotificationType = 'success' | 'error' | 'info';
+type NotificationType = "success" | "error" | "info"
 
 type Notification = {
-  id: number;
-  message: string;
-  type: NotificationType;
-  /** Translation key to render instead of the raw message (e.g. 'errors.sessionExpired') */
-  key?: string;
-};
+  id: number
+  message: string
+  type: NotificationType
+  key?: string
+}
 
 type NotificationContextValue = {
   notify: {
-    success: (message: string) => void;
-    error: (message: string) => void;
-    info: (message: string) => void;
-  };
-};
+    success: (message: string) => void
+    error: (message: string) => void
+    info: (message: string) => void
+  }
+}
 
-const NotificationContext = createContext<NotificationContextValue | null>(null);
+const NotificationContext = createContext<NotificationContextValue | null>(null)
 
-export default function NotificationProvider({ children }: { children: ReactNode }) {
-  const t = useTranslations();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+export default function NotificationProvider({
+  children,
+}: {
+  children: ReactNode
+}) {
+  const t = useTranslations()
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   const dismiss = useCallback((id: number) => {
-    setNotifications((current) => current.filter((notification) => notification.id !== id));
-  }, []);
+    setNotifications((current) =>
+      current.filter(
+        (notification) =>
+          notification.id !==
+          id,
+      ),
+    )
+  }, [])
 
-  const push = useCallback((type: NotificationType, message: string, key?: string) => {
-    const id = Date.now() + Math.random();
-    setNotifications((current) => {
-      // Last write wins - keep only the most recent notification
-      return [{ id, message, type, key }];
-    });
-    window.setTimeout(() => dismiss(id), 5000);
-  }, [dismiss]);
+  const push = useCallback(
+    (type: NotificationType, message: string, key?: string) => {
+      const id =
+        Date.now() +
+        Math.random()
+      setNotifications((current) => {
+        return [{ id, message, type, key }]
+      })
+      window.setTimeout(() => dismiss(id), 5000)
+    },
+    [dismiss],
+  )
 
-  const notify = useMemo(() => ({
-    success: (message: string) => push('success', message),
-    error: (message: string) => push('error', message),
-    info: (message: string) => push('info', message),
-  }), [push]);
+  const notify = useMemo(
+    () => ({
+      success: (message: string) => push("success", message),
+      error: (message: string) => push("error", message),
+      info: (message: string) => push("info", message),
+    }),
+    [push],
+  )
 
   useEffect(() => {
     const handleNotification = (event: Event) => {
-      const detail = (event as CustomEvent<{ type: NotificationType; message?: string; key?: string }>).detail;
-      if (detail?.type && ['success', 'error', 'info'].includes(detail.type) && (detail.message || detail.key)) {
-        push(detail.type, detail.message ?? '', detail.key);
+      const detail = (event as CustomEvent<{
+        type: NotificationType
+        message?: string
+        key?: string
+      }>).detail
+      if (
+        detail?.type &&
+        ["success", "error", "info"].includes(detail.type) &&
+        (detail.message || detail.key)
+      ) {
+        push(detail.type, detail.message ?? "", detail.key)
       }
-    };
+    }
 
-    window.addEventListener('vestio:notification', handleNotification);
-    return () => window.removeEventListener('vestio:notification', handleNotification);
-  }, [push]);
+    window.addEventListener("vestio:notification", handleNotification)
+    return () =>
+      window.removeEventListener("vestio:notification", handleNotification)
+  }, [push])
 
   return (
     <NotificationContext.Provider value={{ notify }}>
       {children}
-      <div className="fixed top-4 end-4 z-[100] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3" aria-live="polite">
+      <div
+        className="fixed top-4 end-4 z-[100] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3"
+        aria-live="polite"
+      >
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            role={notification.type === 'error' ? 'alert' : 'status'}
+            role={notification.type === "error" ? "alert" : "status"}
             className={`flex items-start justify-between gap-4 rounded-xl border bg-white p-4 shadow-xl ${
-              notification.type === 'error'
-                ? 'border-red-200 text-red-800'
-                : notification.type === 'success'
-                  ? 'border-green-200 text-green-800'
-                  : 'border-blue-200 text-blue-800'
+              notification.type === "error"
+                ? "border-red-200 text-red-800"
+                : notification.type === "success"
+                  ? "border-green-200 text-green-800"
+                  : "border-blue-200 text-blue-800"
             }`}
           >
-            <p className="text-sm font-medium">{notification.type == 'error' ? t(notification.key ?? 'errors.genericMessage') : notification.message}</p>
+            <p className="text-sm font-medium">
+              {notification.type == "error"
+                ? t(notification.key ?? "errors.genericMessage")
+                : notification.message}
+            </p>
             <button
               type="button"
               className="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"
-              aria-label={t('notifications.close')}
+              aria-label={t("notifications.close")}
               onClick={() => dismiss(notification.id)}
             >
               ×
@@ -87,13 +129,13 @@ export default function NotificationProvider({ children }: { children: ReactNode
         ))}
       </div>
     </NotificationContext.Provider>
-  );
+  )
 }
 
 export function useNotifications(): NotificationContextValue {
-  const context = useContext(NotificationContext);
+  const context = useContext(NotificationContext)
   if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider');
+    throw new Error("useNotifications must be used within NotificationProvider")
   }
-  return context;
+  return context
 }

@@ -24,3 +24,6 @@ test-results/
 # beside it.
 /.plugins/
 /.opencode-skills/
+tests/
+test-results/
+playwright-report/

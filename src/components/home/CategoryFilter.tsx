@@ -1,14 +1,14 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { ChevronIcon } from '@/components/shared/Icons';
-import type { Category } from '@/lib/api/schemas';
+import { useState } from "react"
+import { ChevronIcon } from "@/components/shared/Icons"
+import type { Category } from "@/lib/api/schemas"
 
 interface CategoryFilterProps {
-  categories: Category[];
-  selectedCategoryIds: string[];
-  onToggle: (id: string) => void;
-  onSelectAll: (ids: string[], selected: boolean) => void;
+  categories: Category[]
+  selectedCategoryIds: string[]
+  onToggle: (id: string) => void
+  onSelectAll: (ids: string[], selected: boolean) => void
 }
 
 export default function CategoryFilter({
@@ -17,35 +17,39 @@ export default function CategoryFilter({
   onToggle,
   onSelectAll,
 }: CategoryFilterProps) {
-  const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
+  const [expandedParents, setExpandedParents] =
+    useState<Record<string, boolean>>({})
 
   const toggleParent = (parentId: string) => {
     setExpandedParents((prev) => ({
       ...prev,
       [parentId]: !prev[parentId],
-    }));
-  };
+    }))
+  }
 
   const isParentSelected = (parent: Category) => {
     if (!parent.subCategories || parent.subCategories.length === 0) {
-      return selectedCategoryIds.includes(parent.id);
+      return selectedCategoryIds.includes(parent.id)
     }
-    return parent.subCategories.every((child) => selectedCategoryIds.includes(child.id));
-  };
+    return parent.subCategories.every((child) =>
+      selectedCategoryIds.includes(child.id),
+    )
+  }
 
   const handleParentToggle = (parent: Category) => {
-    const childrenIds = parent.subCategories?.map((c) => c.id) || [];
-    const idsToToggle = [parent.id, ...childrenIds];
-    const currentlySelected = isParentSelected(parent);
-    onSelectAll(idsToToggle, !currentlySelected);
-  };
+    const childrenIds = parent.subCategories?.map((c) => c.id) || []
+    const idsToToggle = [parent.id, ...childrenIds]
+    const currentlySelected = isParentSelected(parent)
+    onSelectAll(idsToToggle, !currentlySelected)
+  }
 
   return (
     <div className="space-y-4">
       {categories.map((parent) => {
-        const isExpanded = expandedParents[parent.id];
-        const hasChildren = parent.subCategories && parent.subCategories.length > 0;
-        const selected = isParentSelected(parent);
+        const isExpanded = expandedParents[parent.id]
+        const hasChildren =
+          parent.subCategories && parent.subCategories.length > 0
+        const selected = isParentSelected(parent)
 
         return (
           <div key={parent.id} className="space-y-2">
@@ -68,7 +72,7 @@ export default function CategoryFilter({
                 >
                   <ChevronIcon
                     className={`h-4 w-4 text-black/40 transition-transform duration-200 ${
-                      isExpanded ? 'rotate-180' : ''
+                      isExpanded ? "rotate-180" : ""
                     }`}
                   />
                 </button>
@@ -78,7 +82,10 @@ export default function CategoryFilter({
             {hasChildren && isExpanded && (
               <div className="ms-7 space-y-2 pt-1 border-s border-black/5 ps-4">
                 {parent.subCategories?.map((child) => (
-                  <label key={child.id} className="flex items-center gap-3 cursor-pointer group">
+                  <label
+                    key={child.id}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedCategoryIds.includes(child.id)}
@@ -93,8 +100,8 @@ export default function CategoryFilter({
               </div>
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

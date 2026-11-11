@@ -1,4 +1,4 @@
-import Skeleton from '@/components/shared/Skeleton';
+import Skeleton from "@/components/shared/Skeleton"
 
 export default function PreferencesModalSkeleton() {
   return (
@@ -17,5 +17,5 @@ export default function PreferencesModalSkeleton() {
         </div>
       ))}
     </div>
-  );
+  )
 }

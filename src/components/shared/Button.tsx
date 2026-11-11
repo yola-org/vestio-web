@@ -1,17 +1,17 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Disables the button and displays a spinner while an action is pending. */
-  loading?: boolean;
-  children: ReactNode;
-};
+  loading?: boolean
+  children: ReactNode
+}
 
 export default function Button({
   loading = false,
   disabled,
   children,
   className,
-  type = 'button',
+  type = "button",
   ...props
 }: ButtonProps) {
   return (
@@ -30,5 +30,5 @@ export default function Button({
       )}
       {children}
     </button>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-'use client';
+"use client"
 
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import Hero from '@/components/home/Hero';
-import CategoryGrid from '@/components/home/CategoryGrid';
-import HowItWorks from '@/components/home/HowItWorks';
-import ProductGrid from '@/components/home/ProductGrid';
-import CallToAction from '@/components/home/CallToAction';
-import Manifesto from '@/components/home/Manifesto';
+import Header from "@/components/layout/Header"
+import Footer from "@/components/layout/Footer"
+import Hero from "@/components/home/Hero"
+import CategoryGrid from "@/components/home/CategoryGrid"
+import HowItWorks from "@/components/home/HowItWorks"
+import ProductGrid from "@/components/home/ProductGrid"
+import CallToAction from "@/components/home/CallToAction"
+import Manifesto from "@/components/home/Manifesto"
 
 export default function WelcomePage() {
   return (
@@ -23,5 +23,5 @@ export default function WelcomePage() {
       </main>
       <Footer />
     </div>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-'use client';
+"use client"
 
-import HomeHero from './HomeHero';
-import FilterPanel from './FilterPanel';
-import ProductGrid from './ProductGrid';
-import { useTranslations } from 'next-intl';
+import HomeHero from "./HomeHero"
+import FilterPanel from "./FilterPanel"
+import ProductGrid from "./ProductGrid"
+import { useTranslations } from "next-intl"
 
 export default function AuthenticatedHome() {
-  const t = useTranslations();
+  const t = useTranslations()
 
   return (
     <div className="bg-[#f7f3ea]">
@@ -16,8 +16,8 @@ export default function AuthenticatedHome() {
           <FilterPanel />
           <div className="flex-1">
             <ProductGrid
-              title={t('home.authenticated.title')}
-              subtitle={t('home.authenticated.subtitle')}
+              title={t("home.authenticated.title")}
+              subtitle={t("home.authenticated.subtitle")}
               limit={20}
               compact={true}
             />
@@ -25,5 +25,5 @@ export default function AuthenticatedHome() {
         </div>
       </div>
     </div>
-  );
+  )
 }
