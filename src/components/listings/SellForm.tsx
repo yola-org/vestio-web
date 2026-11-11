@@ -1,5 +1,5 @@
 "use client"
-
+// Moving between the drop zone and its children fires additional events.
 import {
   useEffect,
   useRef,
@@ -183,7 +183,6 @@ export default function SellForm() {
   }
 
   function leavePhotoDropZone() {
-    // Moving between the drop zone and its children fires additional events.
     photoDragDepth.current = Math.max(0, photoDragDepth.current - 1)
     if (photoDragDepth.current === 0) setIsDraggingPhotos(false)
   }
@@ -782,9 +781,13 @@ export default function SellForm() {
             {step === reviewStep && (
               <p className="text-xs text-black/60">
                 {t("sell.termsPrefix")}{" "}
-                <a href="#" className="underline">{t("sell.termsLink")}</a>{" "}
+                <a href="#" className="underline">
+                  {t("sell.termsLink")}
+                </a>{" "}
                 {t("sell.termsJoin")}{" "}
-                <a href="#" className="underline">{t("sell.privacyLink")}</a>
+                <a href="#" className="underline">
+                  {t("sell.privacyLink")}
+                </a>
                 {t("sell.termsSuffix")}
               </p>
             )}
