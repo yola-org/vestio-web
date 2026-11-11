@@ -149,10 +149,10 @@ export const ListingSchema = z.object({
 })
 
 export const JwtResponseSchema = z.object({
-  accessToken: z.string(),
-  idToken: z.string(),
-  refreshToken: z.string(),
-  expiresIn: z.number().int(),
+  accessToken: z.string().min(1),
+  idToken: z.string().min(1),
+  refreshToken: z.string().min(1).nullish(),
+  expiresIn: z.number().int().positive(),
   tokenType: z.string(),
 })
 

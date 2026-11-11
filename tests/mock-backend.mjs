@@ -199,10 +199,25 @@ async function handle(req, res, pathname, query) {
       return apiError(res, 401, 'ERR_UNAUTHORIZED', 'Invalid credentials', '/api/auth/login');
     }
 
+    case 'POST /api/auth/refresh':
+      if (body?.refreshToken !== 'mock-refresh-token') {
+        return apiError(res, 401, 'ERR_UNAUTHORIZED', 'Invalid refresh token', pathname);
+      }
+      return json(res, 200, {
+        accessToken: 'refreshed-access-token',
+        idToken: 'refreshed-id-token',
+        refreshToken: null,
+        expiresIn: 3600,
+        tokenType: 'Bearer',
+      });
+
     case 'POST /api/auth/signup':
       return json(res, 200, 'Registration successful');
 
     case 'GET /api/profile':
+      if (!['Bearer mock-access-token', 'Bearer refreshed-access-token'].includes(req.headers.authorization)) {
+        return apiError(res, 401, 'ERR_UNAUTHORIZED', 'Invalid access token', pathname);
+      }
       return json(res, 200, profile);
 
     case 'PUT /api/profile': {

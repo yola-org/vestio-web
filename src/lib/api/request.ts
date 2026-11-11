@@ -2,13 +2,9 @@ import "server-only"
 
 import { cookies } from "next/headers"
 
-import {
-  AUTH_TOKEN_COOKIE,
-  AUTH_REFRESH_TOKEN_COOKIE,
-  AUTH_ID_TOKEN_COOKIE,
-  AUTH_INDICATOR_COOKIE,
-} from "@/constants/auth"
-
+import { AUTH_REFRESH_TOKEN_COOKIE, AUTH_TOKEN_COOKIE } from "@/constants/auth"
+import { clearAuthCookies, writeTokenCookies } from "@/lib/api/auth-cookies"
+import { JwtResponseSchema } from "@/lib/api/schemas"
 import { ApiError } from "@/lib/api/api-error"
 import { getApiError } from "@/lib/api/errors"
 import { logger } from "@/lib/logger"
@@ -19,13 +15,6 @@ const BASE_URL =
   process.env.API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:8080"
-
-const AUTH_COOKIES = [
-  AUTH_TOKEN_COOKIE,
-  AUTH_REFRESH_TOKEN_COOKIE,
-  AUTH_ID_TOKEN_COOKIE,
-  AUTH_INDICATOR_COOKIE,
-] as const
 
 const NETWORK_ERROR_CODES = new Set([
   "ECONNREFUSED",
@@ -109,6 +98,49 @@ export async function request<T>(
   options: RequestInit = {},
   includeAuth = true,
 ): Promise<T> {
+  if (!includeAuth) return requestOnce<T>(endpoint, options)
+
+  const cookieStore = await cookies()
+  const refreshToken = cookieStore.get(AUTH_REFRESH_TOKEN_COOKIE)?.value
+  let accessToken = cookieStore.get(AUTH_TOKEN_COOKIE)?.value
+
+  async function refreshAccessToken(token: string) {
+    const data = await requestOnce<unknown>("/api/auth/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken: token }),
+      cache: "no-store",
+    })
+    const tokens = JwtResponseSchema.parse(data)
+    writeTokenCookies(cookieStore, tokens)
+    return tokens.accessToken
+  }
+
+  try {
+    if (!accessToken && refreshToken) {
+      accessToken = await refreshAccessToken(refreshToken)
+    } else if (accessToken && refreshToken) {
+      try {
+        return await requestOnce<T>(endpoint, options, accessToken)
+      } catch (error) {
+        if (!(error instanceof ApiError) || error.status !== 401) throw error
+      }
+      accessToken = await refreshAccessToken(refreshToken)
+    }
+
+    return await requestOnce<T>(endpoint, options, accessToken)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      clearAuthCookies(cookieStore)
+    }
+    throw error
+  }
+}
+
+async function requestOnce<T>(
+  endpoint: string,
+  options: RequestInit,
+  accessToken?: string,
+): Promise<T> {
   const startTime = Date.now()
   const method = (options.method ?? "GET").toUpperCase()
 
@@ -124,11 +156,8 @@ export async function request<T>(
     headers.set("Content-Type", "application/json")
   }
 
-  const cookieStore = includeAuth ? await cookies() : undefined
-  const token = cookieStore?.get(AUTH_TOKEN_COOKIE)?.value
-
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`)
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`)
   }
 
   const url = `${BASE_URL}${endpoint}`
@@ -178,12 +207,6 @@ export async function request<T>(
       durationMs,
     })
     return responseData as T
-  }
-
-  if (response.status === 401 && cookieStore) {
-    for (const cookie of AUTH_COOKIES) {
-      cookieStore.delete(cookie)
-    }
   }
 
   const apiError = ApiError.createApiError(

@@ -48,9 +48,9 @@ type PreferencesResponse = z.infer<typeof PreferencesResponseSchema>
 export async function getStaticDataAction(): Promise<ApiResult<StaticData>> {
   return runAction(async () => {
     const [categories, cities, sizes] = await Promise.all([
-      request<Category[]>("/api/categories", { next: { revalidate: 0 } }),
-      request<City[]>("/api/cities", { next: { revalidate: 0 } }),
-      request<SizeGroup[]>("/api/sizes", { next: { revalidate: 0 } }),
+      request<Category[]>("/api/categories", {}, false),
+      request<City[]>("/api/cities", {}, false),
+      request<SizeGroup[]>("/api/sizes", {}, false),
     ])
 
     const data: StaticData = {
@@ -135,33 +135,27 @@ export async function updatePreferencesAction(
 
 export async function getCategoriesAction(): Promise<ApiResult<Category[]>> {
   return runAction(async () => {
-    const categories = await request<Category[]>("/api/categories", {
-      next: { revalidate: 0 },
-    })
+    const categories = await request<Category[]>("/api/categories", {}, false)
     return categories
   })
 }
 
 export async function getSizesAction(): Promise<ApiResult<SizeGroup[]>> {
   return runAction(async () => {
-    const sizes = await request<SizeGroup[]>("/api/sizes", {
-      next: { revalidate: 0 },
-    })
+    const sizes = await request<SizeGroup[]>("/api/sizes", {}, false)
     return sizes
   })
 }
 
 export async function getCategoryGroupsAction(): Promise<ApiResult<CategoryGroup[]>> {
   return runAction(() =>
-    request<CategoryGroup[]>("/api/categories/groups", {
-      next: { revalidate: 0 },
-    }),
+    request<CategoryGroup[]>("/api/categories/groups", {}, false),
   )
 }
 
 export async function getCitiesAction(): Promise<ApiResult<City[]>> {
   return runAction(() =>
-    request<City[]>("/api/cities", { next: { revalidate: 0 } }),
+    request<City[]>("/api/cities", {}, false),
   )
 }
 export async function getConditionsAction(): Promise<ApiResult<Condition[]>> {
