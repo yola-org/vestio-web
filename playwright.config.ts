@@ -3,15 +3,15 @@ import { defineConfig, devices } from '@playwright/test';
 const isCI = !!process.env.CI;
 
 /**
- * CI runs the suite against a production build (`next build && next start`)
- * instead of the dev server: no on-demand compilation or HMR, deterministic
- * pages, and it doubles as a build check. Locally the suite runs against
+ * CI runs the suite against the production build produced by the pipeline's
+ * `build` job (`next start`) instead of the dev server: no on-demand
+ * compilation or HMR, deterministic pages. Locally the suite runs against
  * `next dev` for faster iteration. Use `CI=true npm run test:e2e` to
- * reproduce the CI setup locally.
+ * reproduce the CI setup locally (run `npm run build` first).
  */
 const appServer = isCI
   ? {
-      command: 'npm run build && npm run start',
+      command: 'npm run start',
       url: 'http://localhost:3000',
       reuseExistingServer: false,
       timeout: 10 * 60 * 1000,

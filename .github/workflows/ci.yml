@@ -1,0 +1,31 @@
+# Next.js pipeline. Shared logic lives in yola-org/ci-templates.
+#
+# Next.js 16 removed the `next lint` command, so the lint job runs the
+# repository formatter (oxfmt) in check mode instead. Lint, typecheck and e2e
+# stay non-blocking, matching the previous GitLab pipeline.
+
+name: CI
+
+on:
+  push:
+    branches: ['**'] # branches only, no tag pushes
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: Web
+    uses: yola-org/ci-templates/.github/workflows/reusable-node-ci.yml@main
+    with:
+      node-version: '22'
+      lint-command: npx oxfmt --check .
+      typecheck-command: npx tsc --noEmit
+      build-command: npm run build
+      e2e-command: npm run test:e2e
