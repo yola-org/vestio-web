@@ -28,4 +28,6 @@ jobs:
       lint-command: npx oxfmt --check .
       typecheck-command: npx tsc --noEmit
       build-command: npm run build
+      # The GitHub-hosted runner already provides the Chromium system libraries.
+      e2e-install-command: npx playwright install chromium
       e2e-command: npm run test:e2e
