@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 export function ListingCardSkeleton() {
   return (
@@ -18,20 +18,23 @@ export function ListingCardSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 interface ListingGridSkeletonProps {
-  count?: number;
-  columns?: string;
+  count?: number
+  columns?: string
 }
 
-export function ListingGridSkeleton({ count = 8, columns = 'grid-cols-2 lg:grid-cols-4' }: ListingGridSkeletonProps) {
+export function ListingGridSkeleton({
+  count = 8,
+  columns = "grid-cols-2 lg:grid-cols-4",
+}: ListingGridSkeletonProps) {
   return (
     <div className={`grid ${columns} gap-x-4 gap-y-9 lg:gap-6`}>
       {Array.from({ length: count }).map((_, i) => (
         <ListingCardSkeleton key={i} />
       ))}
     </div>
-  );
+  )
 }

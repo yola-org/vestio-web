@@ -14,7 +14,9 @@
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@vercel/otel": "^2.3.0",
     "embla-carousel-react": "^8.6.0",
     "next": "16.4.5",
     "next-intl": "^4.14.9",

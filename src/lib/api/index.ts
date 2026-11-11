@@ -4,8 +4,8 @@ import {
   getListingAction,
   getListingsAction,
   updateListingAction,
-} from '@/lib/actions/listings';
-import { loginAction, logoutAction, signupAction } from '@/lib/actions/auth';
+} from "@/lib/actions/listings"
+import { loginAction, logoutAction, signupAction } from "@/lib/actions/auth"
 import {
   getCategoriesAction,
   getCategoryGroupsAction,
@@ -19,8 +19,17 @@ import {
   getStaticDataAction,
   updatePreferencesAction,
   updateProfileAction,
-} from '@/lib/actions/profile';
-import type { Category, City, Listing, ListingInput, LoginInput, SignupInput, UserPreferencesInput, UserProfile } from '@/lib/api/schemas';
+} from "@/lib/actions/profile"
+import type {
+  Category,
+  City,
+  Listing,
+  ListingInput,
+  LoginInput,
+  SignupInput,
+  UserPreferencesInput,
+  UserProfile,
+} from "@/lib/api/schemas"
 
 /**
  * Authentication API - server actions
@@ -32,7 +41,7 @@ export const authApi = {
   signup: (credentials: SignupInput) => signupAction(credentials),
   /** Logout current session */
   logout: () => logoutAction(),
-};
+}
 
 /**
  * Listings API - server actions
@@ -45,10 +54,11 @@ export const listingsApi = {
   /** Create new listing */
   create: (listing: ListingInput) => createListingAction(listing),
   /** Update existing listing */
-  update: (id: string, listing: ListingInput) => updateListingAction(id, listing),
+  update: (id: string, listing: ListingInput) =>
+    updateListingAction(id, listing),
   /** Delete listing */
   delete: (id: string) => deleteListingAction(id),
-};
+}
 
 /**
  * Profile and metadata API - server actions
@@ -63,7 +73,8 @@ export const profileApi = {
   /** Get user preferences */
   getPreferences: () => getPreferencesAction(),
   /** Update user preferences */
-  updatePreferences: (preferences: UserPreferencesInput) => updatePreferencesAction(preferences),
+  updatePreferences: (preferences: UserPreferencesInput) =>
+    updatePreferencesAction(preferences),
   /** Get all categories */
   getCategories: () => getCategoriesAction(),
   /** Get category groups */
@@ -78,10 +89,10 @@ export const profileApi = {
   getContactTypes: () => getContactTypesAction(),
   /** Get static data bundle */
   getStaticData: () => getStaticDataAction(),
-};
+}
 
-export type { Listing };
-export { callApi } from '@/lib/api/call';
+export type { Listing }
+export { callApi } from "@/lib/api/call"
 export type {
   ApiCallOptions,
   ApiErrorAction,
@@ -89,4 +100,4 @@ export type {
   ApiErrorHandler,
   ApiError,
   ApiResult,
-} from '@/lib/api/result';
+} from "@/lib/api/result"

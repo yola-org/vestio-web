@@ -1,39 +1,41 @@
-'use client';
+"use client"
 
-import ProductCard from './ProductCard';
-import type { Listing } from '@/lib/api/schemas';
-import { ListingGridSkeleton } from './ListingSkeletons';
-import { useTranslations } from 'next-intl';
+import ProductCard from "./ProductCard"
+import type { Listing } from "@/lib/api/schemas"
+import { ListingGridSkeleton } from "./ListingSkeletons"
+import { useTranslations } from "next-intl"
 
 interface ListingGridProps {
-  listings: Listing[];
-  isLoading?: boolean;
-  columns?: string;
-  emptyMessage?: string;
-  savedIds?: string[];
-  onToggleSave?: (id: string) => void;
+  listings: Listing[]
+  isLoading?: boolean
+  columns?: string
+  emptyMessage?: string
+  savedIds?: string[]
+  onToggleSave?: (id: string) => void
 }
 
 export default function ListingGrid({
   listings = [],
   isLoading = false,
-  columns = 'grid-cols-2 lg:grid-cols-4',
+  columns = "grid-cols-2 lg:grid-cols-4",
   emptyMessage,
   savedIds = [],
-  onToggleSave
+  onToggleSave,
 }: ListingGridProps) {
-  const t = useTranslations();
+  const t = useTranslations()
 
   if (isLoading) {
-    return <ListingGridSkeleton count={8} columns={columns} />;
+    return <ListingGridSkeleton count={8} columns={columns} />
   }
 
   if (!listings || listings.length === 0) {
     return (
       <div className="py-20 text-center bg-white rounded-[2rem] border-2 border-dashed border-black/10">
-        <p className="text-black/40 font-medium">{emptyMessage ?? t('listings.empty')}</p>
+        <p className="text-black/40 font-medium">
+          {emptyMessage ?? t("listings.empty")}
+        </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -47,5 +49,5 @@ export default function ListingGrid({
         />
       ))}
     </div>
-  );
+  )
 }

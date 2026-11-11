@@ -1,19 +1,19 @@
-'use client';
+"use client"
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-import { logger } from '@/lib/logger';
+import { useEffect } from "react"
+import Link from "next/link"
+import { logger } from "@/lib/logger"
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   useEffect(() => {
-    logger.error('ERROR_BOUNDARY', error, { digest: error.digest });
-  }, [error]);
+    logger.error("ERROR_BOUNDARY", error, { digest: error.digest })
+  }, [error])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f7f3ea] px-4">
@@ -22,7 +22,8 @@ export default function Error({
           <h1 className="text-6xl font-black tracking-tight">Erreur</h1>
           <h2 className="text-2xl font-bold">Une erreur s'est produite</h2>
           <p className="text-gray-600">
-            Le serveur est temporairement indisponible ou une erreur est survenue.
+            Le serveur est temporairement indisponible ou une erreur est
+            survenue.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -41,5 +42,5 @@ export default function Error({
         </div>
       </div>
     </div>
-  );
+  )
 }

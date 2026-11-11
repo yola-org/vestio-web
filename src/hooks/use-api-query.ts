@@ -1,27 +1,11 @@
-'use client';
-
-import { useEffect, useRef, type DependencyList } from 'react';
-import {
-  useApiAction,
-  type UseApiActionOptions,
-  type UseApiActionResult,
-} from '@/hooks/use-api-action';
-import type { ApiResult } from '@/lib/api/result';
+"use client"
 
 /**
  * Options for {@link useApiQuery}.
  */
-export interface UseApiQueryOptions<T> extends UseApiActionOptions<T> {
-  /** Dependencies that trigger a refetch (like `useEffect` deps) */
-  deps?: DependencyList;
-  /** Set to false to delay the request (default: true) */
-  enabled?: boolean;
-}
-
-export interface UseApiQueryResult<T> extends UseApiActionResult<[], T> {
-  /** Re-runs the query manually */
-  refetch: () => Promise<ApiResult<T>>;
-}
+/** Dependencies that trigger a refetch (like `useEffect` deps) */
+/** Set to false to delay the request (default: true) */
+/** Re-runs the query manually */
 
 /**
  * Runs a server action automatically and exposes its loading/data/error state.
@@ -34,36 +18,52 @@ export interface UseApiQueryResult<T> extends UseApiActionResult<[], T> {
  * ```ts
  * const { data: categories, loading } = useApiQuery(
  *   profileApi.getCategories,
- *   { silent: true, loading: false } // uses the component's own skeleton
+ *   { critical: true, loading: false } // must-have data: failure shows a severe error and goes to /500
  * );
  *
  * const { data: listings, loading } = useApiQuery(
  *   () => listingsApi.list(page - 1, limit),
- *   { deps: [page, limit], silent: true }
+ *   { deps: [page, limit] }
  * );
  * ```
  */
+// `deps` intentionally controls when the query re-runs.
+// eslint-disable-next-line react-hooks/exhaustive-deps
+
+import { useEffect, useRef, type DependencyList } from "react"
+import {
+  useApiAction,
+  type UseApiActionOptions,
+  type UseApiActionResult,
+} from "@/hooks/use-api-action"
+import type { ApiResult } from "@/lib/api/result"
+export interface UseApiQueryOptions<T> extends UseApiActionOptions<T> {
+  deps?: DependencyList
+  enabled?: boolean
+}
+
+export interface UseApiQueryResult<T> extends UseApiActionResult<[], T> {
+  refetch: () => Promise<ApiResult<T>>
+}
 export function useApiQuery<T>(
   action: () => Promise<ApiResult<T>>,
-  options: UseApiQueryOptions<T> = {}
+  options: UseApiQueryOptions<T> = {},
 ): UseApiQueryResult<T> {
-  const { deps = [], enabled = true, ...actionOptions } = options;
+  const { deps = [], enabled = true, ...actionOptions } = options
 
   const { execute, ...state } = useApiAction(action, {
     ...actionOptions,
     initialLoading: actionOptions.initialLoading ?? enabled,
-  });
+  })
 
-  const enabledRef = useRef(enabled);
-  enabledRef.current = enabled;
+  const enabledRef = useRef(enabled)
+  enabledRef.current = enabled
 
   useEffect(() => {
     if (enabledRef.current) {
-      void execute();
+      void execute()
     }
-    // `deps` intentionally controls when the query re-runs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, deps)
 
-  return { ...state, execute, refetch: execute };
+  return { ...state, execute, refetch: execute }
 }

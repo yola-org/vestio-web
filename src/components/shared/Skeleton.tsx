@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react"
 
 interface SkeletonProps {
-  className?: string;
+  className?: string
 }
 
-export default function Skeleton({ className = '' }: SkeletonProps) {
+export default function Skeleton({ className = "" }: SkeletonProps) {
   return (
-    <div 
+    <div
       className={`animate-pulse rounded-md bg-black/5 ${className}`}
       aria-hidden="true"
     />
-  );
+  )
 }

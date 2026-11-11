@@ -63,9 +63,25 @@ Uses `getTranslations()` from next-intl server to translate error messages via `
 Located in `src/lib/api/call.ts`. Used in Client Components.
 
 ### Features
-- **Silent Mode**: Can suppress error toasts/logging
-- **Error Handling**: Uses `handleApiError()` for consistent error processing
-- **Locale Awareness**: Gets locale from cookies for error translations
+- **Critical Mode**: `critical: true` shows a severe error notification and navigates to the `/500` error page (for must-have/static data)
+- **Error Handling**: Uses `getApiError()` for consistent error processing
+- **401 Handling**: If the user was logged in, an error notification asks them to log in again (guests fail silently)
+
+### Logging
+
+Every event is logged as **one single line** (greppable and safe to ship to log aggregators), e.g.:
+
+```
+[ERROR] 2026-11-06T11:40:11.108Z API_REQUEST code=NETWORK_ERROR status=503 path=/api/cities method=GET durationMs=3
+[WARN] 2026-11-06T11:40:12.510Z API_REQUEST code=ERR_NOT_FOUND status=404 path=/api/listings method=GET durationMs=9
+[INFO] 2026-11-06T11:40:12.800Z API_REQUEST message=ok method=GET path=/api/cities status=200 durationMs=4
+```
+
+- Backend responses logged by `API_REQUEST` (in `request.ts`): 2xx → `INFO`, 4xx → `WARN`, **5xx and 404/410 → `ERROR`** (404/410 means contract drift, e.g. a missing endpoint after a backend version bump)
+- Trace context (`traceparent`, W3C) is propagated to the backend by the `@vercel/otel` fetch instrumentation (see `src/instrumentation.ts`, `propagateContextUrls`), so frontend and backend spans/logs can be correlated by trace ID
+- `SERVER_ACTION` only logs unexpected action-level failures; API-originated errors are logged once by `API_REQUEST`
+- Sensitive keys (`authorization`, `cookie`, `token`, `email`, ...) in metadata are redacted automatically
+- Browser logs the same single-line format via `console.info/warn/error`
 
 ### Usage
 
@@ -73,25 +89,23 @@ Located in `src/lib/api/call.ts`. Used in Client Components.
 import { callApi } from '@/lib/api/call';
 import { profileApi } from '@/lib/api';
 
-const result = await callApi(profileApi.getProfile(), { silent: false });
+const result = await callApi(profileApi.getProfile());
 
-result.handle({
-  onSuccess: (data) => {
-    setProfile(data);
-  },
-  onError: (error) => {
-    // Custom error handling
-  }
-});
+if (result.success) {
+  setProfile(result.data);
+}
 ```
 
 ### Options
 
 ```typescript
-interface CallApiOptions {
-  silent?: boolean; // If true, suppress error handling/UI feedback
+interface ApiCallOptions {
+  critical?: boolean; // If true, a failure shows a severe error notification and goes to /500
+  errors?: Partial<Record<string, ApiErrorConfig>>; // Per-code message/action overrides
 }
 ```
+
+Custom handlers in `errors` take precedence: no toast and no `/500` redirect for handled error codes.
 
 ## API Endpoint Definitions (`index.ts`)
 
@@ -173,4 +187,4 @@ export async function loginAction(formData: FormData): Promise<ActionResult<Auth
 ### Performance
 - Use Next.js caching options in `fetch` via `next` property
 - Set appropriate cache/revalidation strategies
-- Use `silent: true` for background/non-critical requests
+- Use `critical: true` for must-have/static requests (e.g. cities, categories) so failures show a severe error and navigate to `/500`

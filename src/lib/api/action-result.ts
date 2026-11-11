@@ -1,11 +1,10 @@
+import "server-only"
 
-import 'server-only';
+import { getApiError } from "@/lib/api/errors"
+import { ApiError, type ApiResult } from "@/lib/api/result"
+import { logger } from "@/lib/logger"
 
-import { getApiError } from '@/lib/api/errors';
-import type { ApiError, ApiResult } from '@/lib/api/result';
-import { logger } from '@/lib/logger';
-
-export type { ApiCallOptions, ApiError, ApiResult } from '@/lib/api/result';
+export type { ApiCallOptions, ApiError, ApiResult } from "@/lib/api/result"
 
 /**
  * Wrapper for server actions that catches errors and returns the same
@@ -25,15 +24,20 @@ export type { ApiCallOptions, ApiError, ApiResult } from '@/lib/api/result';
  * ```
  */
 export async function runAction<T>(
-  action: () => Promise<T>
+  action: () => Promise<T>,
 ): Promise<ApiResult<T>> {
   try {
-    return { success: true, data: await action() };
+    return { success: true, data: await action() }
   } catch (error) {
-    const apiError = getApiError(error);
-    if (apiError.status >= 500) {
-      logger.error('SERVER_ACTION', apiError);
+    const apiError = getApiError(error)
+    // Backend failures (network or API error) are already logged by the
+    // API layer (API_REQUEST) with method/path/status/duration. Only
+    // log unexpected failures here (bugs in the action itself, or errors
+    // not tied to an API call).
+    const alreadyLogged = apiError instanceof ApiError && apiError.path !== ""
+    if (!alreadyLogged && apiError.status >= 500) {
+      logger.error("SERVER_ACTION", apiError)
     }
-    return { success: false, error: apiError.toJSON() as ApiError };
+    return { success: false, error: apiError.toJSON() as ApiError }
   }
 }

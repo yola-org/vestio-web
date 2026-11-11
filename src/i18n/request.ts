@@ -1,15 +1,15 @@
-import { getRequestConfig } from 'next-intl/server';
-import { cookies } from 'next/headers';
-import { defaultLocale, isLocale, LOCALE_COOKIE } from './config';
-import { getDictionary } from './dictionaries';
+import { getRequestConfig } from "next-intl/server"
+import { cookies } from "next/headers"
+import { defaultLocale, isLocale, LOCALE_COOKIE } from "./config"
+import { getDictionary } from "./dictionaries"
 
 export default getRequestConfig(async () => {
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
-  const locale = isLocale(cookieLocale) ? cookieLocale : defaultLocale;
+  const cookieStore = await cookies()
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value
+  const locale = isLocale(cookieLocale) ? cookieLocale : defaultLocale
 
   return {
     locale,
     messages: getDictionary(locale),
-  };
-});
+  }
+})
