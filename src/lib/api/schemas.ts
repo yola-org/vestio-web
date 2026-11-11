@@ -39,21 +39,20 @@ export const UserPreferencesInputSchema = z.object({
 })
 
 export const ConditionSchema = z.enum([
-  "NEW_WITH_TAG",
-  "NEW_WITHOUT_TAG",
+  "NEW_WITH_TAGS",
+  "NEW_WITHOUT_TAGS",
   "VERY_GOOD",
   "GOOD",
   "SATISFACTORY",
 ])
 
-export const ContactTypeSchema = z.enum(["WHATSAPP", "PHONE", "CHAT", "EMAIL"])
+export const ContactTypeSchema = z.enum(["MEETUP", "DELIVERY", "PARCEL"])
 
 export const ListingStatusSchema = z.enum([
   "AVAILABLE",
   "SOLD",
-  "RESERVED",
-  "DELETED",
-  "EXPIRED",
+  "AWAITING_ASSETS",
+  "HIDDEN",
   "PENDING",
 ])
 
@@ -61,15 +60,17 @@ export const ListingInputSchema = z.object({
   id: z.string().optional(),
   title: z.string().trim().min(1),
   description: z.string().nullable().optional(),
-  price: z.number().finite().min(0),
+  price: z.number().positive(),
   colors: z.array(z.string()).nullable().optional(),
   contactTypes: z.array(ContactTypeSchema).min(1),
   condition: ConditionSchema,
   status: ListingStatusSchema.nullable().optional(),
-  quantity: z.number().int().min(1),
-  cityIds: z.array(z.string()),
-  categoryId: z.string().min(1),
-  sizeIds: z.array(z.string()).nullable().optional(),
+  quantity: z.number().int().min(1).max(2147483647),
+  cityIds: z.array(z.uuid()).min(1),
+  categoryId: z.uuid(),
+  sizeIds: z.array(z.uuid()).nullable().optional(),
+  gender: z.string().nullable().optional(),
+  brandId: z.uuid().nullable().optional(),
 })
 
 export const CitySchema = z.object({
@@ -142,6 +143,9 @@ export const ListingSchema = z.object({
   sizeIds: z.array(z.string()).nullish(),
   sizeNames: z.array(z.string()).nullish(),
   userId: z.string().nullish(),
+  assetKeys: z.array(z.uuid()).nullish(),
+  gender: z.string().nullish(),
+  brandId: z.uuid().nullish(),
 })
 
 export const JwtResponseSchema = z.object({

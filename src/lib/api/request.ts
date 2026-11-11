@@ -116,7 +116,11 @@ export async function request<T>(
 
   headers.set("Accept", "application/json, text/plain")
 
-  if (options.body != null && !headers.has("Content-Type")) {
+  if (
+    options.body != null &&
+    !(options.body instanceof FormData) &&
+    !headers.has("Content-Type")
+  ) {
     headers.set("Content-Type", "application/json")
   }
 

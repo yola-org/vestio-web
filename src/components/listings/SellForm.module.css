@@ -1,0 +1,33 @@
+.panel {
+  --slide-offset: 1.75rem;
+  animation: enter 240ms ease-out both;
+}
+
+.backward {
+  --slide-offset: -1.75rem;
+}
+
+.panel:dir(rtl) {
+  --slide-offset: -1.75rem;
+}
+
+.backward:dir(rtl) {
+  --slide-offset: 1.75rem;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--slide-offset));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}

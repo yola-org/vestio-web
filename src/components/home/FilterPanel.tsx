@@ -8,13 +8,7 @@ import CategoryFilter from "./CategoryFilter"
 import Skeleton from "@/components/shared/Skeleton"
 import { useTranslations } from "next-intl"
 
-const CONDITION_VALUES = [
-  "NEW_WITH_TAG",
-  "NEW_WITHOUT_TAG",
-  "VERY_GOOD",
-  "GOOD",
-  "SATISFACTORY",
-] as const
+import { conditions } from "@/constants/data"
 
 export default function FilterPanel() {
   const t = useTranslations()
@@ -113,7 +107,7 @@ export default function FilterPanel() {
           {t("filters.condition")}
         </h3>
         <div className="space-y-2">
-          {CONDITION_VALUES.map((cond) => (
+          {conditions.map((cond) => (
             <label
               key={cond}
               className="flex items-center gap-3 cursor-pointer group"
