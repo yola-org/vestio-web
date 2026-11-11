@@ -1,4 +1,4 @@
-# Next.js pipeline. Shared logic lives in yola-org/ci-templates.
+# Next.js pipeline. Shared logic lives in yola-org/shared-workflows.
 #
 # Next.js 16 removed the `next lint` command, so the lint job runs the
 # repository formatter (oxfmt) in check mode instead. Lint, typecheck and e2e
@@ -22,7 +22,7 @@ concurrency:
 jobs:
   ci:
     name: Web
-    uses: yola-org/ci-templates/.github/workflows/reusable-node-ci.yml@main
+    uses: yola-org/shared-workflows/.github/workflows/reusable-node-ci.yml@main
     with:
       node-version: '22'
       lint-command: npx oxfmt --check .
