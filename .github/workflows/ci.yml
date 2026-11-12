@@ -1,8 +1,8 @@
 # Next.js pipeline. Shared logic lives in yola-org/shared-workflows.
 #
 # Next.js 16 removed the `next lint` command, so the lint job runs the
-# repository formatter (oxfmt) in check mode instead. Lint, typecheck and e2e
-# stay non-blocking, matching the previous GitLab pipeline.
+# repository formatter (oxfmt) in check mode instead. Lint and typecheck are
+# non-blocking. The release tag requires Web E2E to pass.
 
 name: CI
 
@@ -40,6 +40,8 @@ jobs:
       # The GitHub-hosted runner already provides the Chromium system libraries.
       e2e-install-command: npx playwright install chromium
       e2e-command: npm run test:e2e
+      run-e2e: true
+      e2e-continue-on-error: false
 
   release-gate:
     name: Check release gate
