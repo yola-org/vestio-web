@@ -6,7 +6,7 @@ import ProfileSkeleton from "@/components/profile/ProfileSkeleton"
 import { profileApi, listingsApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
 import ListingGrid from "@/components/shared/ListingGrid"
-import { SettingsIcon, CameraIcon } from "@/components/shared/Icons"
+import { SettingsIcon, CameraIcon, HeartIcon } from "@/components/shared/Icons"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 
@@ -78,6 +78,13 @@ export default function ProfilePage() {
                 >
                   <SettingsIcon className="h-4 w-4" />{" "}
                   {t("profile.editProfile")}
+                </Link>
+                <Link
+                  href="/favorites"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full border border-black/10 text-sm font-bold hover:bg-black/5 transition"
+                >
+                  <HeartIcon className="h-4 w-4" aria-hidden="true" />
+                  {t("header.favorites")}
                 </Link>
               </div>
               <p className="text-black/60 font-medium mb-4 max-w-2xl">

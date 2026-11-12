@@ -119,6 +119,29 @@ export async function getListingAction(
   })
 }
 
+export async function getFavoritesAction(): Promise<ApiResult<Listing[]>> {
+  return runAction(async () => {
+    const listings = await request<ListingResponse[]>("/api/listings/favorites")
+    const cityNamesById = await getCityNamesById(listings)
+    return listings.map((listing) => normalizeListing(listing, cityNamesById))
+  })
+}
+
+const FavoriteInputSchema = z.object({ id: z.uuid(), saved: z.boolean() })
+
+export async function setFavoriteAction(
+  id: string,
+  saved: boolean,
+): Promise<ApiResult<null>> {
+  return runAction(async () => {
+    const input = parseInput(FavoriteInputSchema, { id, saved })
+    await request<void>(`/api/listings/${input.id}/favorite`, {
+      method: input.saved ? "POST" : "DELETE",
+    })
+    return null
+  })
+}
+
 export async function createListingAction(
   listing: ListingInput,
 ): Promise<ApiResult<Listing>> {

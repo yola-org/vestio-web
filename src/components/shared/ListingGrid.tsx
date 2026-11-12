@@ -11,7 +11,8 @@ interface ListingGridProps {
   columns?: string
   emptyMessage?: string
   savedIds?: string[]
-  onToggleSave?: (id: string) => void
+  onToggleSave?: (listing: Listing) => void
+  saveDisabled?: boolean
 }
 
 export default function ListingGrid({
@@ -21,6 +22,7 @@ export default function ListingGrid({
   emptyMessage,
   savedIds = [],
   onToggleSave,
+  saveDisabled,
 }: ListingGridProps) {
   const t = useTranslations()
 
@@ -45,7 +47,8 @@ export default function ListingGrid({
           key={listing.id}
           product={listing}
           isSaved={savedIds.includes(listing.id)}
-          onToggleSave={() => onToggleSave?.(listing.id)}
+          onToggleSave={onToggleSave && (() => onToggleSave(listing))}
+          saveDisabled={saveDisabled}
         />
       ))}
     </div>

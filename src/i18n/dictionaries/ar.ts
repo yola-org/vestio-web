@@ -126,6 +126,13 @@ const ar: Dictionary = {
       subtitle: "بناءً على تفضيلاتك",
     },
   },
+  favorites: {
+    title: "مفضلتك",
+    empty: "لم تضف أي قطعة إلى المفضلة بعد.",
+    browse: "تصفح القطع",
+    loadError: "تعذّر تحميل المفضلة.",
+    retry: "إعادة المحاولة",
+  },
   listings: {
     empty: "لم يتم العثور على أي قطعة.",
   },

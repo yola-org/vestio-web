@@ -1,8 +1,10 @@
 import {
   createListingAction,
   deleteListingAction,
+  getFavoritesAction,
   getListingAction,
   getListingsAction,
+  setFavoriteAction,
   updateListingAction,
 } from "@/lib/actions/listings"
 import { loginAction, logoutAction, signupAction } from "@/lib/actions/auth"
@@ -51,6 +53,8 @@ export const listingsApi = {
   list: (page = 0, size = 12) => getListingsAction(page, size),
   /** Get single listing by ID */
   get: (id: string) => getListingAction(id),
+  favorites: getFavoritesAction,
+  setFavorite: setFavoriteAction,
   /** Create new listing */
   create: (listing: ListingInput) => createListingAction(listing),
   /** Update existing listing */

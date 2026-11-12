@@ -22,12 +22,14 @@ interface ProductCardProps {
   }
   isSaved: boolean
   onToggleSave?: () => void
+  saveDisabled?: boolean
 }
 
 export default function ProductCard({
   product,
   isSaved,
   onToggleSave,
+  saveDisabled,
 }: ProductCardProps) {
   const t = useTranslations()
   const [failedImage, setFailedImage] = useState<string>()
@@ -77,8 +79,10 @@ export default function ProductCard({
           <button
             type="button"
             onClick={onToggleSave}
-            className={`absolute top-3 end-3 rounded-full p-2.5 backdrop-blur transition ${
-              isSaved ? "bg-[#ff5d39] text-white" : "bg-white/90 hover:bg-white"
+            disabled={saveDisabled}
+            aria-pressed={isSaved}
+            className={`absolute top-3 end-3 rounded-full p-2.5 backdrop-blur transition disabled:cursor-wait disabled:opacity-60 ${
+              isSaved ? "bg-accent text-white" : "bg-white/90 hover:bg-white"
             }`}
             aria-label={
               isSaved

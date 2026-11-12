@@ -19,7 +19,8 @@ export default function AuthenticatedHome() {
               title={t("home.authenticated.title")}
               subtitle={t("home.authenticated.subtitle")}
               limit={20}
-              compact={true}
+              compact
+              authenticated
             />
           </div>
         </div>
