@@ -127,6 +127,19 @@ export async function getFavoritesAction(): Promise<ApiResult<Listing[]>> {
   })
 }
 
+export async function getPendingListingsAction(
+  page: number,
+  size: number,
+): Promise<ApiResult<Listing[]>> {
+  return runAction(async () => {
+    const listings = await request<ListingResponse[]>(
+      `/api/listings/pending?page=${page}&size=${size}`,
+    )
+    const cityNamesById = await getCityNamesById(listings)
+    return listings.map((listing) => normalizeListing(listing, cityNamesById))
+  })
+}
+
 const FavoriteInputSchema = z.object({ id: z.uuid(), saved: z.boolean() })
 
 export async function setFavoriteAction(

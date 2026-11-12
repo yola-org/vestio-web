@@ -4,6 +4,7 @@ import {
   getFavoritesAction,
   getListingAction,
   getListingsAction,
+  getPendingListingsAction,
   setFavoriteAction,
   updateListingAction,
 } from "@/lib/actions/listings"
@@ -54,6 +55,7 @@ export const listingsApi = {
   /** Get single listing by ID */
   get: (id: string) => getListingAction(id),
   favorites: getFavoritesAction,
+  pending: getPendingListingsAction,
   setFavorite: setFavoriteAction,
   /** Create new listing */
   create: (listing: ListingInput) => createListingAction(listing),

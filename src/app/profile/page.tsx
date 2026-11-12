@@ -1,6 +1,9 @@
-"use client" /* Profile Header Card */ /* Content Tabs */ /* Listings Grid */
+"use client"
+
+import { useState } from "react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
+import PendingListings from "@/components/listings/PendingListings"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton"
 import { profileApi, listingsApi } from "@/lib/api"
@@ -10,8 +13,14 @@ import { SettingsIcon, CameraIcon, HeartIcon } from "@/components/shared/Icons"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 
+const listingTabs = ["articles", "pending"] as const
+const listingColumns =
+  "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+
 export default function ProfilePage() {
   const t = useTranslations()
+  const [activeTab, setActiveTab] =
+    useState<typeof listingTabs[number]>("articles")
   const profileQuery = useApiQuery(profileApi.get, { loading: false })
   const listingsQuery = useApiQuery(() => listingsApi.list(0, 50), {
     loading: false,
@@ -114,12 +123,51 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {}
         <div className="mb-8 border-b border-black/10">
-          <div className="flex gap-8">
-            <button className="pb-4 text-sm font-bold border-b-2 border-[#173fdb] text-[#173fdb]">
-              {t("profile.tabListings", { count: listings.length })}
-            </button>
+          <div className="flex flex-wrap gap-x-4 sm:gap-x-8">
+            <div
+              className="flex gap-x-4 sm:gap-x-8"
+              role="tablist"
+              aria-label={t("profile.statsListings")}
+              onKeyDown={(event) => {
+                if (
+                  !["ArrowLeft", "ArrowRight", "Home", "End"].includes(
+                    event.key,
+                  )
+                )
+                  return
+
+                event.preventDefault()
+                const nextTab =
+                  event.key === "Home"
+                    ? "articles"
+                    : event.key === "End" || activeTab === "articles"
+                      ? "pending"
+                      : "articles"
+                setActiveTab(nextTab)
+                event.currentTarget
+                  .querySelector<HTMLButtonElement>(`#profile-${nextTab}-tab`)
+                  ?.focus()
+              }}
+            >
+              {listingTabs.map((tab) => (
+                <button
+                  key={tab}
+                  id={`profile-${tab}-tab`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab}
+                  aria-controls={`profile-${tab}-panel`}
+                  tabIndex={activeTab === tab ? 0 : -1}
+                  onClick={() => setActiveTab(tab)}
+                  className="border-b-2 border-transparent pb-4 text-sm font-bold text-black/40 transition hover:text-black aria-selected:border-deep-accent aria-selected:text-deep-accent"
+                >
+                  {tab === "articles"
+                    ? t("profile.tabListings", { count: listings.length })
+                    : t("pendingListings.title")}
+                </button>
+              ))}
+            </div>
             <button className="pb-4 text-sm font-bold text-black/40 hover:text-black transition">
               {t("profile.tabReviews", { count: 0 })}
             </button>
@@ -129,24 +177,40 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {}
-        <ListingGrid
-          listings={listings}
-          isLoading={false}
-          columns="grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-          emptyMessage={t("profile.emptyListings")}
-        />
-
-        {listings.length === 0 && (
-          <div className="mt-6 text-center">
-            <Link
-              href="/listings/new"
-              className="inline-block bg-[#ff5d39] text-white px-8 py-4 rounded-full font-bold hover:bg-[#e94422] transition"
-            >
-              {t("profile.sellFirst")}
-            </Link>
-          </div>
-        )}
+        <div
+          id="profile-articles-panel"
+          role="tabpanel"
+          aria-labelledby="profile-articles-tab"
+          tabIndex={0}
+          hidden={activeTab !== "articles"}
+        >
+          <ListingGrid
+            listings={listings}
+            columns={listingColumns}
+            emptyMessage={t("profile.emptyListings")}
+          />
+          {listings.length === 0 && (
+            <div className="mt-6 text-center">
+              <Link
+                href="/listings/new"
+                className="inline-block bg-[#ff5d39] text-white px-8 py-4 rounded-full font-bold hover:bg-[#e94422] transition"
+              >
+                {t("profile.sellFirst")}
+              </Link>
+            </div>
+          )}
+        </div>
+        <div
+          id="profile-pending-panel"
+          role="tabpanel"
+          aria-labelledby="profile-pending-tab"
+          tabIndex={0}
+          hidden={activeTab !== "pending"}
+        >
+          {activeTab === "pending" && (
+            <PendingListings columns={listingColumns} />
+          )}
+        </div>
       </main>
 
       <Footer />

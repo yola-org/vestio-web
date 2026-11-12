@@ -72,9 +72,6 @@ export default function ProductCard({
               : "h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           }
         />
-        <span className="absolute top-3 start-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black uppercase backdrop-blur">
-          {t("common.secondHand")}
-        </span>
         {onToggleSave && (
           <button
             type="button"
