@@ -56,6 +56,8 @@ export async function getListingsAction(
     const response =
       await request<ListingResponse[] | PaginatedResponse<ListingResponse>>(
         `/api/listings?page=${page}&size=${size}`,
+        {},
+        false,
       )
 
     if (Array.isArray(response)) {
@@ -80,6 +82,8 @@ export async function getListingAction(
   return runAction(async () => {
     const response = await request<ListingResponse>(
       `/api/listings/${encodeURIComponent(id)}`,
+      {},
+      false,
     )
 
     return normalizeListing(response)
