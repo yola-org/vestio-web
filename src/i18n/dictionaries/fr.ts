@@ -166,6 +166,8 @@ const fr = {
     },
   },
   productCard: {
+    citySeparator: ", ",
+    moreCities: "{count, plural, one {+ # autre} other {+ # autres}}",
     addFavorite: "Ajouter {title} aux favoris",
     removeFavorite: "Retirer {title} des favoris",
   },
