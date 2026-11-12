@@ -16,9 +16,8 @@ export function proxy(request: NextRequest) {
   const hasAuth = authIndicator?.value === "1"
 
   if (!hasAuth) {
-    // Not authenticated, redirect to welcome
     const url = request.nextUrl.clone()
-    url.pathname = "/welcome"
+    url.pathname = pathname === "/favorites" ? "/login" : "/welcome"
     return NextResponse.redirect(url)
   }
 

@@ -160,9 +160,13 @@ export default function Header() {
           className="ms-auto hidden items-center gap-6 lg:flex"
           aria-label={t("header.mainActionsAria")}
         >
-          <button className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent">
-            <HeartIcon className="h-5 w-5" /> {t("header.favorites")}
-          </button>
+          <Link
+            href="/favorites"
+            className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent"
+          >
+            <HeartIcon className="h-5 w-5" aria-hidden="true" />{" "}
+            {t("header.favorites")}
+          </Link>
           {isAuthenticated ? (
             <>
               <Link
@@ -348,6 +352,14 @@ export default function Header() {
             <a href="#shop" onClick={() => setMobileOpen(false)}>
               {t("header.buy")}
             </a>
+            <Link
+              href="/favorites"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2"
+            >
+              <HeartIcon className="h-5 w-5" aria-hidden="true" />{" "}
+              {t("header.favorites")}
+            </Link>
             {isAuthenticated ? (
               <>
                 <Link

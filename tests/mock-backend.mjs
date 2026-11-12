@@ -75,10 +75,10 @@ const categoryNames = Object.fromEntries(
   categories.flatMap((c) => [c, ...(c.subCategories ?? [])].map((x) => [x.id, x.name]))
 );
 
-let nextListingId = 4;
+const favoriteIds = new Set();
 const listings = [
   {
-    id: '1',
+    id: '00000000-0000-4000-8000-000000000001',
     title: 'Sac en cuir vintage',
     description: 'Magnifique sac en cuir vintage.',
     price: 380,
@@ -96,7 +96,7 @@ const listings = [
     userId: 'user-1',
   },
   {
-    id: '2',
+    id: '00000000-0000-4000-8000-000000000002',
     title: 'Hoodie gris essentiel',
     description: null,
     price: 290,
@@ -114,13 +114,13 @@ const listings = [
     userId: 'user-1',
   },
   {
-    id: '3',
+    id: '00000000-0000-4000-8000-000000000003',
     title: 'Baskets rétro',
     description: 'Pointure 40, comme neuves.',
     price: 520,
     colors: ['#FFFFFF'],
     contactTypes: ['CHAT'],
-    condition: 'NEW_WITHOUT_TAG',
+    condition: 'NEW_WITHOUT_TAGS',
     status: 'AVAILABLE',
     quantity: 1,
     cityIds: ['1', '3'],
@@ -181,6 +181,31 @@ function findListing(id) {
 async function handle(req, res, pathname, query) {
   const route = `${req.method} ${pathname}`;
   const body = await readBody(req);
+
+  const favoriteMatch = pathname.match(/^\/api\/listings\/([^/]+)\/favorite$/);
+  const listsFavorites = route === 'GET /api/listings/favorites';
+  if (listsFavorites || (favoriteMatch && ['POST', 'DELETE'].includes(req.method))) {
+    if (!['Bearer mock-access-token', 'Bearer refreshed-access-token'].includes(req.headers.authorization)) {
+      return apiError(res, 401, 'ERR_UNAUTHORIZED', 'Invalid access token', pathname);
+    }
+
+    if (listsFavorites) {
+      return json(res, 200, [...favoriteIds].reverse().map(findListing));
+    }
+
+    const id = favoriteMatch[1];
+    if (!findListing(id)) {
+      return apiError(res, 404, 'NOT_FOUND', 'Listing not found', pathname);
+    }
+
+    if (req.method === 'POST') {
+      favoriteIds.add(id);
+    } else {
+      favoriteIds.delete(id);
+    }
+    res.writeHead(200);
+    return res.end();
+  }
 
   switch (route) {
     case 'GET /healthz':
@@ -279,7 +304,7 @@ async function handle(req, res, pathname, query) {
     case 'POST /api/listings': {
       const input = typeof body === 'object' && body ? body : {};
       const listing = {
-        id: String(nextListingId++),
+        id: randomUUID(),
         title: input.title ?? 'Untitled',
         description: input.description ?? null,
         price: input.price ?? 0,
@@ -342,6 +367,7 @@ async function handle(req, res, pathname, query) {
         return apiError(res, 404, 'NOT_FOUND', 'Listing not found', pathname);
       }
       listings.splice(index, 1);
+      favoriteIds.delete(id);
       res.writeHead(204);
       return res.end();
     }

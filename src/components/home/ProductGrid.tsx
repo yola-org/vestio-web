@@ -7,12 +7,15 @@ import { useApiQuery } from "@/hooks/use-api-query"
 import ListingGrid from "@/components/shared/ListingGrid"
 import Pagination from "@/components/shared/Pagination"
 import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
+import { useFavorites } from "@/hooks/use-favorites"
 
 interface ProductGridProps {
   title?: string
   subtitle?: string
   limit?: number
   compact?: boolean
+  authenticated?: boolean
 }
 
 export default function ProductGrid({
@@ -20,10 +23,12 @@ export default function ProductGrid({
   subtitle,
   limit = 12,
   compact = false,
+  authenticated = false,
 }: ProductGridProps) {
   const t = useTranslations()
   const [currentPage, setCurrentPage] = useState(1)
-  const [saved, setSaved] = useState<string[]>([])
+  const router = useRouter()
+  const favorites = useFavorites(authenticated)
 
   const { data, loading } = useApiQuery(
     () => listingsApi.list(currentPage - 1, limit),
@@ -33,16 +38,11 @@ export default function ProductGrid({
   const listings: Listing[] = data?.content ?? []
   const totalPages = data?.totalPages ?? 0
 
-  const toggleSaved = (id: string) => {
-    setSaved((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id],
-    )
-  }
-
   return (
-    <section className={`${compact ? "py-0" : "py-20 main-container"}`}>
+    <section
+      id={authenticated ? "shop" : undefined}
+      className={`${compact ? "py-0" : "py-20 main-container"}`}
+    >
       <div className="mb-9 flex items-end justify-between">
         <div>
           <p className="mb-2 text-xs font-black tracking-[0.16em] text-[#173fdb] uppercase">
@@ -62,14 +62,37 @@ export default function ProductGrid({
         )}
       </div>
 
+      {favorites.error && (
+        <div
+          className="mb-4 flex flex-wrap items-center gap-3 text-sm"
+          role="status"
+        >
+          <span>{t("favorites.loadError")}</span>
+          <button
+            type="button"
+            className="font-bold text-deep-accent hover:underline"
+            onClick={() => void favorites.refetch()}
+          >
+            {t("favorites.retry")}
+          </button>
+        </div>
+      )}
+
       <ListingGrid
         listings={listings}
         isLoading={loading}
         columns={`grid-cols-2 gap-x-4 gap-y-9 ${
           compact ? "lg:grid-cols-3 xl:grid-cols-4" : "lg:grid-cols-4"
         } lg:gap-6`}
-        savedIds={saved}
-        onToggleSave={toggleSaved}
+        savedIds={favorites.savedIds}
+        saveDisabled={authenticated && (favorites.loading || favorites.saving)}
+        onToggleSave={
+          authenticated
+            ? favorites.error
+              ? undefined
+              : favorites.toggle
+            : () => router.push("/login")
+        }
       />
 
       {!compact && (

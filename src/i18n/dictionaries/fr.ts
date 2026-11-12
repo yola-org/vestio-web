@@ -126,6 +126,13 @@ const fr = {
       subtitle: "Basé sur vos préférences",
     },
   },
+  favorites: {
+    title: "Vos favoris",
+    empty: "Vous n’avez pas encore d’articles favoris.",
+    browse: "Parcourir les articles",
+    loadError: "Impossible de charger vos favoris.",
+    retry: "Réessayer",
+  },
   listings: {
     empty: "Aucun article trouvé.",
   },
