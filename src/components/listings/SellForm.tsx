@@ -703,7 +703,8 @@ export default function SellForm() {
                       title: formData.title.trim(),
                       price: formData.price,
                       size: sizeNames.join(", "),
-                      city: cityNames.join(", "),
+                      condition: formData.condition,
+                      cityNames,
                       seller: t("common.seller"),
                       image: currentPhoto.url,
                     }}

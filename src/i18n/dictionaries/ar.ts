@@ -166,6 +166,9 @@ const ar: Dictionary = {
     },
   },
   productCard: {
+    citySeparator: "، ",
+    moreCities:
+      "{count, plural, one {+ مدينة أخرى} two {+ مدينتان أخريان} few {+ # مدن أخرى} other {+ # مدينة أخرى}}",
     addFavorite: "أضف {title} إلى المفضلة",
     removeFavorite: "أزل {title} من المفضلة",
   },

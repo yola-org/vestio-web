@@ -1,18 +1,21 @@
 "use client"
 // Helper to handle both mock data and real API Listing
 import { HeartIcon, PinIcon } from "@/components/shared/Icons"
-import type { Listing } from "@/lib/api/schemas"
+import type { Condition, Listing } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 
 const fallbackImage = "/listing-image-unavailable.png"
+const visibleCityLimit = 2
 
 interface ProductCardProps {
   product: Listing | {
     title: string
     size: string
+    condition?: Condition
     price: string | number
-    city: string
+    city?: string
+    cityNames?: string[]
     image: string
     seller: string
     colors?: string[]
@@ -36,10 +39,13 @@ export default function ProductCard({
     typeof product.price === "number"
       ? `${product.price} ${t("common.currency")}`
       : product.price
-  const displayCity =
-    "cityNames" in product
-      ? product.cityNames?.join(", ") || ""
-      : (product as any).city
+  const cityNames =
+    product.cityNames ??
+    ("city" in product && product.city ? [product.city] : [])
+  const displayCities = cityNames
+    .slice(0, visibleCityLimit)
+    .join(t("productCard.citySeparator"))
+  const hiddenCityCount = cityNames.length - visibleCityLimit
   const displaySeller =
     "userId" in product
       ? (product as any).seller || t("common.seller")
@@ -101,16 +107,42 @@ export default function ProductCard({
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-bold">{product.title}</h3>
-            <p className="mt-1 text-xs text-black/50">{displaySize}</p>
+            {product.condition && (
+              <p className="mt-1 text-xs text-black/50">
+                {t(`conditions.${product.condition}.label`)}
+              </p>
+            )}
+            {displaySize && (
+              <p className="mt-1 text-xs text-black/50">{displaySize}</p>
+            )}
           </div>
           <strong className="shrink-0">{displayPrice}</strong>
         </div>
-        <div className="mt-4 flex items-center justify-between border-t border-black/10 pt-3 text-[11px] text-black/55">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-black/10 pt-3 text-[11px] text-black/55">
           <span>{displaySeller}</span>
-          <span className="flex items-center gap-1">
-            <PinIcon className="h-3.5 w-3.5" />
-            {displayCity}
-          </span>
+          {displayCities && (
+            <span
+              className="flex items-center gap-1"
+              title={
+                hiddenCityCount > 0
+                  ? cityNames.join(t("productCard.citySeparator"))
+                  : undefined
+              }
+            >
+              <PinIcon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>
+                {displayCities}
+                {hiddenCityCount > 0 && (
+                  <>
+                    {" "}
+                    <span className="whitespace-nowrap">
+                      {t("productCard.moreCities", { count: hiddenCityCount })}
+                    </span>
+                  </>
+                )}
+              </span>
+            </span>
+          )}
         </div>
       </div>
     </article>
