@@ -176,11 +176,6 @@ const ar: Dictionary = {
     login: {
       title: "مرحباً بعودتك!",
       subtitle: "سجّل الدخول للوصول إلى خزانتك ومفضلاتك.",
-      termsPrefix: "بنشرك لهذا الإعلان، فإنك توافق على",
-      termsLink: "شروط البيع العامة",
-      termsJoin: "و",
-      privacyLink: "سياسة الخصوصية",
-      termsSuffix: ".",
       submit: "تسجيل الدخول",
       submitting: "جارٍ تسجيل الدخول...",
       invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
@@ -234,6 +229,12 @@ const ar: Dictionary = {
     error: "حدث خطأ أثناء تحديث الملف الشخصي.",
   },
   sell: {
+    requiredFields: "الحقول المميزة بعلامة النجمة (*) إلزامية.",
+    termsPrefix: "بنشرك لهذا الإعلان، فإنك توافق على",
+    termsLink: "شروط البيع العامة",
+    termsJoin: "و",
+    privacyLink: "سياسة الخصوصية",
+    termsSuffix: ".",
     pageTitle: "بِع قطعة",
     pageSubtitle: "امنح ملابسك حياة ثانية ببضع نقرات.",
     steps: {

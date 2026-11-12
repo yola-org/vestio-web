@@ -14,7 +14,6 @@ import { CameraIcon, CheckIcon } from "@/components/shared/Icons"
 import Button from "@/components/shared/Button"
 import ProductCard from "@/components/shared/ProductCard"
 import { listingsApi, profileApi } from "@/lib/api"
-import { replaceListingAssetsAction } from "@/lib/actions/listings"
 import { useApiAction } from "@/hooks/use-api-action"
 import { useApiQuery } from "@/hooks/use-api-query"
 import {
@@ -48,6 +47,10 @@ type FormError = "photosRequired" | "photosInvalid" | "titleRequired" | "categor
 
 function toggleSelection(ids: string[], id: string) {
   return ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]
+}
+
+function RequiredMark() {
+  return <span className="ms-1 font-bold text-red-700">*</span>
 }
 
 function Choice({
@@ -122,7 +125,6 @@ export default function SellForm() {
   })
   const create = useApiAction(listingsApi.create, { loading: false })
   const update = useApiAction(listingsApi.update, { loading: false })
-  const upload = useApiAction(replaceListingAssetsAction, { loading: false })
 
   const cities = citiesQuery.data ?? []
   const parents =
@@ -266,6 +268,7 @@ export default function SellForm() {
     setSubmitting(true)
     setError(null)
 
+    let failure: FormError = "publishError"
     try {
       const saved = draft.current
       let listingId: string
@@ -276,22 +279,32 @@ export default function SellForm() {
           ? await update.execute(saved.id, formData)
           : await create.execute(formData)
         if (!result.success) {
-          setError("publishError")
+          setError(failure)
           return
         }
         listingId = result.data.id
         draft.current = { id: listingId, formData }
       }
 
+      failure = "uploadError"
       const images = new FormData()
       for (const { file } of photos) images.append("images", file)
-      const result = await upload.execute(listingId, images)
-      if (!result.success) {
-        setError("uploadError")
+      const result = await fetch(
+        `/api/listings/${encodeURIComponent(listingId)}/assets`,
+        {
+          method: "PUT",
+          body: images,
+          signal: AbortSignal.timeout(120_000),
+        },
+      )
+      if (result.status !== 204) {
+        setError(failure)
         return
       }
       setPublished(true)
       requestAnimationFrame(() => heading.current?.focus())
+    } catch {
+      setError(failure)
     } finally {
       publishInProgress.current = false
       setSubmitting(false)
@@ -396,14 +409,21 @@ export default function SellForm() {
               backward ? styles.backward : ""
             } space-y-6 p-5 sm:p-8`}
           >
-            <h2
-              ref={heading}
-              id="sell-step-heading"
-              tabIndex={-1}
-              className="text-2xl font-black tracking-tight"
-            >
-              {t(`sell.headings.${steps[step]}`)}
-            </h2>
+            <div>
+              <h2
+                ref={heading}
+                id="sell-step-heading"
+                tabIndex={-1}
+                className="text-2xl font-black tracking-tight"
+              >
+                {t(`sell.headings.${steps[step]}`)}
+              </h2>
+              {step < reviewStep && (
+                <p className="mt-2 text-sm text-black/65">
+                  {t("sell.requiredFields")}
+                </p>
+              )}
+            </div>
 
             {step === 0 && (
               <>
@@ -435,6 +455,7 @@ export default function SellForm() {
                     className={backClass}
                   >
                     {t("sell.selectFiles")}
+                    <RequiredMark />
                   </Button>
                 </div>
                 {photos.length > 0 && (
@@ -474,7 +495,10 @@ export default function SellForm() {
             {step === 1 && (
               <>
                 <label className="block space-y-2 text-sm font-bold">
-                  <span>{t("sell.listingTitle")}</span>
+                  <span>
+                    {t("sell.listingTitle")}
+                    <RequiredMark />
+                  </span>
                   <input
                     required
                     className={fieldClass}
@@ -500,6 +524,7 @@ export default function SellForm() {
                 <fieldset>
                   <legend className="mb-3 text-sm font-bold">
                     {t("sell.condition")}
+                    <RequiredMark />
                   </legend>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {ConditionSchema.options.map((condition) => (
@@ -510,6 +535,7 @@ export default function SellForm() {
                         <input
                           type="radio"
                           name="condition"
+                          required
                           checked={formData.condition === condition}
                           onChange={() => changeDetails({ condition })}
                           className="mt-1 accent-deep-accent"
@@ -534,6 +560,7 @@ export default function SellForm() {
                 <fieldset>
                   <legend className="mb-3 text-sm font-bold">
                     {t("sell.mainCategory")}
+                    <RequiredMark />
                   </legend>
                   <div className="flex flex-wrap gap-2">
                     {parents.map((category) => (
@@ -563,6 +590,7 @@ export default function SellForm() {
                   <fieldset>
                     <legend className="mb-3 text-sm font-bold">
                       {t("sell.subcategory")}
+                      <RequiredMark />
                     </legend>
                     <div className="flex flex-wrap gap-2">
                       {subcategories.map((category) => (
@@ -619,6 +647,7 @@ export default function SellForm() {
                   <label className="block space-y-2 text-sm font-bold">
                     <span>
                       {t("sell.price", { currency: t("common.currency") })}
+                      <RequiredMark />
                     </span>
                     <input
                       required
@@ -638,7 +667,10 @@ export default function SellForm() {
                     />
                   </label>
                   <label className="block space-y-2 text-sm font-bold">
-                    <span>{t("sell.quantity")}</span>
+                    <span>
+                      {t("sell.quantity")}
+                      <RequiredMark />
+                    </span>
                     <input
                       required
                       type="number"
@@ -657,6 +689,7 @@ export default function SellForm() {
                 <fieldset>
                   <legend className="mb-3 text-sm font-bold">
                     {t("sell.cities")}
+                    <RequiredMark />
                   </legend>
                   <div className="flex max-h-52 flex-wrap gap-2 overflow-y-auto p-1">
                     {cities.map((city) => (
@@ -675,8 +708,12 @@ export default function SellForm() {
                   </div>
                 </fieldset>
                 <label className="block space-y-2 text-sm font-bold">
-                  <span>{t("sell.contact")}</span>
+                  <span>
+                    {t("sell.contact")}
+                    <RequiredMark />
+                  </span>
                   <select
+                    required
                     className={fieldClass}
                     value={formData.contactTypes[0]}
                     onChange={(event) =>

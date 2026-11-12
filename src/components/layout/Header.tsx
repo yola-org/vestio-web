@@ -160,12 +160,6 @@ export default function Header() {
           className="ms-auto hidden items-center gap-6 lg:flex"
           aria-label={t("header.mainActionsAria")}
         >
-          <Link
-            href="/welcome#how"
-            className="text-sm font-semibold hover:text-deep-accent"
-          >
-            {t("header.howItWorks")}
-          </Link>
           <button className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent">
             <HeartIcon className="h-5 w-5" /> {t("header.favorites")}
           </button>
@@ -351,9 +345,6 @@ export default function Header() {
             </div>
           </div>
           <div className="grid gap-3 text-sm font-bold">
-            <a href="#how" onClick={() => setMobileOpen(false)}>
-              {t("header.howItWorks")}
-            </a>
             <a href="#shop" onClick={() => setMobileOpen(false)}>
               {t("header.buy")}
             </a>
