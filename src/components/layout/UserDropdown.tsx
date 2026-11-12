@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   UserIcon,
+  ClockIcon,
   LogOutIcon,
   HelpIcon,
   ContactIcon,
@@ -61,6 +62,11 @@ export default function UserDropdown() {
 
   const menuItems = [
     { label: t("userMenu.profile"), href: "/profile", icon: UserIcon },
+    {
+      label: t("pendingListings.title"),
+      href: "/listings/pending",
+      icon: ClockIcon,
+    },
     {
       label: t("userMenu.preferences"),
       onClick: () => setIsPreferencesOpen(true),

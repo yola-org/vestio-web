@@ -287,6 +287,22 @@ async function handle(req, res, pathname, query) {
     case 'GET /api/sizes':
       return json(res, 200, sizes);
 
+    case 'GET /api/listings/pending': {
+      if (!['Bearer mock-access-token', 'Bearer refreshed-access-token'].includes(req.headers.authorization)) {
+        return apiError(res, 401, 'ERR_UNAUTHORIZED', 'Invalid access token', pathname);
+      }
+
+      const page = Number(query.get('page') ?? '0');
+      const size = Number(query.get('size') ?? '12');
+      const pendingListings = [{
+        ...listings[0],
+        id: '00000000-0000-4000-8000-000000000099',
+        title: 'Veste en cours de traitement',
+        status: 'PENDING',
+      }];
+      return json(res, 200, pendingListings.slice(page * size, (page + 1) * size));
+    }
+
     case 'GET /api/listings': {
       const page = Number(query.get('page') ?? '0');
       const size = Number(query.get('size') ?? '12');

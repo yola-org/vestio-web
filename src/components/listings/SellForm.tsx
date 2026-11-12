@@ -9,6 +9,7 @@ import {
   type FormEvent,
 } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { CameraIcon, CheckIcon } from "@/components/shared/Icons"
 import Button from "@/components/shared/Button"
@@ -352,6 +353,12 @@ export default function SellForm() {
         <Button onClick={() => router.push("/")} className={nextClass}>
           {t("sell.home")}
         </Button>
+        <Link
+          href="/listings/pending"
+          className="mt-4 block text-sm font-bold text-deep-accent hover:underline"
+        >
+          {t("pendingListings.title")}
+        </Link>
       </section>
     )
   }

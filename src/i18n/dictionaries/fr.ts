@@ -5,7 +5,6 @@ const fr = {
     arabic: "العربية",
     currency: "DH",
     seller: "Vendeur",
-    secondHand: "Seconde main",
     close: "Fermer",
     cancel: "Annuler",
     save: "Enregistrer",
@@ -125,6 +124,13 @@ const fr = {
       title: "Pour vous",
       subtitle: "Basé sur vos préférences",
     },
+  },
+  pendingListings: {
+    title: "Annonces en attente",
+    empty: "Vous n’avez aucune annonce en attente.",
+    emptyPage: "Il n’y a plus d’annonces en attente.",
+    loadError: "Impossible de charger vos annonces en attente.",
+    retry: "Réessayer",
   },
   favorites: {
     title: "Vos favoris",

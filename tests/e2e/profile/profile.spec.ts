@@ -12,6 +12,29 @@ test.describe('Profile Page', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
+  test('shows pending listings in the profile tab and from the account menu', async ({ page }) => {
+    await page.goto('/profile');
+
+    const articlesTab = page.getByRole('tab', { name: /^Articles/ });
+    const pendingTab = page.getByRole('tab', { name: 'Annonces en attente' });
+    const pendingPanel = page.getByRole('tabpanel', { name: 'Annonces en attente' });
+    const listingTitle = 'Veste en cours de traitement';
+
+    await expect(articlesTab).toHaveAttribute('aria-selected', 'true');
+    await articlesTab.focus();
+    await articlesTab.press('ArrowRight');
+    await expect(pendingTab).toBeFocused();
+    await expect(pendingPanel.getByRole('heading', { name: listingTitle })).toBeVisible();
+    await pendingTab.press('ArrowLeft');
+    await expect(articlesTab).toBeFocused();
+    await expect(pendingPanel).toBeHidden();
+
+    await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
+    await page.getByRole('link', { name: 'Annonces en attente', exact: true }).click();
+    await expect(page).toHaveURL('/listings/pending');
+    await expect(page.getByRole('heading', { name: listingTitle })).toBeVisible();
+  });
+
   for (const accessToken of ['expired-access-token', undefined]) {
     test(`renews the session when the access token is ${accessToken ? 'expired' : 'missing'}`, async ({ page }) => {
       await page.context().clearCookies({ name: 'vestio_token' });

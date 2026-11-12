@@ -7,7 +7,6 @@ const ar: Dictionary = {
     arabic: "العربية",
     currency: "د.م.",
     seller: "البائع",
-    secondHand: "مستعمل",
     close: "إغلاق",
     cancel: "إلغاء",
     save: "حفظ",
@@ -125,6 +124,13 @@ const ar: Dictionary = {
       title: "لك",
       subtitle: "بناءً على تفضيلاتك",
     },
+  },
+  pendingListings: {
+    title: "الإعلانات قيد الانتظار",
+    empty: "ليس لديك أي إعلانات قيد الانتظار.",
+    emptyPage: "لا توجد إعلانات أخرى قيد الانتظار.",
+    loadError: "تعذّر تحميل إعلاناتك قيد الانتظار.",
+    retry: "إعادة المحاولة",
   },
   favorites: {
     title: "مفضلتك",
