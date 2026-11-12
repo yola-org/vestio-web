@@ -20,6 +20,15 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  version:
+    name: Calculate version
+    permissions:
+      contents: write
+    uses: yola-org/shared-workflows/.github/workflows/reusable-version.yml@main
+    with:
+      tag: false
+      commit-message: ${{ github.event.pull_request.title || '' }}
+
   ci:
     name: Web
     uses: yola-org/shared-workflows/.github/workflows/reusable-node-ci.yml@main
@@ -31,3 +40,34 @@ jobs:
       # The GitHub-hosted runner already provides the Chromium system libraries.
       e2e-install-command: npx playwright install chromium
       e2e-command: npm run test:e2e
+
+  release-gate:
+    name: Check release gate
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: yola-org/shared-workflows/.github/workflows/reusable-release-gate.yml@main
+    with:
+      base-branch: main
+      require-merged-pr: false
+
+  tag:
+    name: Tag release
+    needs: [release-gate, version, ci]
+    if: ${{ needs.release-gate.outputs.release == 'true' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Create and push tag
+        uses: yola-org/shared-workflows/.github/actions/version-tag@main
+        with:
+          version: ${{ needs.version.outputs.version }}
+          git-tag: ${{ needs.version.outputs.git_tag }}
+          token: ${{ secrets.INFRA_GITHUB_TOKEN }}
