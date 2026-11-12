@@ -175,11 +175,6 @@ const fr = {
     login: {
       title: "Bon retour !",
       subtitle: "Connectez-vous pour accéder à votre dressing et vos favoris.",
-      termsPrefix: "En publiant cette annonce, vous acceptez nos",
-      termsLink: "Conditions Générales de Vente",
-      termsJoin: "et notre",
-      privacyLink: "Politique de Confidentialité",
-      termsSuffix: ".",
       submit: "Se connecter",
       submitting: "Connexion...",
       invalidCredentials: "Email ou mot de passe incorrect.",
@@ -236,6 +231,12 @@ const fr = {
     error: "Erreur lors de la mise à jour du profil.",
   },
   sell: {
+    requiredFields: "Les champs marqués d’un astérisque (*) sont obligatoires.",
+    termsPrefix: "En publiant cette annonce, vous acceptez nos",
+    termsLink: "Conditions Générales de Vente",
+    termsJoin: "et notre",
+    privacyLink: "Politique de Confidentialité",
+    termsSuffix: ".",
     pageTitle: "Vendre un article",
     pageSubtitle: "Donnez une seconde vie à vos vêtements en quelques clics.",
     steps: {

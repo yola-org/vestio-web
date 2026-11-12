@@ -155,15 +155,3 @@ export async function deleteListingAction(
     return null
   })
 }
-
-export async function replaceListingAssetsAction(
-  id: string,
-  images: FormData,
-): Promise<ApiResult<Listing>> {
-  return runAction(() =>
-    request<Listing>(`/api/listings/${encodeURIComponent(id)}/assets`, {
-      method: "PUT",
-      body: images,
-    }),
-  )
-}
