@@ -19,10 +19,19 @@ const cookieOptions = {
   path: "/",
 } as const
 
-export function writeTokenCookies(cookieStore: CookieStore, tokens: JwtResponse) {
+export function writeTokenCookies(
+  cookieStore: CookieStore,
+  tokens: JwtResponse,
+) {
   const maxAge = Math.min(tokens.expiresIn, SESSION_MAX_AGE)
-  cookieStore.set(AUTH_TOKEN_COOKIE, tokens.accessToken, { ...cookieOptions, maxAge })
-  cookieStore.set(AUTH_ID_TOKEN_COOKIE, tokens.idToken, { ...cookieOptions, maxAge })
+  cookieStore.set(AUTH_TOKEN_COOKIE, tokens.accessToken, {
+    ...cookieOptions,
+    maxAge,
+  })
+  cookieStore.set(AUTH_ID_TOKEN_COOKIE, tokens.idToken, {
+    ...cookieOptions,
+    maxAge,
+  })
 
   // Cognito omits this field when refresh token rotation is disabled.
   if (tokens.refreshToken) {
@@ -33,7 +42,10 @@ export function writeTokenCookies(cookieStore: CookieStore, tokens: JwtResponse)
   }
 }
 
-export function startAuthSession(cookieStore: CookieStore, tokens: JwtResponse) {
+export function startAuthSession(
+  cookieStore: CookieStore,
+  tokens: JwtResponse,
+) {
   if (!tokens.refreshToken) cookieStore.delete(AUTH_REFRESH_TOKEN_COOKIE)
   writeTokenCookies(cookieStore, tokens)
   cookieStore.set(AUTH_INDICATOR_COOKIE, "1", {

@@ -154,9 +154,7 @@ export async function getCategoryGroupsAction(): Promise<ApiResult<CategoryGroup
 }
 
 export async function getCitiesAction(): Promise<ApiResult<City[]>> {
-  return runAction(() =>
-    request<City[]>("/api/cities", {}, false),
-  )
+  return runAction(() => request<City[]>("/api/cities", {}, false))
 }
 export async function getConditionsAction(): Promise<ApiResult<Condition[]>> {
   return runAction(async () => [...conditions])

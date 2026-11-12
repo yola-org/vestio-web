@@ -6,7 +6,11 @@ import { request } from "@/lib/api/request.ts"
 import { clearAuthCookies, startAuthSession } from "@/lib/api/auth-cookies"
 import { getTranslations } from "next-intl/server"
 import type { JwtResponse, LoginInput, SignupInput } from "@/lib/api/schemas"
-import { JwtResponseSchema, LoginInputSchema, SignupInputSchema } from "@/lib/api/schemas"
+import {
+  JwtResponseSchema,
+  LoginInputSchema,
+  SignupInputSchema,
+} from "@/lib/api/schemas"
 import { parseInput } from "@/lib/api/validation"
 
 export async function loginAction(
