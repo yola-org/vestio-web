@@ -303,6 +303,24 @@ async function handle(req, res, pathname, query) {
       return json(res, 200, pendingListings.slice(page * size, (page + 1) * size));
     }
 
+    case 'GET /api/listings/search': {
+      const page = Number(query.get('page') ?? '0');
+      const size = Number(query.get('size') ?? '12');
+      const term = (query.get('query') ?? '').trim().toLowerCase();
+      const cityId = query.get('cityId');
+      const condition = query.get('condition');
+      const minPrice = Number(query.get('minPrice') ?? 0);
+      const maxPrice = Number(query.get('maxPrice') ?? Infinity);
+      const matches = listings.filter((listing) =>
+        listing.status === 'AVAILABLE' &&
+        `${listing.title} ${listing.description ?? ''}`.toLowerCase().includes(term) &&
+        (!cityId || listing.cityIds.includes(cityId)) &&
+        (!condition || listing.condition === condition) &&
+        listing.price >= minPrice && listing.price <= maxPrice
+      );
+      return json(res, 200, matches.slice(page * size, (page + 1) * size));
+    }
+
     case 'GET /api/listings': {
       const page = Number(query.get('page') ?? '0');
       const size = Number(query.get('size') ?? '12');

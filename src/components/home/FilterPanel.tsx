@@ -1,135 +1,209 @@
 "use client"
-// Add all IDs that aren't already there
-// Remove all IDs in the list
-import { useState } from "react"
-import { getCategoriesAction } from "@/lib/actions/profile"
-import { useApiQuery } from "@/hooks/use-api-query"
-import CategoryFilter from "./CategoryFilter"
-import Skeleton from "@/components/shared/Skeleton"
+
+import { Fragment, type ReactNode } from "react"
+import Form from "next/form"
+import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { conditions, contactTypes } from "@/constants/data"
+import { useApiQuery } from "@/hooks/use-api-query"
+import { profileApi } from "@/lib/api"
+import type { Category } from "@/lib/api/schemas"
 
-import { conditions } from "@/constants/data"
+const fieldClass =
+  "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-deep-accent"
 
-export default function FilterPanel() {
-  const t = useTranslations()
-  const { data, loading } = useApiQuery(getCategoriesAction, {
-    critical: true,
-    loading: false,
-  })
-  const categories = data ?? []
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
+interface FilterPanelProps {
+  query?: string
+  filters?: Record<string, string>
+}
 
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "Unique"]
-
-  const handleToggleCategory = (id: string) => {
-    setSelectedCategoryIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+function categoryOptions(categories: Category[], parent = ""): ReactNode {
+  return categories.map((category) => {
+    const label = parent ? `${parent} / ${category.name}` : category.name
+    return (
+      <Fragment key={category.id}>
+        <option value={category.id}>{label}</option>
+        {category.subCategories &&
+          categoryOptions(category.subCategories, label)}
+      </Fragment>
     )
-  }
+  })
+}
 
-  const handleSelectAllCategories = (ids: string[], selected: boolean) => {
-    setSelectedCategoryIds((prev) => {
-      if (selected) {
-        const next = [...prev]
-        ids.forEach((id) => {
-          if (!next.includes(id)) next.push(id)
-        })
-        return next
-      } else {
-        return prev.filter((id) => !ids.includes(id))
-      }
-    })
-  }
-
-  const resetFilters = () => {
-    setSelectedCategoryIds([])
-  }
+export default function FilterPanel({
+  query = "",
+  filters = {},
+}: FilterPanelProps) {
+  const t = useTranslations()
+  const { data, loading, error, refetch } = useApiQuery(
+    profileApi.getStaticData,
+    {
+      loading: false,
+    },
+  )
+  const resetParams = new URLSearchParams(query ? { query } : {})
+  const resetHref = query ? `/search?${resetParams}` : "/search"
 
   return (
-    <aside className="w-full shrink-0 lg:w-64 space-y-8">
-      <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">
-          {t("filters.categories")}
-        </h3>
-        {loading ? (
-          <div className="space-y-3 px-1">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-5 w-full" />
-            ))}
-          </div>
-        ) : (
-          <CategoryFilter
-            categories={categories}
-            selectedCategoryIds={selectedCategoryIds}
-            onToggle={handleToggleCategory}
-            onSelectAll={handleSelectAllCategories}
-          />
+    <aside className="w-full shrink-0 lg:w-64">
+      <Form action="/search" className="space-y-5">
+        {query && <input type="hidden" name="query" value={query} />}
+        {filters.brandId && (
+          <input type="hidden" name="brandId" value={filters.brandId} />
         )}
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">
-          {t("filters.price", { currency: t("common.currency") })}
-        </h3>
-        <div className="flex items-center gap-3">
-          <input
-            type="number"
-            placeholder={t("filters.min")}
-            className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-[#173fdb]"
-          />
-          <span className="text-black/30">—</span>
-          <input
-            type="number"
-            placeholder={t("filters.max")}
-            className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-[#173fdb]"
-          />
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">
-          {t("filters.size")}
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => (
+        {error && (
+          <p role="status" className="text-sm">
+            {t("search.filtersError")}{" "}
             <button
-              key={size}
-              className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-xs font-bold hover:border-[#173fdb] hover:text-[#173fdb]"
+              type="button"
+              onClick={() => void refetch()}
+              className="font-bold underline"
             >
-              {size}
+              {t("favorites.retry")}
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-xs font-black tracking-widest text-black/40 uppercase">
-          {t("filters.condition")}
-        </h3>
-        <div className="space-y-2">
-          {conditions.map((cond) => (
-            <label
-              key={cond}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-black/15 text-[#173fdb] focus:ring-[#173fdb]"
-              />
-              <span className="text-sm font-medium text-black/70 group-hover:text-[#173fdb]">
-                {t(`conditions.${cond}.short`)}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <button
-        onClick={resetFilters}
-        className="w-full rounded-xl bg-black py-3 text-xs font-bold text-white transition hover:bg-black/80"
-      >
-        {t("filters.reset")}
-      </button>
+          </p>
+        )}
+        <label className="block space-y-2 text-sm font-bold">
+          <span>{t("filters.categories")}</span>
+          <select
+            key={String(Boolean(data))}
+            name="categoryId"
+            className={fieldClass}
+            defaultValue={filters.categoryId}
+          >
+            <option value="">{t("search.all")}</option>
+            {data
+              ? categoryOptions(data.categories)
+              : filters.categoryId && (
+                  <option value={filters.categoryId}>
+                    {t("common.loading")}
+                  </option>
+                )}
+          </select>
+        </label>
+        <label className="block space-y-2 text-sm font-bold">
+          <span>{t("sell.cities")}</span>
+          <select
+            key={String(Boolean(data))}
+            name="cityId"
+            className={fieldClass}
+            defaultValue={filters.cityId}
+          >
+            <option value="">{t("header.allCities")}</option>
+            {data
+              ? data.cities.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {city.name}
+                  </option>
+                ))
+              : filters.cityId && (
+                  <option value={filters.cityId}>{t("common.loading")}</option>
+                )}
+          </select>
+        </label>
+        <label className="block space-y-2 text-sm font-bold">
+          <span>{t("filters.size")}</span>
+          <select
+            key={String(Boolean(data))}
+            name="sizeId"
+            className={fieldClass}
+            defaultValue={filters.sizeId}
+          >
+            <option value="">{t("search.all")}</option>
+            {data
+              ? data.sizes.map((group) => (
+                  <optgroup key={group.id} label={group.name}>
+                    {group.sizes.map((size) => (
+                      <option key={size.id} value={size.id}>
+                        {size.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))
+              : filters.sizeId && (
+                  <option value={filters.sizeId}>{t("common.loading")}</option>
+                )}
+          </select>
+        </label>
+        <label className="block space-y-2 text-sm font-bold">
+          <span>{t("filters.condition")}</span>
+          <select
+            name="condition"
+            className={fieldClass}
+            defaultValue={filters.condition}
+          >
+            <option value="">{t("search.all")}</option>
+            {conditions.map((condition) => (
+              <option key={condition} value={condition}>
+                {t(`conditions.${condition}.short`)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block space-y-2 text-sm font-bold">
+          <span>{t("sell.contact")}</span>
+          <select
+            name="contactType"
+            className={fieldClass}
+            defaultValue={filters.contactType}
+          >
+            <option value="">{t("search.all")}</option>
+            {contactTypes.map((type) => (
+              <option key={type} value={type}>
+                {t(`sell.contactTypes.${type}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <fieldset>
+          <legend className="mb-2 text-sm font-bold">
+            {t("filters.price", { currency: t("common.currency") })}
+          </legend>
+          <div className="flex gap-3">
+            <input
+              type="number"
+              name="minPrice"
+              min="0"
+              step="any"
+              defaultValue={filters.minPrice}
+              aria-label={t("filters.min")}
+              placeholder={t("filters.min")}
+              className={fieldClass}
+            />
+            <input
+              type="number"
+              name="maxPrice"
+              min="0"
+              step="any"
+              defaultValue={filters.maxPrice}
+              aria-label={t("filters.max")}
+              placeholder={t("filters.max")}
+              className={fieldClass}
+            />
+          </div>
+        </fieldset>
+        {filters.gender && (
+          <input type="hidden" name="gender" value={filters.gender} />
+        )}
+        {filters.color && (
+          <input type="hidden" name="color" value={filters.color} />
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-deep-accent py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-50"
+        >
+          {t("search.apply")}
+        </button>
+        {Object.keys(filters).length > 0 && (
+          <Link
+            href={resetHref}
+            className="block text-center text-xs font-bold hover:underline"
+          >
+            {t("filters.reset")}
+          </Link>
+        )}
+      </Form>
     </aside>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import {
-  SearchIcon,
   HeartIcon,
   UserIcon,
   MenuIcon,
@@ -20,16 +19,27 @@ import { useApiQuery } from "@/hooks/use-api-query"
 import { isAuthenticated as hasAuthSession } from "@/lib/auth"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import HeaderSearch from "@/components/layout/HeaderSearch"
 import {
   HeaderNavSkeleton,
   MegaMenuSkeleton,
 } from "@/components/layout/HeaderSkeletons"
 
-export default function Header() {
+interface HeaderProps {
+  searchQuery?: string
+  searchCityId?: string
+  searchFilters?: Record<string, string>
+}
+
+export default function Header({
+  searchQuery = "",
+  searchCityId = "",
+  searchFilters = {},
+}: HeaderProps) {
   const t = useTranslations()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
-  const [selectedCity, setSelectedCity] = useState<string | null>(null)
+  const [selectedCityId, setSelectedCityId] = useState(searchCityId)
   const [citySelectorOpen, setCitySelectorOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const citySelectorRef = useRef<HTMLDivElement>(null)
@@ -44,6 +54,7 @@ export default function Header() {
   })
 
   const cities = citiesQuery.data ?? []
+  const selectedCity = cities.find((city) => city.id === selectedCityId)
   const categories = categoriesQuery.data ?? []
   const loading = citiesQuery.loading || categoriesQuery.loading
 
@@ -74,6 +85,10 @@ export default function Header() {
     }
   }, [citySelectorOpen])
 
+  const activeSearchFilters = selectedCityId
+    ? { ...searchFilters, cityId: selectedCityId }
+    : searchFilters
+
   return (
     <header className="relative z-50 border-b border-black/10 bg-background">
       <div className="bg-deep-accent py-2 text-center text-[11px] font-bold tracking-[0.16em] text-white uppercase sm:text-xs content-padding">
@@ -92,14 +107,14 @@ export default function Header() {
           <div className="flex items-center rounded-full border border-black/15 bg-white transition focus-within:border-deep-accent focus-within:ring-2 focus-within:ring-deep-accent/10">
             <div
               className="relative border-e border-black/10"
-              ref={citySelectorRef}
+              ref={mobileOpen ? undefined : citySelectorRef}
             >
               <button
                 onClick={() => setCitySelectorOpen(!citySelectorOpen)}
                 className="flex h-12 items-center gap-2 px-5 text-sm font-bold whitespace-nowrap hover:bg-black/5 rounded-s-full transition"
               >
                 <PinIcon className="h-4 w-4 text-accent" />
-                {selectedCity ?? t("header.allCities")}
+                {selectedCity?.name ?? t("header.allCities")}
                 <ChevronIcon
                   className={`h-4 w-4 transition ${
                     citySelectorOpen ? "rotate-180" : ""
@@ -112,11 +127,11 @@ export default function Header() {
                   <div className="max-h-80 overflow-y-auto">
                     <button
                       onClick={() => {
-                        setSelectedCity(null)
+                        setSelectedCityId("")
                         setCitySelectorOpen(false)
                       }}
                       className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-deep-accent/5 ${
-                        selectedCity === null
+                        !selectedCityId
                           ? "bg-deep-accent/10 font-bold text-deep-accent"
                           : "text-black/70"
                       }`}
@@ -127,11 +142,11 @@ export default function Header() {
                       <button
                         key={city.id}
                         onClick={() => {
-                          setSelectedCity(city.name)
+                          setSelectedCityId(city.id)
                           setCitySelectorOpen(false)
                         }}
                         className={`flex w-full items-center px-5 py-2.5 text-sm transition hover:bg-deep-accent/5 ${
-                          selectedCity === city.name
+                          selectedCityId === city.id
                             ? "bg-deep-accent/10 font-bold text-deep-accent"
                             : "text-black/70"
                         }`}
@@ -144,15 +159,10 @@ export default function Header() {
               )}
             </div>
 
-            <div className="relative flex-1">
-              <SearchIcon className="absolute top-1/2 start-4 h-5 w-5 -translate-y-1/2 text-black/40" />
-              <input
-                type="search"
-                placeholder={t("header.searchPlaceholder")}
-                className="h-12 w-full pe-5 ps-12 text-sm outline-none bg-transparent"
-                aria-label={t("header.searchAria")}
-              />
-            </div>
+            <HeaderSearch
+              initialQuery={searchQuery}
+              filters={activeSearchFilters}
+            />
           </div>
         </div>
 
@@ -296,14 +306,14 @@ export default function Header() {
       {mobileOpen && (
         <div className="absolute top-full end-0 start-0 border-t border-black/10 bg-background p-5 shadow-xl lg:hidden">
           <div className="mb-5 flex flex-col gap-3">
-            <div className="relative">
+            <div className="relative" ref={citySelectorRef}>
               <button
                 onClick={() => setCitySelectorOpen(!citySelectorOpen)}
                 className="flex h-12 w-full items-center justify-between rounded-xl border border-black/15 bg-white px-4 text-sm font-bold"
               >
                 <span className="flex items-center gap-2">
                   <PinIcon className="h-4 w-4 text-accent" />
-                  {selectedCity ?? t("header.allCities")}
+                  {selectedCity?.name ?? t("header.allCities")}
                 </span>
                 <ChevronIcon
                   className={`h-4 w-4 transition ${
@@ -316,7 +326,7 @@ export default function Header() {
                 <div className="mt-2 max-h-60 overflow-y-auto rounded-xl border border-black/10 bg-white py-2 shadow-lg">
                   <button
                     onClick={() => {
-                      setSelectedCity(null)
+                      setSelectedCityId("")
                       setCitySelectorOpen(false)
                     }}
                     className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-deep-accent/5"
@@ -327,7 +337,7 @@ export default function Header() {
                     <button
                       key={city.id}
                       onClick={() => {
-                        setSelectedCity(city.name)
+                        setSelectedCityId(city.id)
                         setCitySelectorOpen(false)
                       }}
                       className="flex w-full items-center px-4 py-2.5 text-sm hover:bg-deep-accent/5"
@@ -339,14 +349,11 @@ export default function Header() {
               )}
             </div>
 
-            <div className="relative">
-              <SearchIcon className="absolute top-1/2 start-4 h-5 w-5 -translate-y-1/2 text-black/40" />
-              <input
-                type="search"
-                placeholder={t("header.mobileSearchPlaceholder")}
-                className="h-12 w-full rounded-xl border border-black/15 bg-white pe-4 ps-12 text-sm outline-none"
-              />
-            </div>
+            <HeaderSearch
+              initialQuery={searchQuery}
+              filters={activeSearchFilters}
+              mobile
+            />
           </div>
           <div className="grid gap-3 text-sm font-bold">
             <a href="#shop" onClick={() => setMobileOpen(false)}>
