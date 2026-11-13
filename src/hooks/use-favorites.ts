@@ -1,11 +1,15 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { useTranslations } from "next-intl"
+import { useNotifications } from "@/components/shared/NotificationProvider"
 import { useApiAction } from "@/hooks/use-api-action"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { listingsApi, type Listing } from "@/lib/api"
 
 export function useFavorites(enabled = true) {
+  const t = useTranslations("favorites")
+  const { notify } = useNotifications()
   const [listings, setListings] = useState<Listing[]>([])
   const saving = useRef(false)
   const query = useApiQuery(listingsApi.favorites, {
@@ -14,7 +18,17 @@ export function useFavorites(enabled = true) {
     loading: false,
     onSuccess: setListings,
   })
-  const mutation = useApiAction(listingsApi.setFavorite, { loading: false })
+  const mutation = useApiAction(listingsApi.setFavorite, {
+    loading: false,
+    errors: {
+      ERR_CANNOT_FAVORITE_OWN_LISTING: {
+        message: t("ownListing"),
+        action: (error) => {
+          notify.error(error.message)
+        },
+      },
+    },
+  })
   const savedIds = listings.map(({ id }) => id)
 
   async function toggle(listing: Listing) {

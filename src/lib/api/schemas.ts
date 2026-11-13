@@ -144,6 +144,8 @@ export const ListingSchema = z.object({
   sizeNames: z.array(z.string()).nullish(),
   userId: z.string().nullish(),
   assetKeys: z.array(z.uuid()).nullish(),
+  image: z.string().nullish(),
+  imageUrls: z.array(z.string()).nullish(),
   gender: z.string().nullish(),
   brandId: z.uuid().nullish(),
 })

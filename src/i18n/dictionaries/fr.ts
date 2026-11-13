@@ -133,6 +133,7 @@ const fr = {
     retry: "Réessayer",
   },
   favorites: {
+    ownListing: "Vous ne pouvez pas ajouter votre propre article aux favoris.",
     title: "Vos favoris",
     empty: "Vous n’avez pas encore d’articles favoris.",
     browse: "Parcourir les articles",
@@ -141,6 +142,30 @@ const fr = {
   },
   listings: {
     empty: "Aucun article trouvé.",
+  },
+  listingDetail: {
+    genderUnspecified: "Genre non précisé",
+    categoryBreadcrumb: "Fil d’Ariane des catégories",
+    showAll: "Tout afficher ({count, number})",
+    showLess: "Afficher moins",
+    colors: "Couleurs",
+    sendOffer: "Faire une offre",
+    offerAmount: "Montant de l’offre ({currency})",
+    copyOffer: "Copier l’offre",
+    offerCopied: "Offre copiée. Vous pouvez la partager avec le vendeur.",
+    offerCopyManually: "Copiez ce message pour le partager avec le vendeur.",
+    offerMessage:
+      "Bonjour, je vous propose {amount} {currency} pour « {title} ». {url}",
+    previousPhoto: "Photo précédente",
+    nextPhoto: "Photo suivante",
+    photoPosition: "{current, number} sur {total, number}",
+    back: "Voir les annonces",
+    details: "Détails de l’article",
+    sold: "Vendu",
+    save: "Ajouter aux favoris",
+    saved: "Retirer des favoris",
+    missingTitle: "Annonce introuvable",
+    missingDescription: "Cette annonce n’est plus disponible.",
   },
   search: {
     previewTitle: "Aperçu des résultats",

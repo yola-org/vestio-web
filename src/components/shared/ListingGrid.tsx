@@ -46,6 +46,13 @@ export default function ListingGrid({
         <ProductCard
           key={listing.id}
           product={listing}
+          href={
+            !listing.status ||
+            listing.status === "AVAILABLE" ||
+            listing.status === "SOLD"
+              ? `/listings/${encodeURIComponent(listing.id)}`
+              : undefined
+          }
           isSaved={savedIds.includes(listing.id)}
           onToggleSave={onToggleSave && (() => onToggleSave(listing))}
           saveDisabled={saveDisabled}

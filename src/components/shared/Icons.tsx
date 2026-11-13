@@ -19,6 +19,34 @@ function Icon({ children, ...props }: IconProps & { children: ReactNode }) {
   )
 }
 
+export const MaleIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <circle cx="9" cy="15" r="5" />
+    <path d="m12.5 11.5 6.5-6.5M14 5h5v5" />
+  </Icon>
+)
+
+export const FemaleIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <circle cx="12" cy="8" r="5" />
+    <path d="M12 13v8m-3-3h6" />
+  </Icon>
+)
+
+export const WarningIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M10.3 4.9a2 2 0 0 1 3.4 0l7.2 12.6a2 2 0 0 1-1.7 3H4.8a2 2 0 0 1-1.7-3Z" />
+    <path d="M12 9v4m0 3.5h.01" />
+  </Icon>
+)
+
+export const InfoIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5m0-8h.01" />
+  </Icon>
+)
+
 export const SearchIcon = (props: IconProps) => (
   <Icon {...props}>
     <circle cx="11" cy="11" r="7" />
