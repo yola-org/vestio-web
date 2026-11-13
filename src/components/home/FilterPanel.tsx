@@ -177,7 +177,9 @@ export default function FilterPanel({
           </select>
         </label>
         <fieldset>
-          <legend className="mb-2 text-sm font-bold">{t("filters.color")}</legend>
+          <legend className="mb-2 text-sm font-bold">
+            {t("filters.color")}
+          </legend>
           <div className="flex flex-wrap gap-2">
             {[
               { value: "", label: t("search.all") },
