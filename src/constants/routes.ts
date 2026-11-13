@@ -7,6 +7,8 @@ export const PUBLIC_PATHS = [
 ]
 
 export function isPublicPath(pathname: string) {
+  if (/^\/listings\/(?!new$|pending$)[^/]+$/.test(pathname)) return true
+
   return PUBLIC_PATHS.some(
     (path) => pathname === path || pathname.startsWith(path + "/"),
   )

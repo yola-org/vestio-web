@@ -1,5 +1,25 @@
 import type { Category } from "@/lib/api/schemas"
 
+export function findCategoryWithParent(categories: Category[], id: string) {
+  const byId = new Map<string, Category>()
+
+  function indexCategories(items: Category[], parentId?: string) {
+    for (const category of items) {
+      byId.set(category.id, {
+        ...category,
+        parentId:
+          category.parentId ?? parentId ?? byId.get(category.id)?.parentId,
+      })
+      indexCategories(category.subCategories ?? [], category.id)
+    }
+  }
+
+  indexCategories(categories)
+  const category = byId.get(id)
+  const parent = category?.parentId ? byId.get(category.parentId) : undefined
+  return { category, parent }
+}
+
 /**
  * Converts a category and its subcategories into a formatted tree string.
  * @param category The root category to print.

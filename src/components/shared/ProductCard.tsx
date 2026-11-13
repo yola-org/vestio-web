@@ -1,8 +1,10 @@
 "use client"
 // Helper to handle both mock data and real API Listing
-import { HeartIcon, PinIcon } from "@/components/shared/Icons"
+import { PinIcon } from "@/components/shared/Icons"
+import FavoriteButton from "@/components/shared/FavoriteButton"
 import type { Condition, Listing } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { useState } from "react"
 
 const fallbackImage = "/listing-image-unavailable.png"
@@ -21,6 +23,7 @@ interface ProductCardProps {
     colors?: string[]
   }
   isSaved: boolean
+  href?: string
   onToggleSave?: () => void
   saveDisabled?: boolean
 }
@@ -28,6 +31,7 @@ interface ProductCardProps {
 export default function ProductCard({
   product,
   isSaved,
+  href,
   onToggleSave,
   saveDisabled,
 }: ProductCardProps) {
@@ -55,7 +59,7 @@ export default function ProductCard({
   const image = "image" in product ? product.image?.trim() : undefined
   const showFallback = !image || image === failedImage
   return (
-    <article className="group">
+    <article className="group relative">
       <div
         className={`relative aspect-[4/5] overflow-hidden ${
           showFallback ? "bg-[#e9ecf0]" : "bg-[#e9e4d9]"
@@ -73,22 +77,13 @@ export default function ProductCard({
           }
         />
         {onToggleSave && (
-          <button
-            type="button"
-            onClick={onToggleSave}
+          <FavoriteButton
+            title={product.title}
+            saved={isSaved}
+            onToggle={onToggleSave}
             disabled={saveDisabled}
-            aria-pressed={isSaved}
-            className={`absolute top-3 end-3 rounded-full p-2.5 backdrop-blur transition disabled:cursor-wait disabled:opacity-60 ${
-              isSaved ? "bg-accent text-white" : "bg-white/90 hover:bg-white"
-            }`}
-            aria-label={
-              isSaved
-                ? t("productCard.removeFavorite", { title: product.title })
-                : t("productCard.addFavorite", { title: product.title })
-            }
-          >
-            <HeartIcon className={`h-5 w-5 ${isSaved ? "fill-current" : ""}`} />
-          </button>
+            compact
+          />
         )}
 
         {product.colors && product.colors.length > 0 && (
@@ -107,7 +102,18 @@ export default function ProductCard({
       <div className="pt-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-bold">{product.title}</h3>
+            <h3 className="font-bold">
+              {href ? (
+                <Link
+                  href={href}
+                  className="after:absolute after:inset-0 focus-visible:after:outline-2 focus-visible:after:outline-deep-accent"
+                >
+                  {product.title}
+                </Link>
+              ) : (
+                product.title
+              )}
+            </h3>
             {product.condition && (
               <p className="mt-1 text-xs text-black/50">
                 {t(`conditions.${product.condition}.label`)}

@@ -76,3 +76,25 @@ test("keeps a previous page link when a shared page has no results", async ({
   ).toBeVisible()
   expect(new URL(page.url()).searchParams.get("page")).toBeNull()
 })
+
+test("opens a listing from search as a guest on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto("/search?query=cuir+vintage")
+  await page.getByRole("link", { name: "Sac en cuir vintage" }).click()
+
+  await expect(page).toHaveURL(/\/listings\/00000000-0000-4000-8000-000000000001$/)
+  const main = page.getByRole("main")
+  await expect(main.getByRole("heading", { name: "Sac en cuir vintage" })).toBeVisible()
+  await expect(main.getByText("380 DH")).toBeVisible()
+  await expect(main.getByText("Magnifique sac en cuir vintage.")).toBeVisible()
+  await expect(main.getByText("Très bon état")).toBeVisible()
+  await expect(main.getByText("Casablanca")).toBeVisible()
+  await expect(main.getByRole("link", { name: "Ajouter aux favoris" })).toHaveAttribute("href", "/login")
+})
+
+test("shows a listing-specific message for missing items", async ({ page }) => {
+  await page.goto("/listings/00000000-0000-4000-8000-000000000099")
+  await expect(page.getByRole("heading", { name: "Annonce introuvable" })).toBeVisible()
+  await page.getByRole("link", { name: "Voir les annonces" }).click()
+  await expect(page).toHaveURL(/\/search$/)
+})

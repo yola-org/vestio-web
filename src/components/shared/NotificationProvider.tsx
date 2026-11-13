@@ -11,8 +11,15 @@ import {
   useState,
 } from "react"
 import { useTranslations } from "next-intl"
+import { CheckIcon, InfoIcon, WarningIcon } from "./Icons"
 
 type NotificationType = "success" | "error" | "info"
+
+const notificationIcons = {
+  success: CheckIcon,
+  error: WarningIcon,
+  info: InfoIcon,
+}
 
 type Notification = {
   id: number
@@ -93,33 +100,39 @@ export default function NotificationProvider({
         className="fixed top-4 end-4 z-[100] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3"
         aria-live="polite"
       >
-        {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            role={notification.type === "error" ? "alert" : "status"}
-            className={`flex items-start justify-between gap-4 rounded-xl border bg-white p-4 shadow-xl ${
-              notification.type === "error"
-                ? "border-red-200 text-red-800"
-                : notification.type === "success"
-                  ? "border-green-200 text-green-800"
-                  : "border-blue-200 text-blue-800"
-            }`}
-          >
-            <p className="text-sm font-medium">
-              {notification.type == "error"
-                ? t(notification.key ?? "errors.genericMessage")
-                : notification.message}
-            </p>
-            <button
-              type="button"
-              className="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"
-              aria-label={t("notifications.close")}
-              onClick={() => dismiss(notification.id)}
+        {notifications.map((notification) => {
+          const NotificationIcon = notificationIcons[notification.type]
+          return (
+            <div
+              key={notification.id}
+              role={notification.type === "error" ? "alert" : "status"}
+              className={`flex items-start justify-between gap-4 rounded-xl border bg-white p-4 shadow-xl ${
+                notification.type === "error"
+                  ? "border-red-200 text-red-800"
+                  : notification.type === "success"
+                    ? "border-green-200 text-green-800"
+                    : "border-blue-200 text-blue-800"
+              }`}
             >
-              ×
-            </button>
-          </div>
-        ))}
+              <div className="flex min-w-0 flex-1 items-start gap-2.5">
+                <NotificationIcon className="size-5 shrink-0" />
+                <p className="text-sm font-medium">
+                  {notification.key
+                    ? t(notification.key)
+                    : notification.message}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"
+                aria-label={t("notifications.close")}
+                onClick={() => dismiss(notification.id)}
+              >
+                ×
+              </button>
+            </div>
+          )
+        })}
       </div>
     </NotificationContext.Provider>
   )
