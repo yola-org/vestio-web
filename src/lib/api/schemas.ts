@@ -158,13 +158,6 @@ export const JwtResponseSchema = z.object({
   tokenType: z.string(),
 })
 
-export const OnboardingStatusSchema = z.object({
-  accountCreated: z.boolean(),
-  additionalDataAdded: z.boolean(),
-  preferencesAdded: z.boolean(),
-  publishedSomething: z.boolean(),
-})
-
 export const StaticDataSchema = z.object({
   cities: z.array(CitySchema),
   categories: z.array(CategorySchema),
@@ -213,6 +206,5 @@ export type SizeGroup = z.infer<typeof SizeGroupSchema>
 export type CategoryGroup = z.infer<typeof CategoryGroupSchema>
 export type Listing = z.infer<typeof ListingSchema>
 export type JwtResponse = z.infer<typeof JwtResponseSchema>
-export type OnboardingStatus = z.infer<typeof OnboardingStatusSchema>
 export type StaticData = z.infer<typeof StaticDataSchema>
 export type UserProfile = z.infer<typeof UserProfileSchema>

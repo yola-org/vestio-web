@@ -12,7 +12,6 @@ import {
   UploadIcon,
 } from "@/components/shared/Icons"
 import UserDropdown from "@/components/layout/UserDropdown"
-import OnboardingStatus from "@/components/layout/OnboardingStatus"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { profileApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -185,7 +184,6 @@ export default function Header({
               >
                 <UploadIcon className="h-4 w-4" /> {t("header.sell")}
               </Link>
-              <OnboardingStatus />
               <UserDropdown />
             </>
           ) : (

@@ -28,7 +28,6 @@ UI components organized by purpose:
   - `Header.tsx` - Main navigation, search, auth state, language switcher
   - `Footer.tsx` - Site footer
   - `UserDropdown.tsx` - User menu
-  - `OnboardingStatus.tsx` - Onboarding progress
   - `LanguageSwitcher.tsx` - Locale switching
   - `HeaderSkeletons.tsx` - Loading skeletons
 - **`home/`** - Landing page sections (hero, categories, etc.)
