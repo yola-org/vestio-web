@@ -12,6 +12,22 @@ import type { Category } from "@/lib/api/schemas"
 const fieldClass =
   "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-deep-accent"
 
+const colorOptions = [
+  { value: "Black", swatch: "#171717", label: "black" },
+  { value: "White", swatch: "#ffffff", label: "white" },
+  { value: "Gray", swatch: "#808080", label: "gray" },
+  { value: "Brown", swatch: "#78452c", label: "brown" },
+  { value: "Beige", swatch: "#dcc5a3", label: "beige" },
+  { value: "Red", swatch: "#c62828", label: "red" },
+  { value: "Orange", swatch: "#ed7822", label: "orange" },
+  { value: "Yellow", swatch: "#f2ce32", label: "yellow" },
+  { value: "Green", swatch: "#358343", label: "green" },
+  { value: "Neon Green", swatch: "#88e52c", label: "neonGreen" },
+  { value: "Blue", swatch: "#3265c9", label: "blue" },
+  { value: "Purple", swatch: "#8448a4", label: "purple" },
+  { value: "Pink", swatch: "#e77ca6", label: "pink" },
+] as const
+
 interface FilterPanelProps {
   query?: string
   filters?: Record<string, string>
@@ -43,6 +59,11 @@ export default function FilterPanel({
   )
   const resetParams = new URLSearchParams(query ? { query } : {})
   const resetHref = query ? `/search?${resetParams}` : "/search"
+  const activeColor = filters.color ?? ""
+  const namedColor = colorOptions.find(
+    ({ value }) => value.toLowerCase() === activeColor.toLowerCase(),
+  )
+  const selectedColor = namedColor?.value ?? activeColor
 
   return (
     <aside className="w-full shrink-0 lg:w-64">
@@ -156,6 +177,42 @@ export default function FilterPanel({
           </select>
         </label>
         <fieldset>
+          <legend className="mb-2 text-sm font-bold">{t("filters.color")}</legend>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { value: "", label: t("search.all") },
+              ...colorOptions.map(({ value, swatch, label }) => ({
+                value,
+                swatch,
+                label: t(`filters.colors.${label}`),
+              })),
+              ...(activeColor && !namedColor
+                ? [{ value: activeColor, label: activeColor }]
+                : []),
+            ].map((option) => (
+              <label key={option.value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="color"
+                  value={option.value}
+                  defaultChecked={selectedColor === option.value}
+                  className="peer sr-only"
+                />
+                <span className="flex items-center gap-1.5 rounded-full border border-black/15 px-2.5 py-1.5 text-xs peer-checked:border-deep-accent peer-checked:bg-deep-accent/10 peer-focus-visible:ring-2 peer-focus-visible:ring-deep-accent">
+                  {"swatch" in option && (
+                    <span
+                      aria-hidden="true"
+                      className="size-3 rounded-full border border-black/20"
+                      style={{ backgroundColor: option.swatch }}
+                    />
+                  )}
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset>
           <legend className="mb-2 text-sm font-bold">
             {t("filters.price", { currency: t("common.currency") })}
           </legend>
@@ -184,9 +241,6 @@ export default function FilterPanel({
         </fieldset>
         {filters.gender && (
           <input type="hidden" name="gender" value={filters.gender} />
-        )}
-        {filters.color && (
-          <input type="hidden" name="color" value={filters.color} />
         )}
         <button
           type="submit"
