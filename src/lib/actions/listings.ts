@@ -4,7 +4,7 @@
 
 import { z } from "zod"
 
-import { getCitiesAction } from "@/lib/actions/profile"
+import { getCitiesAction, getSizesAction } from "@/lib/actions/profile"
 import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
 import { request } from "@/lib/api/request.ts"
 import type {
@@ -102,6 +102,52 @@ export async function getListingsAction(
         normalizeListing(listing, cityNamesById),
       ),
     }
+  })
+}
+
+export async function searchListingsAction(
+  filters: Record<string, string>,
+  page: number,
+  size: number,
+): Promise<ApiResult<Listing[]>> {
+  return runAction(async () => {
+    const params = new URLSearchParams({
+      ...filters,
+      page: String(page),
+      size: String(size),
+    })
+    const listings = await request<ListingResponse[]>(
+      `/api/listings/search?${params}`,
+      {},
+      false,
+    )
+    const [cityNamesById, sizeGroups] = await Promise.all([
+      getCityNamesById(listings),
+      listings.some(
+        (listing) => listing.sizes?.length || listing.sizeIds?.length,
+      )
+        ? getSizesAction()
+        : undefined,
+    ])
+    const sizeNamesById = new Map(
+      sizeGroups?.success
+        ? sizeGroups.data.flatMap((group) =>
+            group.sizes.map(({ id, name }) => [id, name] as const),
+          )
+        : [],
+    )
+    return listings.map((listing) => {
+      const normalized = normalizeListing(listing, cityNamesById)
+      return {
+        ...normalized,
+        sizeNames: normalized.sizeNames?.length
+          ? normalized.sizeNames
+          : (normalized.sizeIds ?? []).flatMap((id) => {
+              const name = sizeNamesById.get(id)
+              return name ? [name] : []
+            }),
+      }
+    })
   })
 }
 

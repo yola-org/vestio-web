@@ -142,6 +142,20 @@ const fr = {
   listings: {
     empty: "Aucun article trouvé.",
   },
+  search: {
+    previewTitle: "Aperçu des résultats",
+    listingSize: "Taille : {sizes}",
+    viewResults: "Voir tous les résultats",
+    title: "Résultats de recherche",
+    queryTitle: "Résultats pour « {query} »",
+    submit: "Rechercher",
+    apply: "Appliquer les filtres",
+    all: "Tous",
+    invalidPrice:
+      "Le prix maximum doit être supérieur ou égal au prix minimum.",
+    loadError: "Impossible de charger les résultats de recherche.",
+    filtersError: "Impossible de charger les options de filtrage.",
+  },
   filters: {
     categories: "Catégories",
     price: "Prix ({currency})",

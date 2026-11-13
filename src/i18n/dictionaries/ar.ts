@@ -142,6 +142,19 @@ const ar: Dictionary = {
   listings: {
     empty: "لم يتم العثور على أي قطعة.",
   },
+  search: {
+    previewTitle: "معاينة النتائج",
+    listingSize: "المقاس: {sizes}",
+    viewResults: "عرض كل النتائج",
+    title: "نتائج البحث",
+    queryTitle: "نتائج البحث عن «{query}»",
+    submit: "بحث",
+    apply: "تطبيق الفلاتر",
+    all: "الكل",
+    invalidPrice: "يجب أن يكون السعر الأقصى أكبر من السعر الأدنى أو مساويًا له.",
+    loadError: "تعذّر تحميل نتائج البحث.",
+    filtersError: "تعذّر تحميل خيارات التصفية.",
+  },
   filters: {
     categories: "الفئات",
     price: "السعر ({currency})",
