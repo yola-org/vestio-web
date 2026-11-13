@@ -16,7 +16,6 @@ import type {
   Category,
   CategoryGroup,
   City,
-  OnboardingStatus,
   StaticData,
   UserPreferencesInput,
   UserProfile,
@@ -90,12 +89,6 @@ export async function updateProfileAction(
       }),
     })
   })
-}
-
-export async function getOnboardingStatusAction(): Promise<ApiResult<OnboardingStatus>> {
-  return runAction(() =>
-    request<OnboardingStatus>("/api/profile/onboarding-status"),
-  )
 }
 
 export async function getPreferencesAction(): Promise<ApiResult<UserPreferencesInput>> {

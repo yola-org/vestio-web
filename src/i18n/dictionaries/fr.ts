@@ -370,18 +370,6 @@ const fr = {
     save: "Enregistrer",
     success: "Vos préférences ont été enregistrées avec succès.",
   },
-  onboarding: {
-    ariaLabel: "Progression de votre profil",
-    steps: {
-      account: "Créer un compte",
-      profile: "Compléter mon profil",
-      preferences: "Mes préférences de style",
-      publish: "Publier ma première pépite",
-    },
-    title: "Votre voyage Vestio",
-    progress: "{progress}% complété",
-    hint: "Complétez ces étapes pour booster votre visibilité et vendre plus vite !",
-  },
   userMenu: {
     account: "Mon compte",
     profile: "Mon Profil",

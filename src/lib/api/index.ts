@@ -16,7 +16,6 @@ import {
   getSizesAction,
   getConditionsAction,
   getContactTypesAction,
-  getOnboardingStatusAction,
   getPreferencesAction,
   getProfileAction,
   getStaticDataAction,
@@ -74,8 +73,6 @@ export const profileApi = {
   get: () => getProfileAction(),
   /** Update user profile */
   update: (profile: Partial<UserProfile>) => updateProfileAction(profile),
-  /** Get onboarding status */
-  getOnboardingStatus: () => getOnboardingStatusAction(),
   /** Get user preferences */
   getPreferences: () => getPreferencesAction(),
   /** Update user preferences */

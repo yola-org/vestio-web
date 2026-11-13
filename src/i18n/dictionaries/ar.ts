@@ -362,18 +362,6 @@ const ar: Dictionary = {
     save: "حفظ",
     success: "تم حفظ تفضيلاتك بنجاح.",
   },
-  onboarding: {
-    ariaLabel: "تقدم ملفك الشخصي",
-    steps: {
-      account: "إنشاء حساب",
-      profile: "إكمال ملفي الشخصي",
-      preferences: "تفضيلات أسلوبي",
-      publish: "نشر أول قطعة لي",
-    },
-    title: "رحلتك مع فيستيو",
-    progress: "{progress}% مكتمل",
-    hint: "أكمل هذه الخطوات لتعزيز ظهورك والبيع بشكل أسرع!",
-  },
   userMenu: {
     account: "حسابي",
     profile: "ملفي الشخصي",
