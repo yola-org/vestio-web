@@ -15,7 +15,11 @@ import UserDropdown from "@/components/layout/UserDropdown"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { profileApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
-import { isAuthenticated as hasAuthSession } from "@/lib/auth"
+import {
+  isAuthenticated as hasAuthSession,
+  readAccountDisplayName,
+} from "@/lib/auth"
+import type { AccountDisplayName } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import HeaderSearch from "@/components/layout/HeaderSearch"
@@ -41,6 +45,7 @@ export default function Header({
   const [selectedCityId, setSelectedCityId] = useState(searchCityId)
   const [citySelectorOpen, setCitySelectorOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [displayName, setDisplayName] = useState<AccountDisplayName>()
   const citySelectorRef = useRef<HTMLDivElement>(null)
 
   const citiesQuery = useApiQuery(profileApi.getCities, {
@@ -58,7 +63,10 @@ export default function Header({
   const loading = citiesQuery.loading || categoriesQuery.loading
 
   useEffect(() => {
-    const updateAuthentication = () => setIsAuthenticated(hasAuthSession())
+    const updateAuthentication = () => {
+      setIsAuthenticated(hasAuthSession())
+      setDisplayName(readAccountDisplayName())
+    }
     updateAuthentication()
     window.addEventListener("vestio:auth-changed", updateAuthentication)
     return () =>
@@ -184,7 +192,7 @@ export default function Header({
               >
                 <UploadIcon className="h-4 w-4" /> {t("header.sell")}
               </Link>
-              <UserDropdown />
+              <UserDropdown displayName={displayName} />
             </>
           ) : (
             <>
@@ -378,7 +386,7 @@ export default function Header({
                   className="flex items-center"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <UserDropdown />
+                  <UserDropdown displayName={displayName} />
                 </div>
               </>
             ) : (

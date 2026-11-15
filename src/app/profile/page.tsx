@@ -27,7 +27,9 @@ export default function ProfilePage() {
   })
 
   const profile = profileQuery.data
-  const listings = listingsQuery.data?.content ?? []
+  const listings = (listingsQuery.data?.content ?? []).filter(
+    (listing) => listing.status === "AVAILABLE",
+  )
   const isLoading = profileQuery.loading || listingsQuery.loading
 
   if (isLoading) {

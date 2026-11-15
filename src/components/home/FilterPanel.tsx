@@ -1,5 +1,6 @@
 "use client"
 
+import Spinner from "@/components/shared/Spinner"
 import { Fragment, type ReactNode } from "react"
 import Form from "next/form"
 import Link from "next/link"
@@ -72,6 +73,12 @@ export default function FilterPanel({
         {filters.brandId && (
           <input type="hidden" name="brandId" value={filters.brandId} />
         )}
+        {loading && (
+          <Spinner
+            label={t("common.loading")}
+            className="size-5 border-2 text-deep-accent"
+          />
+        )}
         {error && (
           <p role="status" className="text-sm">
             {t("search.filtersError")}{" "}
@@ -95,11 +102,7 @@ export default function FilterPanel({
             <option value="">{t("search.all")}</option>
             {data
               ? categoryOptions(data.categories)
-              : filters.categoryId && (
-                  <option value={filters.categoryId}>
-                    {t("common.loading")}
-                  </option>
-                )}
+              : filters.categoryId && <option value={filters.categoryId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">
@@ -117,9 +120,7 @@ export default function FilterPanel({
                     {city.name}
                   </option>
                 ))
-              : filters.cityId && (
-                  <option value={filters.cityId}>{t("common.loading")}</option>
-                )}
+              : filters.cityId && <option value={filters.cityId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">
@@ -141,9 +142,7 @@ export default function FilterPanel({
                     ))}
                   </optgroup>
                 ))
-              : filters.sizeId && (
-                  <option value={filters.sizeId}>{t("common.loading")}</option>
-                )}
+              : filters.sizeId && <option value={filters.sizeId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">

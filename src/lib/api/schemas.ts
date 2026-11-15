@@ -150,12 +150,20 @@ export const ListingSchema = z.object({
   brandId: z.uuid().nullish(),
 })
 
+export const AccountDisplayNameSchema = z.object({
+  firstName: z.string().nullish(),
+  lastName: z.string().nullish(),
+})
+
+export type AccountDisplayName = z.infer<typeof AccountDisplayNameSchema>
+
 export const JwtResponseSchema = z.object({
   accessToken: z.string().min(1),
   idToken: z.string().min(1),
   refreshToken: z.string().min(1).nullish(),
   expiresIn: z.number().int().positive(),
   tokenType: z.string(),
+  displayName: AccountDisplayNameSchema.nullish(),
 })
 
 export const StaticDataSchema = z.object({

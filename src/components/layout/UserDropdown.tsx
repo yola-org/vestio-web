@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import {
   UserIcon,
   ClockIcon,
+  MessageIcon,
   LogOutIcon,
   HelpIcon,
   ContactIcon,
@@ -14,19 +15,22 @@ import {
 } from "@/components/shared/Icons"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
 import PreferencesModal from "@/components/profile/PreferencesModal"
-import { authApi, profileApi } from "@/lib/api"
+import { authApi } from "@/lib/api"
+import type { AccountDisplayName } from "@/lib/api/schemas"
 import { useApiAction } from "@/hooks/use-api-action"
-import { useApiQuery } from "@/hooks/use-api-query"
 import { clearAuthTracking, notifyAuthChanged } from "@/lib/auth"
 import { useTranslations } from "next-intl"
 
-export default function UserDropdown() {
+export default function UserDropdown({
+  displayName,
+}: {
+  displayName?: AccountDisplayName
+}) {
   const t = useTranslations()
   const [isOpen, setIsOpen] = useState(false)
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const { data: profile } = useApiQuery(profileApi.get)
   const logout = useApiAction(authApi.logout, {
     onSuccess: () => {
       clearAuthTracking()
@@ -62,6 +66,7 @@ export default function UserDropdown() {
 
   const menuItems = [
     { label: t("userMenu.profile"), href: "/profile", icon: UserIcon },
+    { label: t("offers.title"), href: "/offers", icon: MessageIcon },
     {
       label: t("pendingListings.title"),
       href: "/listings/pending",
@@ -86,8 +91,8 @@ export default function UserDropdown() {
         aria-haspopup="true"
       >
         <ProfileAvatar
-          firstName={profile?.firstName}
-          lastName={profile?.lastName}
+          firstName={displayName?.firstName ?? undefined}
+          lastName={displayName?.lastName ?? undefined}
           size="md"
         />
         <ChevronIcon
@@ -103,9 +108,9 @@ export default function UserDropdown() {
             <p className="text-xs font-bold uppercase tracking-wider text-black/40">
               {t("userMenu.account")}
             </p>
-            {profile && (
+            {(displayName?.firstName || displayName?.lastName) && (
               <p className="mt-1 text-sm font-bold truncate">
-                {profile.firstName} {profile.lastName}
+                {displayName.firstName} {displayName.lastName}
               </p>
             )}
           </div>

@@ -12,7 +12,7 @@ import type {
   ListingInput,
   PaginatedResponse,
 } from "@/lib/api/schemas"
-import { ListingInputSchema } from "@/lib/api/schemas"
+import { ContactTypeSchema, ListingInputSchema } from "@/lib/api/schemas"
 import { parseInput } from "@/lib/api/validation"
 const ListingResponseSchema = z.object({
   category: z.object({ id: z.string() }).nullish(),
@@ -252,6 +252,61 @@ export async function deleteListingAction(
       method: "DELETE",
     })
 
+    return null
+  })
+}
+
+const OfferInputSchema = z.object({
+  listingId: z.uuid(),
+  price: z.string().regex(/^(?!0+(?:\.0{1,2})?$)[0-9]{1,17}(?:\.[0-9]{1,2})?$/),
+  deliveryTypes: z.array(ContactTypeSchema).min(1),
+  message: z.string(),
+})
+
+export type OfferDetailsInput = Omit<z.input<typeof OfferInputSchema>, "listingId">
+
+export async function createOfferAction(
+  input: z.input<typeof OfferInputSchema>,
+): Promise<ApiResult<null>> {
+  return runAction(async () => {
+    const { listingId, ...offer } = parseInput(OfferInputSchema, input)
+    await request(`/api/listings/${listingId}/offers`, {
+      method: "POST",
+      body: JSON.stringify(offer),
+    })
+    return null
+  })
+}
+
+export async function updateOfferAction(
+  listingId: string,
+  offerId: string,
+  details: OfferDetailsInput,
+): Promise<ApiResult<null>> {
+  return runAction(async () => {
+    const { listingId: id, ...offer } = parseInput(OfferInputSchema, {
+      listingId,
+      ...details,
+    })
+    const offerKey = parseInput(z.uuid(), offerId)
+    await request(`/api/listings/${id}/offers/${offerKey}`, {
+      method: "PUT",
+      body: JSON.stringify(offer),
+    })
+    return null
+  })
+}
+
+export async function cancelOfferAction(
+  listingId: string,
+  offerId: string,
+): Promise<ApiResult<null>> {
+  return runAction(async () => {
+    const id = parseInput(z.uuid(), listingId)
+    const offerKey = parseInput(z.uuid(), offerId)
+    await request(`/api/listings/${id}/offers/${offerKey}`, {
+      method: "DELETE",
+    })
     return null
   })
 }

@@ -37,6 +37,12 @@ test.describe('Profile Page', () => {
 
   for (const accessToken of ['expired-access-token', undefined]) {
     test(`renews the session when the access token is ${accessToken ? 'expired' : 'missing'}`, async ({ page }) => {
+      const sessionRequests: string[] = [];
+      page.on('request', (request) => {
+        if (new URL(request.url()).pathname === '/api/auth/session') {
+          sessionRequests.push(request.method());
+        }
+      });
       await page.context().clearCookies({ name: 'vestio_token' });
       if (accessToken) {
         await page.context().addCookies([
@@ -47,6 +53,7 @@ test.describe('Profile Page', () => {
       await page.goto('/profile');
 
       await expect(page.getByRole('heading', { name: 'Test User' })).toBeVisible();
+      expect(sessionRequests).toEqual(accessToken ? [] : ['POST']);
       const cookies = await page.context().cookies();
       expect(cookies).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'vestio_token', value: 'refreshed-access-token', httpOnly: true }),

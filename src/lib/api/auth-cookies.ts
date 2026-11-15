@@ -2,12 +2,13 @@ import "server-only"
 
 import { cookies } from "next/headers"
 import {
+  AUTH_DISPLAY_NAME_COOKIE,
   AUTH_ID_TOKEN_COOKIE,
   AUTH_INDICATOR_COOKIE,
   AUTH_REFRESH_TOKEN_COOKIE,
   AUTH_TOKEN_COOKIE,
 } from "@/constants/auth"
-import type { JwtResponse } from "@/lib/api/schemas"
+import type { AccountDisplayName, JwtResponse } from "@/lib/api/schemas"
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
 
@@ -42,12 +43,32 @@ export function writeTokenCookies(
   }
 }
 
+export function writeAccountDisplayName(
+  cookieStore: CookieStore,
+  { firstName, lastName }: AccountDisplayName,
+) {
+  cookieStore.set(
+    AUTH_DISPLAY_NAME_COOKIE,
+    JSON.stringify({ firstName, lastName }),
+    {
+      ...cookieOptions,
+      httpOnly: false,
+      maxAge: SESSION_MAX_AGE,
+    },
+  )
+}
+
 export function startAuthSession(
   cookieStore: CookieStore,
   tokens: JwtResponse,
 ) {
   if (!tokens.refreshToken) cookieStore.delete(AUTH_REFRESH_TOKEN_COOKIE)
   writeTokenCookies(cookieStore, tokens)
+  if (tokens.displayName) {
+    writeAccountDisplayName(cookieStore, tokens.displayName)
+  } else {
+    cookieStore.delete(AUTH_DISPLAY_NAME_COOKIE)
+  }
   cookieStore.set(AUTH_INDICATOR_COOKIE, "1", {
     ...cookieOptions,
     httpOnly: false,
@@ -60,4 +81,5 @@ export function clearAuthCookies(cookieStore: CookieStore) {
   cookieStore.delete(AUTH_REFRESH_TOKEN_COOKIE)
   cookieStore.delete(AUTH_ID_TOKEN_COOKIE)
   cookieStore.delete(AUTH_INDICATOR_COOKIE)
+  cookieStore.delete(AUTH_DISPLAY_NAME_COOKIE)
 }
