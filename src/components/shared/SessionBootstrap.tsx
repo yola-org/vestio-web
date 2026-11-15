@@ -23,16 +23,20 @@ export default function SessionBootstrap({
       signal: AbortSignal.timeout(7_000),
     })
 
-    void refresh.current.catch(() => null).then((response) => {
-      if (!active) return
+    void refresh.current
+      .catch(() => null)
+      .then((response) => {
+        if (!active) return
 
-      const { pathname } = window.location
-      if (response?.status === 401 && !isPublicPath(pathname)) {
-        window.location.replace(pathname === "/favorites" ? "/login" : "/welcome")
-        return
-      }
-      setReady(true)
-    })
+        const { pathname } = window.location
+        if (response?.status === 401 && !isPublicPath(pathname)) {
+          window.location.replace(
+            pathname === "/favorites" ? "/login" : "/welcome",
+          )
+          return
+        }
+        setReady(true)
+      })
 
     return () => {
       active = false

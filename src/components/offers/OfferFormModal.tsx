@@ -55,7 +55,9 @@ export default function OfferFormModal({
 
     const form = new FormData(event.currentTarget)
     const price = String(form.get("price")).replace(",", ".")
-    const selectedTypes = deliveryTypes.filter((type) => form.getAll("deliveryTypes").includes(type))
+    const selectedTypes = deliveryTypes.filter((type) =>
+      form.getAll("deliveryTypes").includes(type),
+    )
 
     if (!/^[0-9]{1,17}(?:\.[0-9]{1,2})?$/.test(price) || Number(price) <= 0) {
       setError(t("listingDetail.offerInvalidAmount"))
@@ -86,9 +88,14 @@ export default function OfferFormModal({
 
       const code = result.error.error
       const messageKey = Object.prototype.hasOwnProperty.call(offerErrors, code)
-        ? offerErrors[code as keyof typeof offerErrors]
+        ? offerErrors[(code as keyof typeof offerErrors)]
         : undefined
-      setError(t(messageKey ?? (initial ? "offers.editFailed" : "listingDetail.offerFailed")))
+      setError(
+        t(
+          messageKey ??
+            (initial ? "offers.editFailed" : "listingDetail.offerFailed"),
+        ),
+      )
       setBlocked(Boolean(messageKey))
     } catch {
       setError(t(initial ? "offers.editFailed" : "listingDetail.offerFailed"))
@@ -99,7 +106,12 @@ export default function OfferFormModal({
   }
 
   return (
-    <Modal title={title} description={listingTitle} onClose={onClose} dismissDisabled={pending}>
+    <Modal
+      title={title}
+      description={listingTitle}
+      onClose={onClose}
+      dismissDisabled={pending}
+    >
       {requiresLogin ? (
         <div className="grid gap-4 text-sm">
           <p>{t("listingDetail.offerSignIn")}</p>
@@ -107,11 +119,17 @@ export default function OfferFormModal({
             <button type="button" onClick={onClose} className={cancelClass}>
               {t("common.cancel")}
             </button>
-            <Link href="/login" className={submitClass}>{t("header.login")}</Link>
+            <Link href="/login" className={submitClass}>
+              {t("header.login")}
+            </Link>
           </div>
         </div>
       ) : (
-        <form onSubmit={submitOffer} aria-busy={pending} className="grid gap-4 text-sm">
+        <form
+          onSubmit={submitOffer}
+          aria-busy={pending}
+          className="grid gap-4 text-sm"
+        >
           <label className="grid gap-1.5 font-bold">
             {t("listingDetail.offerAmount", { currency: t("common.currency") })}
             <input
@@ -130,12 +148,19 @@ export default function OfferFormModal({
           <fieldset disabled={pending} className="grid gap-2">
             <legend className="mb-2 font-bold">{t("sell.contact")}</legend>
             {deliveryTypes.map((type) => (
-              <label key={type} className="flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5">
+              <label
+                key={type}
+                className="flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5"
+              >
                 <input
                   type="checkbox"
                   name="deliveryTypes"
                   value={type}
-                  defaultChecked={initial ? initial.deliveryTypes.includes(type) : deliveryTypes.length === 1}
+                  defaultChecked={
+                    initial
+                      ? initial.deliveryTypes.includes(type)
+                      : deliveryTypes.length === 1
+                  }
                   className="size-4 accent-accent"
                 />
                 {t(`sell.contactTypes.${type}`)}
@@ -152,12 +177,26 @@ export default function OfferFormModal({
               className="rounded-xl border border-black/20 px-3 py-2.5 font-normal"
             />
           </label>
-          {error && <p role="alert" className="text-red-700">{error}</p>}
+          {error && (
+            <p role="alert" className="text-red-700">
+              {error}
+            </p>
+          )}
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <button type="button" disabled={pending} onClick={onClose} className={cancelClass}>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={onClose}
+              className={cancelClass}
+            >
               {t("common.cancel")}
             </button>
-            <Button type="submit" loading={pending} disabled={blocked} className={submitClass}>
+            <Button
+              type="submit"
+              loading={pending}
+              disabled={blocked}
+              className={submitClass}
+            >
               {submitLabel}
             </Button>
           </div>

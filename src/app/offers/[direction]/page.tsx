@@ -22,7 +22,10 @@ export default async function OffersDirectionPage({
         <h1 className="mb-6 font-display text-4xl font-black tracking-tight sm:text-5xl">
           {t("title")}
         </h1>
-        <nav aria-label={t("title")} className="mb-6 flex gap-2 border-b border-black/10">
+        <nav
+          aria-label={t("title")}
+          className="mb-6 flex gap-2 border-b border-black/10"
+        >
           {(["received", "sent"] as const).map((type) => (
             <Link
               key={type}

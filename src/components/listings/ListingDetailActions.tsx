@@ -42,12 +42,17 @@ export function ListingDetailCarousel({
   photos,
   legacyPhotos,
   title,
-}: { photos: string[]; legacyPhotos: string[]; title: string }) {
+}: {
+  photos: string[]
+  legacyPhotos: string[]
+  title: string
+}) {
   const t = useTranslations("listingDetail")
   const [index, setIndex] = useState(0)
   const [failedImages, setFailedImages] = useState<string[]>([])
   const photo = photos[index]
-  const source = photo && failedImages.includes(photo) ? legacyPhotos[index] : photo
+  const source =
+    photo && failedImages.includes(photo) ? legacyPhotos[index] : photo
   const hasPhoto = source && !failedImages.includes(source)
   const canNavigate = photos.length > 1
   const controlClass =
@@ -55,7 +60,9 @@ export function ListingDetailCarousel({
 
   return (
     <div className="relative isolate aspect-[4/5] min-w-0 overflow-hidden border border-black/10 bg-[#e9ecf0] md:aspect-auto md:border-e-0">
-      {hasPhoto && <ListingDetailBackdrop key={`backdrop-${source}`} photo={source} />}
+      {hasPhoto && (
+        <ListingDetailBackdrop key={`backdrop-${source}`} photo={source} />
+      )}
       <img
         key={source}
         src={hasPhoto ? source : "/listing-image-unavailable.png"}

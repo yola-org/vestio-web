@@ -201,17 +201,20 @@ async function requestOnce<T>(
   } catch (error: unknown) {
     const durationMs = Date.now() - startTime
     const timedOut = error instanceof Error && error.name === "TimeoutError"
-    const apiError = isNetworkError(error) || timedOut
-      ? new ApiError({
-          timestamp: new Date().toISOString(),
-          status: 503,
-          error: "NETWORK_ERROR",
-          message:
-            error instanceof Error ? error.message : "Network request failed.",
-          path: endpoint,
-          validationErrors: [],
-        })
-      : getApiError(error)
+    const apiError =
+      isNetworkError(error) || timedOut
+        ? new ApiError({
+            timestamp: new Date().toISOString(),
+            status: 503,
+            error: "NETWORK_ERROR",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Network request failed.",
+            path: endpoint,
+            validationErrors: [],
+          })
+        : getApiError(error)
     logger.error("API_REQUEST", apiError, { method, durationMs })
     throw apiError
   }

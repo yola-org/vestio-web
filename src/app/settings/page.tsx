@@ -61,7 +61,10 @@ export default function SettingsPage() {
       <div className="min-h-screen bg-[#f7f3ea]">
         <Header />
         <main className="main-container py-20 flex justify-center">
-          <Spinner className="size-8 border-4 text-deep-accent" label={t("settings.loading")} />
+          <Spinner
+            className="size-8 border-4 text-deep-accent"
+            label={t("settings.loading")}
+          />
         </main>
         <Footer />
       </div>

@@ -35,7 +35,9 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <GlobalLoadingProvider>
             <NotificationProvider>
-              <SessionBootstrap needsRefresh={needsRefresh}>{children}</SessionBootstrap>
+              <SessionBootstrap needsRefresh={needsRefresh}>
+                {children}
+              </SessionBootstrap>
             </NotificationProvider>
           </GlobalLoadingProvider>
         </NextIntlClientProvider>

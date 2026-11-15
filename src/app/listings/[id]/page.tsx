@@ -68,8 +68,9 @@ export default async function ListingPage({
     ...new Set(listing.colors?.map((color) => color.trim()).filter(Boolean)),
   ]
   const gender = listing.gender?.trim().toUpperCase()
-  const deliveryTypes = [...new Set(listing.contactTypes ?? [])]
-    .filter((type) => ContactTypeSchema.options.includes(type))
+  const deliveryTypes = [...new Set(listing.contactTypes ?? [])].filter(
+    (type) => ContactTypeSchema.options.includes(type),
+  )
   const delivery = deliveryTypes.map((type) => t(`sell.contactTypes.${type}`))
   const details = [
     [t("filters.condition"), t(`conditions.${listing.condition}.label`)],

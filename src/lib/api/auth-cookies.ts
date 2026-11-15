@@ -47,11 +47,15 @@ export function writeAccountDisplayName(
   cookieStore: CookieStore,
   { firstName, lastName }: AccountDisplayName,
 ) {
-  cookieStore.set(AUTH_DISPLAY_NAME_COOKIE, JSON.stringify({ firstName, lastName }), {
-    ...cookieOptions,
-    httpOnly: false,
-    maxAge: SESSION_MAX_AGE,
-  })
+  cookieStore.set(
+    AUTH_DISPLAY_NAME_COOKIE,
+    JSON.stringify({ firstName, lastName }),
+    {
+      ...cookieOptions,
+      httpOnly: false,
+      maxAge: SESSION_MAX_AGE,
+    },
+  )
 }
 
 export function startAuthSession(

@@ -74,7 +74,10 @@ export default function FilterPanel({
           <input type="hidden" name="brandId" value={filters.brandId} />
         )}
         {loading && (
-          <Spinner label={t("common.loading")} className="size-5 border-2 text-deep-accent" />
+          <Spinner
+            label={t("common.loading")}
+            className="size-5 border-2 text-deep-accent"
+          />
         )}
         {error && (
           <p role="status" className="text-sm">
@@ -99,9 +102,7 @@ export default function FilterPanel({
             <option value="">{t("search.all")}</option>
             {data
               ? categoryOptions(data.categories)
-              : filters.categoryId && (
-                  <option value={filters.categoryId} />
-                )}
+              : filters.categoryId && <option value={filters.categoryId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">
@@ -119,9 +120,7 @@ export default function FilterPanel({
                     {city.name}
                   </option>
                 ))
-              : filters.cityId && (
-                  <option value={filters.cityId} />
-                )}
+              : filters.cityId && <option value={filters.cityId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">
@@ -143,9 +142,7 @@ export default function FilterPanel({
                     ))}
                   </optgroup>
                 ))
-              : filters.sizeId && (
-                  <option value={filters.sizeId} />
-                )}
+              : filters.sizeId && <option value={filters.sizeId} />}
           </select>
         </label>
         <label className="block space-y-2 text-sm font-bold">

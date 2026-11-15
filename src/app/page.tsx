@@ -34,7 +34,10 @@ export default function Page() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f7f3ea] flex items-center justify-center">
-        <Spinner className="size-8 border-4 text-deep-accent" label={t("message")} />
+        <Spinner
+          className="size-8 border-4 text-deep-accent"
+          label={t("message")}
+        />
       </div>
     )
   }

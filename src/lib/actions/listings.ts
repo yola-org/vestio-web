@@ -284,7 +284,10 @@ export async function updateOfferAction(
   details: OfferDetailsInput,
 ): Promise<ApiResult<null>> {
   return runAction(async () => {
-    const { listingId: id, ...offer } = parseInput(OfferInputSchema, { listingId, ...details })
+    const { listingId: id, ...offer } = parseInput(OfferInputSchema, {
+      listingId,
+      ...details,
+    })
     const offerKey = parseInput(z.uuid(), offerId)
     await request(`/api/listings/${id}/offers/${offerKey}`, {
       method: "PUT",
@@ -301,7 +304,9 @@ export async function cancelOfferAction(
   return runAction(async () => {
     const id = parseInput(z.uuid(), listingId)
     const offerKey = parseInput(z.uuid(), offerId)
-    await request(`/api/listings/${id}/offers/${offerKey}`, { method: "DELETE" })
+    await request(`/api/listings/${id}/offers/${offerKey}`, {
+      method: "DELETE",
+    })
     return null
   })
 }

@@ -23,8 +23,8 @@ const OfferSummarySchema = z.object({
 export async function getOffersAction(direction: "sent" | "received") {
   return runAction(async () => {
     const type = z.enum(["sent", "received"]).parse(direction)
-    return z.array(OfferSummarySchema).parse(
-      await request<unknown>(`/api/offers/${type}`),
-    )
+    return z
+      .array(OfferSummarySchema)
+      .parse(await request<unknown>(`/api/offers/${type}`))
   })
 }

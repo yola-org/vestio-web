@@ -109,7 +109,11 @@ export default function SentOfferActions({
         >
           <div className="grid gap-4 text-sm" aria-busy={pending}>
             <p>{t("offers.cancelConfirm")}</p>
-            {cancelError && <p role="alert" className="text-red-700">{cancelError}</p>}
+            {cancelError && (
+              <p role="alert" className="text-red-700">
+                {cancelError}
+              </p>
+            )}
             <div className="flex flex-wrap justify-end gap-3">
               <button
                 type="button"

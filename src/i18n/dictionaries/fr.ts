@@ -138,7 +138,8 @@ const fr = {
     cancelConfirm: "Voulez-vous annuler cette offre ?",
     editFailed: "Impossible de modifier l’offre. Réessayez.",
     cancelFailed: "Impossible d’annuler l’offre. Réessayez.",
-    notPending: "Seules les offres en attente peuvent être modifiées ou annulées.",
+    notPending:
+      "Seules les offres en attente peuvent être modifiées ou annulées.",
     status: { PENDING: "En attente", ACCEPTED: "Acceptée" },
   },
   pendingListings: {
@@ -171,9 +172,11 @@ const fr = {
     offerSubmit: "Envoyer l’offre",
     offerSent: "Offre envoyée",
     offerDuplicate: "Vous avez déjà fait une offre pour cette annonce.",
-    offerOwnListing: "Vous ne pouvez pas faire d’offre sur votre propre annonce.",
+    offerOwnListing:
+      "Vous ne pouvez pas faire d’offre sur votre propre annonce.",
     offerDeliveryRequired: "Choisissez au moins un mode de remise.",
-    offerDeliveryChanged: "Les modes de remise ont changé. Actualisez l’annonce.",
+    offerDeliveryChanged:
+      "Les modes de remise ont changé. Actualisez l’annonce.",
     offerSignIn: "Connectez-vous pour envoyer une offre.",
     offerInvalidAmount: "Saisissez un montant supérieur à zéro.",
     offerFailed: "Impossible d’envoyer l’offre. Réessayez.",

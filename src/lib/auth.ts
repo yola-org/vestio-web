@@ -1,4 +1,7 @@
-import { AUTH_DISPLAY_NAME_COOKIE, AUTH_INDICATOR_COOKIE } from "@/constants/auth"
+import {
+  AUTH_DISPLAY_NAME_COOKIE,
+  AUTH_INDICATOR_COOKIE,
+} from "@/constants/auth"
 import { AccountDisplayNameSchema } from "@/lib/api/schemas"
 
 const AUTH_LOCAL_STORAGE_KEY = "vestio_was_authenticated"
@@ -34,7 +37,9 @@ export function readAccountDisplayName() {
   if (!isAuthenticated()) return undefined
 
   const prefix = `${AUTH_DISPLAY_NAME_COOKIE}=`
-  const cookie = document.cookie.split("; ").find((item) => item.startsWith(prefix))
+  const cookie = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith(prefix))
   if (!cookie) return undefined
 
   try {

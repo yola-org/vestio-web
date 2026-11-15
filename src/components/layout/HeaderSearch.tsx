@@ -191,9 +191,18 @@ export default function HeaderSearch({
             ) : (
               <div className="px-4 py-5 text-sm text-black/65">
                 {currentPreview ? (
-                  <p role="status">{t(currentPreview.listings ? "listings.empty" : "search.loadError")}</p>
+                  <p role="status">
+                    {t(
+                      currentPreview.listings
+                        ? "listings.empty"
+                        : "search.loadError",
+                    )}
+                  </p>
                 ) : (
-                  <Spinner label={t("common.loading")} className="size-5 border-2 text-deep-accent" />
+                  <Spinner
+                    label={t("common.loading")}
+                    className="size-5 border-2 text-deep-accent"
+                  />
                 )}
               </div>
             )}

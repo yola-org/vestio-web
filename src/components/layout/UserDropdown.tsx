@@ -21,7 +21,11 @@ import { useApiAction } from "@/hooks/use-api-action"
 import { clearAuthTracking, notifyAuthChanged } from "@/lib/auth"
 import { useTranslations } from "next-intl"
 
-export default function UserDropdown({ displayName }: { displayName?: AccountDisplayName }) {
+export default function UserDropdown({
+  displayName,
+}: {
+  displayName?: AccountDisplayName
+}) {
   const t = useTranslations()
   const [isOpen, setIsOpen] = useState(false)
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)

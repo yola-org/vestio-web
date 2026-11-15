@@ -25,12 +25,19 @@ export default function Button({
     >
       {loading ? (
         <>
-          <span className="inline-flex items-center justify-center gap-2 opacity-0">{children}</span>
-          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+          <span className="inline-flex items-center justify-center gap-2 opacity-0">
+            {children}
+          </span>
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 flex items-center justify-center"
+          >
             <Spinner />
           </span>
         </>
-      ) : children}
+      ) : (
+        children
+      )}
     </button>
   )
 }

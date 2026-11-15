@@ -58,8 +58,11 @@ export default function ProductCard({
       ? (product as any).seller || t("common.seller")
       : (product as any).seller
   const listing = "id" in product ? product : undefined
-  const flatImage = listing ? getListingImageUrls(listing, "thumbnail")[0] : undefined
-  const layout = flatImage && failedImages.includes(flatImage) ? "nested" : "flat"
+  const flatImage = listing
+    ? getListingImageUrls(listing, "thumbnail")[0]
+    : undefined
+  const layout =
+    flatImage && failedImages.includes(flatImage) ? "nested" : "flat"
   const image = listing
     ? getListingImageUrls(listing, "thumbnail", layout)[0]
     : product.image?.trim()
@@ -78,14 +81,14 @@ export default function ProductCard({
         <img
           key={image}
           src={showFallback ? fallbackImage : image}
-          srcSet={
-            responsive
-              ? `${mobileImage} 480w, ${image} 960w`
-              : undefined
-          }
+          srcSet={responsive ? `${mobileImage} 480w, ${image} 960w` : undefined}
           sizes={responsive ? "(max-width: 639px) 50vw, 480px" : undefined}
           alt={product.title}
-          onError={showFallback ? undefined : () => setFailedImages((failed) => [...failed, image])}
+          onError={
+            showFallback
+              ? undefined
+              : () => setFailedImages((failed) => [...failed, image])
+          }
           className={
             showFallback
               ? "h-full w-full object-contain"

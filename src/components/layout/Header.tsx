@@ -15,7 +15,10 @@ import UserDropdown from "@/components/layout/UserDropdown"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { profileApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
-import { isAuthenticated as hasAuthSession, readAccountDisplayName } from "@/lib/auth"
+import {
+  isAuthenticated as hasAuthSession,
+  readAccountDisplayName,
+} from "@/lib/auth"
 import type { AccountDisplayName } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
