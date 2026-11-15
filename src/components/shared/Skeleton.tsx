@@ -1,14 +1,27 @@
-import React from "react"
+import type { ReactNode } from "react"
+import { useTranslations } from "next-intl"
 
-interface SkeletonProps {
-  className?: string
-}
-
-export default function Skeleton({ className = "" }: SkeletonProps) {
+export default function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-black/5 ${className}`}
+      className={`skeleton-block animate-pulse bg-black/5 motion-reduce:animate-none ${className}`}
       aria-hidden="true"
     />
+  )
+}
+
+export function SkeletonGroup({
+  className,
+  children,
+}: {
+  className?: string
+  children: ReactNode
+}) {
+  const t = useTranslations("loading")
+
+  return (
+    <div role="status" aria-label={t("message")} className={className}>
+      {children}
+    </div>
   )
 }

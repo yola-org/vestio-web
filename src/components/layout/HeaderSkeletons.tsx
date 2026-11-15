@@ -1,4 +1,4 @@
-import Skeleton from "@/components/shared/Skeleton"
+import Skeleton, { SkeletonGroup } from "@/components/shared/Skeleton"
 
 export function MegaMenuSkeleton() {
   return (
@@ -27,5 +27,22 @@ export function HeaderNavSkeleton() {
         <Skeleton key={i} className="h-4 w-20" />
       ))}
     </div>
+  )
+}
+
+export function SearchPreviewSkeleton() {
+  return (
+    <SkeletonGroup className="divide-y divide-black/10">
+      {Array.from({ length: 3 }, (_, index) => (
+        <div key={index} className="space-y-2 px-4 py-3">
+          <div className="flex justify-between gap-3">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-4 w-14" />
+          </div>
+          <Skeleton className="h-3 w-1/2" />
+          <Skeleton className="h-3 w-1/3" />
+        </div>
+      ))}
+    </SkeletonGroup>
   )
 }

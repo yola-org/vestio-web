@@ -2,7 +2,7 @@
 
 // Form state
 
-import Spinner from "@/components/shared/Spinner"
+import SettingsFormSkeleton from "@/components/profile/SettingsFormSkeleton"
 import { useState } from "react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
@@ -56,21 +56,6 @@ export default function SettingsPage() {
     },
   )
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#f7f3ea]">
-        <Header />
-        <main className="main-container py-20 flex justify-center">
-          <Spinner
-            className="size-8 border-4 text-deep-accent"
-            label={t("settings.loading")}
-          />
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-[#f7f3ea] text-[#151515]">
       <Header />
@@ -87,83 +72,87 @@ export default function SettingsPage() {
               {t("settings.personalInfo")}
             </h2>
 
-            <form action={formAction} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {isLoading ? (
+              <SettingsFormSkeleton />
+            ) : (
+              <form action={formAction} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      className="block text-sm font-bold mb-2"
+                      htmlFor="firstName"
+                    >
+                      {t("settings.firstName")}
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block text-sm font-bold mb-2"
+                      htmlFor="lastName"
+                    >
+                      {t("settings.lastName")}
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label
-                    className="block text-sm font-bold mb-2"
-                    htmlFor="firstName"
-                  >
-                    {t("settings.firstName")}
+                  <label className="block text-sm font-bold mb-2" htmlFor="bio">
+                    {t("settings.bio")}
                   </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                    required
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder={t("settings.bioPlaceholder")}
+                    className="w-full p-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition min-h-[120px]"
                   />
                 </div>
+
                 <div>
-                  <label
-                    className="block text-sm font-bold mb-2"
-                    htmlFor="lastName"
-                  >
-                    {t("settings.lastName")}
+                  <label className="block text-sm font-bold mb-2" htmlFor="phone">
+                    {t("settings.phone")}
                   </label>
                   <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    type="tel"
+                    id="phone"
+                    name="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder={t("settings.phonePlaceholder")}
                     className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                    required
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-2" htmlFor="bio">
-                  {t("settings.bio")}
-                </label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder={t("settings.bioPlaceholder")}
-                  className="w-full p-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition min-h-[120px]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold mb-2" htmlFor="phone">
-                  {t("settings.phone")}
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phoneNumber"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder={t("settings.phonePlaceholder")}
-                  className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                />
-              </div>
-
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  loading={pending}
-                  className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {t("settings.submit")} <ArrowIcon className="h-5 w-5" />
-                </Button>
-              </div>
-            </form>
+                <div className="pt-4">
+                  <Button
+                    type="submit"
+                    loading={pending}
+                    className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {t("settings.submit")} <ArrowIcon className="h-5 w-5" />
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </main>

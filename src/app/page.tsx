@@ -2,9 +2,10 @@
 
 // Listen for auth changes
 
-import Spinner from "@/components/shared/Spinner"
+import PageSkeleton from "@/components/shared/PageSkeleton"
+import Skeleton, { SkeletonGroup } from "@/components/shared/Skeleton"
+import { ListingGridSkeleton } from "@/components/shared/ListingSkeletons"
 import { useState, useEffect } from "react"
-import { useTranslations } from "next-intl"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import Hero from "@/components/home/Hero"
@@ -17,7 +18,6 @@ import AuthenticatedHome from "@/components/home/AuthenticatedHome"
 import { isAuthenticated as hasAuthSession } from "@/lib/auth"
 
 export default function Page() {
-  const t = useTranslations("loading")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -33,12 +33,15 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f3ea] flex items-center justify-center">
-        <Spinner
-          className="size-8 border-4 text-deep-accent"
-          label={t("message")}
-        />
-      </div>
+      <PageSkeleton>
+        <main className="main-container space-y-10 py-12">
+          <SkeletonGroup className="space-y-5">
+            <Skeleton className="h-56 rounded-3xl" />
+            <Skeleton className="h-8 w-48" />
+          </SkeletonGroup>
+          <ListingGridSkeleton />
+        </main>
+      </PageSkeleton>
     )
   }
 
