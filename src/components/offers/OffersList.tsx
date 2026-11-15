@@ -1,6 +1,6 @@
 "use client"
 
-import Spinner from "@/components/shared/Spinner"
+import OffersSkeleton from "@/components/offers/OffersSkeleton"
 import Link from "next/link"
 import { useFormatter, useTranslations } from "next-intl"
 import SentOfferActions from "@/components/offers/SentOfferActions"
@@ -19,13 +19,7 @@ export default function OffersList({
     { deps: [direction], loading: false },
   )
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12 text-deep-accent">
-        <Spinner className="size-8 border-4" label={t("common.loading")} />
-      </div>
-    )
-  }
+  if (loading) return <OffersSkeleton sent={direction === "sent"} />
 
   if (error) {
     return (

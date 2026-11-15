@@ -1,6 +1,6 @@
 "use client"
 
-import Spinner from "@/components/shared/Spinner"
+import { SearchPreviewSkeleton } from "@/components/layout/HeaderSkeletons"
 import { useEffect, useId, useState } from "react"
 import Form from "next/form"
 import { useFormatter, useTranslations } from "next-intl"
@@ -188,23 +188,16 @@ export default function HeaderSearch({
                   </li>
                 ))}
               </ul>
-            ) : (
-              <div className="px-4 py-5 text-sm text-black/65">
-                {currentPreview ? (
-                  <p role="status">
-                    {t(
-                      currentPreview.listings
-                        ? "listings.empty"
-                        : "search.loadError",
-                    )}
-                  </p>
-                ) : (
-                  <Spinner
-                    label={t("common.loading")}
-                    className="size-5 border-2 text-deep-accent"
-                  />
+            ) : currentPreview ? (
+              <p className="px-4 py-5 text-sm text-black/65" role="status">
+                {t(
+                  currentPreview.listings
+                    ? "listings.empty"
+                    : "search.loadError",
                 )}
-              </div>
+              </p>
+            ) : (
+              <SearchPreviewSkeleton />
             )}
           </div>
           <button

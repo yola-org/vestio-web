@@ -1,6 +1,6 @@
 "use client"
 
-import Spinner from "@/components/shared/Spinner"
+import FilterPanelSkeleton from "@/components/home/FilterPanelSkeleton"
 import { Fragment, type ReactNode } from "react"
 import Form from "next/form"
 import Link from "next/link"
@@ -66,18 +66,14 @@ export default function FilterPanel({
   )
   const selectedColor = namedColor?.value ?? activeColor
 
+  if (loading) return <FilterPanelSkeleton />
+
   return (
     <aside className="w-full shrink-0 lg:w-64">
       <Form action="/search" className="space-y-5">
         {query && <input type="hidden" name="query" value={query} />}
         {filters.brandId && (
           <input type="hidden" name="brandId" value={filters.brandId} />
-        )}
-        {loading && (
-          <Spinner
-            label={t("common.loading")}
-            className="size-5 border-2 text-deep-accent"
-          />
         )}
         {error && (
           <p role="status" className="text-sm">
@@ -245,7 +241,6 @@ export default function FilterPanel({
         )}
         <button
           type="submit"
-          disabled={loading}
           className="w-full rounded-xl bg-deep-accent py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-50"
         >
           {t("search.apply")}

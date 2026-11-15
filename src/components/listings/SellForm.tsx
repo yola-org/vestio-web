@@ -1,6 +1,6 @@
 "use client"
 // Moving between the drop zone and its children fires additional events.
-import Spinner from "@/components/shared/Spinner"
+import SellFormSkeleton from "@/components/listings/SellFormSkeleton"
 import {
   useEffect,
   useRef,
@@ -329,17 +329,7 @@ export default function SellForm() {
     }
   }
 
-  if (loading) {
-    return (
-      <div
-        className="flex justify-center py-20"
-        role="status"
-        aria-label={t("sell.loading")}
-      >
-        <Spinner className="size-8 border-4 text-deep-accent" />
-      </div>
-    )
-  }
+  if (loading) return <SellFormSkeleton />
 
   if (published) {
     return (

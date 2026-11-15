@@ -1,8 +1,8 @@
-import Skeleton from "@/components/shared/Skeleton"
+import Skeleton, { SkeletonGroup } from "@/components/shared/Skeleton"
 
 export default function PreferencesModalSkeleton() {
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <SkeletonGroup className="space-y-8">
       {[...Array(3)].map((_, i) => (
         <div key={i} className="space-y-4">
           <div className="flex items-center justify-between px-1">
@@ -16,6 +16,6 @@ export default function PreferencesModalSkeleton() {
           </div>
         </div>
       ))}
-    </div>
+    </SkeletonGroup>
   )
 }

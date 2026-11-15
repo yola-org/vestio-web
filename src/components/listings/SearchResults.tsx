@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import ListingGrid from "@/components/shared/ListingGrid"
+import { searchGridColumns } from "@/components/shared/ListingSkeletons"
 import { useFavorites } from "@/hooks/use-favorites"
 import type { Listing } from "@/lib/api/schemas"
 
@@ -33,7 +34,7 @@ export default function SearchResults({
       )}
       <ListingGrid
         listings={listings}
-        columns="grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        columns={searchGridColumns}
         savedIds={favorites.savedIds}
         saveDisabled={authenticated && (favorites.loading || favorites.saving)}
         onToggleSave={
