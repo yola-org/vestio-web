@@ -6,7 +6,10 @@ import FilterPanel from "@/components/home/FilterPanel"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import SearchResults from "@/components/listings/SearchResults"
-import { ListingGridSkeleton, searchGridColumns } from "@/components/shared/ListingSkeletons"
+import {
+  ListingGridSkeleton,
+  searchGridColumns,
+} from "@/components/shared/ListingSkeletons"
 import { AUTH_INDICATOR_COOKIE } from "@/constants/auth"
 import { searchListingsAction } from "@/lib/actions/listings"
 
@@ -74,7 +77,10 @@ export default async function SearchPage({
           />
           <div className="min-w-0 flex-1">
             {invalidRange ? (
-              <p role="alert" className="rounded-xl border border-black/10 bg-white p-5">
+              <p
+                role="alert"
+                className="rounded-xl border border-black/10 bg-white p-5"
+              >
                 {t("search.invalidPrice")}
               </p>
             ) : (
@@ -114,7 +120,10 @@ async function SearchPageResults({
 
   if (!result.success) {
     return (
-      <p role="alert" className="rounded-xl border border-black/10 bg-white p-5">
+      <p
+        role="alert"
+        className="rounded-xl border border-black/10 bg-white p-5"
+      >
         {t("search.loadError")}
       </p>
     )

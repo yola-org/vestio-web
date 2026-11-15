@@ -32,7 +32,9 @@ export function ListingGridSkeleton({
 }) {
   return (
     <SkeletonGroup className={`grid ${columns} gap-x-4 gap-y-9 lg:gap-6`}>
-      {Array.from({ length: count }, (_, index) => <ListingCardSkeleton key={index} />)}
+      {Array.from({ length: count }, (_, index) => (
+        <ListingCardSkeleton key={index} />
+      ))}
     </SkeletonGroup>
   )
 }
@@ -41,7 +43,10 @@ export function ListingDetailSkeleton() {
   return (
     <SkeletonGroup className="grid items-stretch md:grid-cols-[1.2fr_1fr]">
       <Skeleton className="aspect-[4/5] rounded-none md:aspect-auto" />
-      <div aria-hidden="true" className="min-w-0 space-y-5 border border-black/10 bg-white p-5 sm:p-6 lg:p-8">
+      <div
+        aria-hidden="true"
+        className="min-w-0 space-y-5 border border-black/10 bg-white p-5 sm:p-6 lg:p-8"
+      >
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-9 w-3/4" />
         <Skeleton className="h-7 w-24" />

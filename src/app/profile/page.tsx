@@ -55,7 +55,10 @@ function ProfileContent() {
     return (
       <main className="main-container py-20 text-center">
         <h1 className="mb-4 text-2xl font-bold">{t("profile.notFound")}</h1>
-        <Link href="/login" className="font-bold text-deep-accent hover:underline">
+        <Link
+          href="/login"
+          className="font-bold text-deep-accent hover:underline"
+        >
           {t("profile.pleaseLogin")}
         </Link>
       </main>
@@ -91,8 +94,7 @@ function ProfileContent() {
                 href="/settings"
                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-black/10 text-sm font-bold hover:bg-black/5 transition"
               >
-                <SettingsIcon className="h-4 w-4" />{" "}
-                {t("profile.editProfile")}
+                <SettingsIcon className="h-4 w-4" /> {t("profile.editProfile")}
               </Link>
               <Link
                 href="/favorites"
@@ -141,9 +143,7 @@ function ProfileContent() {
             aria-label={t("profile.statsListings")}
             onKeyDown={(event) => {
               if (
-                !["ArrowLeft", "ArrowRight", "Home", "End"].includes(
-                  event.key,
-                )
+                !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
               )
                 return
 

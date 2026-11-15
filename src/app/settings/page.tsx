@@ -128,7 +128,10 @@ export default function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold mb-2" htmlFor="phone">
+                  <label
+                    className="block text-sm font-bold mb-2"
+                    htmlFor="phone"
+                  >
                     {t("settings.phone")}
                   </label>
                   <input

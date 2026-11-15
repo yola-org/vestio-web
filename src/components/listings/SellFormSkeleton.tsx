@@ -5,7 +5,10 @@ export default function SellFormSkeleton() {
     <SkeletonGroup className="mx-auto max-w-3xl">
       <div className="mb-6 grid grid-cols-5 gap-1.5 sm:gap-3">
         {Array.from({ length: 5 }, (_, index) => (
-          <div key={index} className="grid justify-items-center gap-2 border-t-4 border-black/10 pt-3">
+          <div
+            key={index}
+            className="grid justify-items-center gap-2 border-t-4 border-black/10 pt-3"
+          >
             <Skeleton className="size-7 rounded-full" />
             <Skeleton className="h-3 w-4/5" />
           </div>

@@ -4,7 +4,11 @@ export default function OffersSkeleton({ sent = false }: { sent?: boolean }) {
   return (
     <SkeletonGroup className="grid gap-4">
       {Array.from({ length: 3 }, (_, index) => (
-        <div key={index} className="rounded-2xl border border-black/10 bg-white p-5 sm:p-6" aria-hidden="true">
+        <div
+          key={index}
+          className="rounded-2xl border border-black/10 bg-white p-5 sm:p-6"
+          aria-hidden="true"
+        >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-2">
               <Skeleton className="h-5 w-36 sm:w-48" />

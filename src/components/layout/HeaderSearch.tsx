@@ -190,7 +190,11 @@ export default function HeaderSearch({
               </ul>
             ) : currentPreview ? (
               <p className="px-4 py-5 text-sm text-black/65" role="status">
-                {t(currentPreview.listings ? "listings.empty" : "search.loadError")}
+                {t(
+                  currentPreview.listings
+                    ? "listings.empty"
+                    : "search.loadError",
+                )}
               </p>
             ) : (
               <SearchPreviewSkeleton />

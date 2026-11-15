@@ -1,5 +1,8 @@
 import FilterPanelSkeleton from "@/components/home/FilterPanelSkeleton"
-import { ListingGridSkeleton, searchGridColumns } from "@/components/shared/ListingSkeletons"
+import {
+  ListingGridSkeleton,
+  searchGridColumns,
+} from "@/components/shared/ListingSkeletons"
 import PageSkeleton from "@/components/shared/PageSkeleton"
 import Skeleton from "@/components/shared/Skeleton"
 
