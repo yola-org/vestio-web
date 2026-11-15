@@ -21,6 +21,7 @@ import { getListingAction } from "@/lib/actions/listings"
 import { getCategoriesAction } from "@/lib/actions/profile"
 import { ContactTypeSchema } from "@/lib/api/schemas"
 import { findCategoryWithParent } from "@/lib/category-utils"
+import { getListingImageUrls } from "@/lib/listing-images"
 
 export default async function ListingPage({
   params,
@@ -45,6 +46,8 @@ export default async function ListingPage({
     notFound()
   }
 
+  const photos = getListingImageUrls(listing)
+  const legacyPhotos = getListingImageUrls(listing, "original", "nested")
   const [t, format, cookieStore, categories] = await Promise.all([
     getTranslations(),
     getFormatter(),
@@ -65,9 +68,9 @@ export default async function ListingPage({
     ...new Set(listing.colors?.map((color) => color.trim()).filter(Boolean)),
   ]
   const gender = listing.gender?.trim().toUpperCase()
-  const delivery = (listing.contactTypes ?? [])
+  const deliveryTypes = [...new Set(listing.contactTypes ?? [])]
     .filter((type) => ContactTypeSchema.options.includes(type))
-    .map((type) => t(`sell.contactTypes.${type}`))
+  const delivery = deliveryTypes.map((type) => t(`sell.contactTypes.${type}`))
   const details = [
     [t("filters.condition"), t(`conditions.${listing.condition}.label`)],
     [t("sell.contact"), format.list(delivery, { type: "unit" })],
@@ -88,8 +91,8 @@ export default async function ListingPage({
         <article className="grid items-stretch md:grid-cols-[1.2fr_1fr]">
           <ListingDetailCarousel
             key={listing.id}
-            image={listing.image}
-            imageUrls={listing.imageUrls}
+            photos={photos}
+            legacyPhotos={legacyPhotos}
             title={listing.title}
           />
 
@@ -134,8 +137,14 @@ export default async function ListingPage({
               {format.number(listing.price)} {t("common.currency")}
             </p>
             <div className="mt-4 grid gap-2">
-              {listing.status !== "SOLD" && (
-                <ListingDetailOffer title={listing.title} />
+              {listing.status !== "SOLD" && deliveryTypes.length > 0 && (
+                <ListingDetailOffer
+                  key={listing.id}
+                  listingId={listing.id}
+                  title={listing.title}
+                  deliveryTypes={deliveryTypes}
+                  authenticated={authenticated}
+                />
               )}
               <ListingDetailFavorite
                 listing={listing}

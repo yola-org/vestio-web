@@ -2,6 +2,7 @@
 
 /** A reference-counted full-page loader for API calls that opt into it. */
 
+import Spinner from "@/components/shared/Spinner"
 import {
   createContext,
   useCallback,
@@ -40,13 +41,12 @@ export default function GlobalLoadingProvider({
       {children}
       {pendingCount > 0 && (
         <div
-          className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-4 bg-[#f7f3ea]/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#f7f3ea]/80 text-deep-accent backdrop-blur-sm"
           role="status"
           aria-live="polite"
           aria-label={t("loading.message")}
         >
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#173fdb]/15 border-t-[#173fdb]" />
-          <p className="font-bold text-black/60">{t("loading.message")}</p>
+          <Spinner className="size-12 border-4" />
         </div>
       )}
     </GlobalLoadingContext.Provider>

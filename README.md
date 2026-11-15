@@ -35,6 +35,8 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 The API base URL is resolved as `process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'` (see `src/lib/api/request.ts`).
 
+Listing images use the public S3 endpoint for `vestio-dev-assets` in local development and `vestio-assets` in production builds. Set `NEXT_PUBLIC_LISTING_ASSETS_BASE_URL` at build time to point a deployment at a different bucket or CDN.
+
 ### Development
 ```bash
 npm run dev

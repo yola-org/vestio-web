@@ -1,36 +1,61 @@
 "use client"
 
-import { useId, useState, type FormEvent } from "react"
+import { useEffect, useId, useRef, useState } from "react"
+import Link from "next/link"
 import { useFormatter, useTranslations } from "next-intl"
 import { ArrowIcon } from "@/components/shared/Icons"
+import OfferFormModal from "@/components/offers/OfferFormModal"
 import FavoriteButton from "@/components/shared/FavoriteButton"
 import { useFavorites } from "@/hooks/use-favorites"
-import type { Listing } from "@/lib/api/schemas"
+import { createOfferAction } from "@/lib/actions/listings"
+import type { ContactType, Listing } from "@/lib/api/schemas"
+
+function ListingDetailBackdrop({ photo }: { photo: string }) {
+  const [loaded, setLoaded] = useState(false)
+  const imageRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    const image = imageRef.current
+    if (image?.complete && image.naturalWidth > 0) setLoaded(true)
+  }, [])
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-0 overflow-hidden transition-opacity duration-500 motion-reduce:transition-none ${
+        loaded ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <img
+        ref={imageRef}
+        src={photo}
+        alt=""
+        className="absolute inset-0 size-full scale-105 object-cover opacity-80 blur-md"
+        onLoad={() => setLoaded(true)}
+      />
+      <div className="absolute inset-0 bg-black/55" />
+    </div>
+  )
+}
 
 export function ListingDetailCarousel({
-  image,
-  imageUrls,
+  photos,
+  legacyPhotos,
   title,
-}: Pick<Listing, "image" | "imageUrls" | "title">) {
+}: { photos: string[]; legacyPhotos: string[]; title: string }) {
   const t = useTranslations("listingDetail")
   const [index, setIndex] = useState(0)
   const [failedImages, setFailedImages] = useState<string[]>([])
-  const photos = [
-    ...new Set(
-      [image, ...(imageUrls ?? [])].flatMap((url) => {
-        const trimmed = url?.trim()
-        return trimmed ? [trimmed] : []
-      }),
-    ),
-  ]
-  const source = photos[index]
+  const photo = photos[index]
+  const source = photo && failedImages.includes(photo) ? legacyPhotos[index] : photo
   const hasPhoto = source && !failedImages.includes(source)
   const canNavigate = photos.length > 1
   const controlClass =
     "absolute top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-black/10 bg-white text-primary shadow-sm transition enabled:hover:bg-background disabled:cursor-default disabled:opacity-50 sm:size-10"
 
   return (
-    <div className="relative aspect-[4/5] min-w-0 overflow-hidden border border-black/10 bg-[#e9ecf0] md:aspect-auto md:border-e-0">
+    <div className="relative isolate aspect-[4/5] min-w-0 overflow-hidden border border-black/10 bg-[#e9ecf0] md:aspect-auto md:border-e-0">
+      {hasPhoto && <ListingDetailBackdrop key={`backdrop-${source}`} photo={source} />}
       <img
         key={source}
         src={hasPhoto ? source : "/listing-image-unavailable.png"}
@@ -76,82 +101,53 @@ export function ListingDetailCarousel({
   )
 }
 
-export function ListingDetailOffer({ title }: Pick<Listing, "title">) {
+export function ListingDetailOffer({
+  listingId,
+  title,
+  deliveryTypes,
+  authenticated,
+}: {
+  listingId: string
+  title: string
+  deliveryTypes: ContactType[]
+  authenticated: boolean
+}) {
   const t = useTranslations()
-  const format = useFormatter()
-  const [message, setMessage] = useState("")
-  const [copied, setCopied] = useState(false)
-
-  async function copyOffer(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const amount = Number(new FormData(event.currentTarget).get("amount"))
-    if (!Number.isFinite(amount) || amount <= 0) return
-
-    const offer = t("listingDetail.offerMessage", {
-      amount: format.number(amount, { maximumFractionDigits: 2 }),
-      currency: t("common.currency"),
-      title,
-      url: window.location.href,
-    })
-    setMessage(offer)
-    try {
-      await navigator.clipboard.writeText(offer)
-      setCopied(true)
-    } catch {
-      setCopied(false)
-    }
-  }
+  const [isOpen, setIsOpen] = useState(false)
+  const [sent, setSent] = useState(false)
 
   return (
-    <details>
-      <summary className="cursor-pointer list-none rounded-full bg-accent px-5 py-3.5 text-center text-sm font-bold text-white transition hover:brightness-95 [&::-webkit-details-marker]:hidden">
-        {t("listingDetail.sendOffer")}
-      </summary>
-      <form
-        onSubmit={copyOffer}
-        className="mt-3 grid gap-3 rounded-2xl border border-black/10 p-4 text-sm"
+    <>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-disabled={sent || undefined}
+        onClick={() => {
+          if (!sent) setIsOpen(true)
+        }}
+        className="rounded-full bg-accent px-5 py-3.5 text-center text-sm font-bold text-white transition hover:brightness-95 aria-disabled:opacity-60"
       >
-        <label className="grid gap-1 font-bold">
-          {t("listingDetail.offerAmount", { currency: t("common.currency") })}
-          <input
-            type="number"
-            name="amount"
-            required
-            min="0.01"
-            step="0.01"
-            className="min-w-0 rounded-lg border border-black/20 px-3 py-2"
-            onChange={() => {
-              setMessage("")
-              setCopied(false)
-            }}
-          />
-        </label>
-        <button
-          type="submit"
-          className="justify-self-start font-bold text-deep-accent hover:underline"
-        >
-          {t("listingDetail.copyOffer")}
-        </button>
-        {message && (
-          <div className="grid gap-2">
-            <p role="status">
-              {t(
-                copied
-                  ? "listingDetail.offerCopied"
-                  : "listingDetail.offerCopyManually",
-              )}
-            </p>
-            <textarea
-              aria-label={t("listingDetail.copyOffer")}
-              className="w-full rounded-lg border border-black/20 p-2"
-              readOnly
-              rows={3}
-              value={message}
-            />
-          </div>
-        )}
-      </form>
-    </details>
+        {t(sent ? "listingDetail.offerSent" : "listingDetail.sendOffer")}
+      </button>
+      <p role="status" className="sr-only">
+        {sent && t("listingDetail.offerSent")}
+      </p>
+      {isOpen && (
+        <OfferFormModal
+          title={t("listingDetail.sendOffer")}
+          submitLabel={t("listingDetail.offerSubmit")}
+          listingTitle={title}
+          deliveryTypes={deliveryTypes}
+          authenticated={authenticated}
+          onClose={() => setIsOpen(false)}
+          onSubmit={(details) => createOfferAction({ listingId, ...details })}
+          onSaved={() => {
+            setIsOpen(false)
+            setSent(true)
+          }}
+        />
+      )}
+    </>
   )
 }
 

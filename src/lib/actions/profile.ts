@@ -8,6 +8,9 @@
 // The backend expects objects { id: UUID } for categories
 
 import { z } from "zod"
+import { cookies } from "next/headers"
+import { AUTH_DISPLAY_NAME_COOKIE } from "@/constants/auth"
+import { writeAccountDisplayName } from "@/lib/api/auth-cookies"
 
 import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
 import { request } from "@/lib/api/request.ts"
@@ -68,6 +71,10 @@ export async function getStaticDataAction(): Promise<ApiResult<StaticData>> {
 export async function getProfileAction(): Promise<ApiResult<UserProfile>> {
   return runAction(async () => {
     const profile = await request<ProfileResponse>("/api/profile")
+    const cookieStore = await cookies()
+    if (!cookieStore.has(AUTH_DISPLAY_NAME_COOKIE)) {
+      writeAccountDisplayName(cookieStore, profile)
+    }
     return {
       ...profile,
       cityId: profile.city?.id || profile.cityId || null,
@@ -79,15 +86,17 @@ export async function getProfileAction(): Promise<ApiResult<UserProfile>> {
 export async function updateProfileAction(
   profile: Partial<UserProfile>,
 ): Promise<ApiResult<UserProfile>> {
-  return runAction(() => {
+  return runAction(async () => {
     const input = parseInput(ProfileUpdateInputSchema, profile)
-    return request<UserProfile>("/api/profile", {
+    const updated = await request<UserProfile>("/api/profile", {
       method: "PUT",
       body: JSON.stringify({
         ...input,
         city: input.cityId ? { id: input.cityId } : undefined,
       }),
     })
+    writeAccountDisplayName(await cookies(), updated)
+    return updated
   })
 }
 

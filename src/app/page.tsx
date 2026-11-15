@@ -2,7 +2,9 @@
 
 // Listen for auth changes
 
+import Spinner from "@/components/shared/Spinner"
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import Hero from "@/components/home/Hero"
@@ -15,6 +17,7 @@ import AuthenticatedHome from "@/components/home/AuthenticatedHome"
 import { isAuthenticated as hasAuthSession } from "@/lib/auth"
 
 export default function Page() {
+  const t = useTranslations("loading")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -31,7 +34,7 @@ export default function Page() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f7f3ea] flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#173fdb] border-t-transparent"></div>
+        <Spinner className="size-8 border-4 text-deep-accent" label={t("message")} />
       </div>
     )
   }

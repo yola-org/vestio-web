@@ -1,5 +1,6 @@
 "use client"
 
+import Spinner from "@/components/shared/Spinner"
 import { useEffect, useId, useState } from "react"
 import Form from "next/form"
 import { useFormatter, useTranslations } from "next-intl"
@@ -188,13 +189,13 @@ export default function HeaderSearch({
                 ))}
               </ul>
             ) : (
-              <p className="px-4 py-5 text-sm text-black/65" role="status">
-                {!currentPreview
-                  ? t("common.loading")
-                  : currentPreview.listings
-                    ? t("listings.empty")
-                    : t("search.loadError")}
-              </p>
+              <div className="px-4 py-5 text-sm text-black/65">
+                {currentPreview ? (
+                  <p role="status">{t(currentPreview.listings ? "listings.empty" : "search.loadError")}</p>
+                ) : (
+                  <Spinner label={t("common.loading")} className="size-5 border-2 text-deep-accent" />
+                )}
+              </div>
             )}
           </div>
           <button

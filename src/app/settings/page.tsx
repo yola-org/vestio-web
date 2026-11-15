@@ -2,10 +2,12 @@
 
 // Form state
 
+import Spinner from "@/components/shared/Spinner"
 import { useState } from "react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { profileApi } from "@/lib/api"
+import { notifyAuthChanged } from "@/lib/auth"
 import { useApiForm } from "@/hooks/use-api-form"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { ArrowIcon, UserIcon } from "@/components/shared/Icons"
@@ -44,6 +46,7 @@ export default function SettingsPage() {
     {
       loading: false,
       onSuccess: () => {
+        notifyAuthChanged()
         notify.success(t("settings.success"))
         router.push("/profile")
       },
@@ -58,9 +61,7 @@ export default function SettingsPage() {
       <div className="min-h-screen bg-[#f7f3ea]">
         <Header />
         <main className="main-container py-20 flex justify-center">
-          <div className="animate-pulse text-xl font-bold">
-            {t("settings.loading")}
-          </div>
+          <Spinner className="size-8 border-4 text-deep-accent" label={t("settings.loading")} />
         </main>
         <Footer />
       </div>

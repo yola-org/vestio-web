@@ -3,6 +3,7 @@ import { useState } from "react"
 import { profileApi } from "@/lib/api"
 import { useApiAction } from "@/hooks/use-api-action"
 import { useApiQuery } from "@/hooks/use-api-query"
+import Button from "@/components/shared/Button"
 import { CloseIcon } from "@/components/shared/Icons"
 import PreferencesModalSkeleton from "@/components/profile/PreferencesModalSkeleton"
 import { useNotifications } from "@/components/shared/NotificationProvider"
@@ -198,16 +199,14 @@ export default function PreferencesModal({
           >
             {t("preferences.cancel")}
           </button>
-          <button
+          <Button
             onClick={handleSave}
-            disabled={saving || loading}
+            loading={saving}
+            disabled={loading}
             className="bg-[#173fdb] text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-[#173fdb]/20 hover:bg-[#1234b5] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {saving && (
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            )}
             {t("preferences.save")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

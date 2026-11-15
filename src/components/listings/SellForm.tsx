@@ -1,5 +1,6 @@
 "use client"
 // Moving between the drop zone and its children fires additional events.
+import Spinner from "@/components/shared/Spinner"
 import {
   useEffect,
   useRef,
@@ -335,7 +336,7 @@ export default function SellForm() {
         role="status"
         aria-label={t("sell.loading")}
       >
-        <span className="h-8 w-8 animate-spin rounded-full border-4 border-deep-accent border-t-transparent" />
+        <Spinner className="size-8 border-4 text-deep-accent" />
       </div>
     )
   }
@@ -864,11 +865,7 @@ export default function SellForm() {
                   : nextClass
               }
             >
-              {submitting
-                ? t("sell.submitting")
-                : step === reviewStep
-                  ? t("sell.submit")
-                  : t("sell.next")}
+              {t(step === reviewStep ? "sell.submit" : "sell.next")}
             </Button>
           </div>
         </fieldset>

@@ -1,3 +1,4 @@
+import Spinner from "@/components/shared/Spinner"
 import type { ButtonHTMLAttributes, ReactNode } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -20,15 +21,16 @@ export default function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={className}
+      className={loading ? `relative ${className ?? ""}` : className}
     >
-      {loading && (
-        <span
-          className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-current/35 border-t-current"
-          aria-hidden="true"
-        />
-      )}
-      {children}
+      {loading ? (
+        <>
+          <span className="inline-flex items-center justify-center gap-2 opacity-0">{children}</span>
+          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </span>
+        </>
+      ) : children}
     </button>
   )
 }

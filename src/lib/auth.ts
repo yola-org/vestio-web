@@ -1,4 +1,5 @@
-import { AUTH_INDICATOR_COOKIE } from "@/constants/auth"
+import { AUTH_DISPLAY_NAME_COOKIE, AUTH_INDICATOR_COOKIE } from "@/constants/auth"
+import { AccountDisplayNameSchema } from "@/lib/api/schemas"
 
 const AUTH_LOCAL_STORAGE_KEY = "vestio_was_authenticated"
 
@@ -27,6 +28,22 @@ export function isAuthenticated(): boolean {
   return document.cookie
     .split("; ")
     .some((cookie) => cookie.startsWith(`${AUTH_INDICATOR_COOKIE}=1`))
+}
+
+export function readAccountDisplayName() {
+  if (!isAuthenticated()) return undefined
+
+  const prefix = `${AUTH_DISPLAY_NAME_COOKIE}=`
+  const cookie = document.cookie.split("; ").find((item) => item.startsWith(prefix))
+  if (!cookie) return undefined
+
+  try {
+    return AccountDisplayNameSchema.safeParse(
+      JSON.parse(decodeURIComponent(cookie.slice(prefix.length))),
+    ).data
+  } catch {
+    return undefined
+  }
 }
 
 /**

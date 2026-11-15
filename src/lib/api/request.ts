@@ -104,27 +104,16 @@ export async function request<T>(
   const refreshToken = cookieStore.get(AUTH_REFRESH_TOKEN_COOKIE)?.value
   let accessToken = cookieStore.get(AUTH_TOKEN_COOKIE)?.value
 
-  async function refreshAccessToken(token: string) {
-    const data = await requestOnce<unknown>("/api/auth/refresh", {
-      method: "POST",
-      body: JSON.stringify({ refreshToken: token }),
-      cache: "no-store",
-    })
-    const tokens = JwtResponseSchema.parse(data)
-    writeTokenCookies(cookieStore, tokens)
-    return tokens.accessToken
-  }
-
   try {
     if (!accessToken && refreshToken) {
-      accessToken = await refreshAccessToken(refreshToken)
+      accessToken = await refreshAccessToken(cookieStore, refreshToken)
     } else if (accessToken && refreshToken) {
       try {
         return await requestOnce<T>(endpoint, options, accessToken)
       } catch (error) {
         if (!(error instanceof ApiError) || error.status !== 401) throw error
       }
-      accessToken = await refreshAccessToken(refreshToken)
+      accessToken = await refreshAccessToken(cookieStore, refreshToken)
     }
 
     return await requestOnce<T>(endpoint, options, accessToken)
@@ -134,6 +123,43 @@ export async function request<T>(
     }
     throw error
   }
+}
+
+export async function refreshPageSession(): Promise<number> {
+  const cookieStore = await cookies()
+  if (cookieStore.get(AUTH_TOKEN_COOKIE)?.value) return 204
+
+  const refreshToken = cookieStore.get(AUTH_REFRESH_TOKEN_COOKIE)?.value
+  if (!refreshToken) {
+    clearAuthCookies(cookieStore)
+    return 401
+  }
+
+  try {
+    await refreshAccessToken(cookieStore, refreshToken)
+    return 204
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      clearAuthCookies(cookieStore)
+      return 401
+    }
+    return 503
+  }
+}
+
+async function refreshAccessToken(
+  cookieStore: Awaited<ReturnType<typeof cookies>>,
+  token: string,
+) {
+  const data = await requestOnce<unknown>("/api/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken: token }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(5_000),
+  })
+  const tokens = JwtResponseSchema.parse(data)
+  writeTokenCookies(cookieStore, tokens)
+  return tokens.accessToken
 }
 
 async function requestOnce<T>(
@@ -162,16 +188,20 @@ async function requestOnce<T>(
 
   const url = `${BASE_URL}${endpoint}`
   let response: Response
+  let responseData: unknown
 
   try {
     response = await fetch(url, {
       ...options,
       headers,
+      signal: options.signal ?? AbortSignal.timeout(15_000),
       next: options.next ?? { revalidate: 0 },
     })
+    if (response.status !== 204) responseData = await parseResponse(response)
   } catch (error: unknown) {
     const durationMs = Date.now() - startTime
-    const apiError = isNetworkError(error)
+    const timedOut = error instanceof Error && error.name === "TimeoutError"
+    const apiError = isNetworkError(error) || timedOut
       ? new ApiError({
           timestamp: new Date().toISOString(),
           status: 503,
@@ -196,7 +226,6 @@ async function requestOnce<T>(
     return undefined as T
   }
 
-  const responseData = await parseResponse(response)
   const durationMs = Date.now() - startTime
 
   if (response.ok) {

@@ -1,5 +1,6 @@
 "use client"
 
+import Spinner from "@/components/shared/Spinner"
 import { Fragment, type ReactNode } from "react"
 import Form from "next/form"
 import Link from "next/link"
@@ -72,6 +73,9 @@ export default function FilterPanel({
         {filters.brandId && (
           <input type="hidden" name="brandId" value={filters.brandId} />
         )}
+        {loading && (
+          <Spinner label={t("common.loading")} className="size-5 border-2 text-deep-accent" />
+        )}
         {error && (
           <p role="status" className="text-sm">
             {t("search.filtersError")}{" "}
@@ -96,9 +100,7 @@ export default function FilterPanel({
             {data
               ? categoryOptions(data.categories)
               : filters.categoryId && (
-                  <option value={filters.categoryId}>
-                    {t("common.loading")}
-                  </option>
+                  <option value={filters.categoryId} />
                 )}
           </select>
         </label>
@@ -118,7 +120,7 @@ export default function FilterPanel({
                   </option>
                 ))
               : filters.cityId && (
-                  <option value={filters.cityId}>{t("common.loading")}</option>
+                  <option value={filters.cityId} />
                 )}
           </select>
         </label>
@@ -142,7 +144,7 @@ export default function FilterPanel({
                   </optgroup>
                 ))
               : filters.sizeId && (
-                  <option value={filters.sizeId}>{t("common.loading")}</option>
+                  <option value={filters.sizeId} />
                 )}
           </select>
         </label>
