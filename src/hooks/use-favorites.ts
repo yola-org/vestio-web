@@ -25,7 +25,7 @@ export function useFavorites(enabled = true) {
         message: t("ownListing"),
         action: (error) => {
           notify.error(error.message)
-        },
+          },
       },
     },
   })
