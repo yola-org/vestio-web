@@ -22,6 +22,7 @@ import {
 import type { AccountDisplayName } from "@/lib/api/schemas"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import { categoryHref } from "@/lib/category-utils"
 import HeaderSearch from "@/components/layout/HeaderSearch"
 import {
   HeaderNavSkeleton,
@@ -31,12 +32,16 @@ import {
 interface HeaderProps {
   searchQuery?: string
   searchCityId?: string
+  searchCategoryId?: string
+  searchAction?: string
   searchFilters?: Record<string, string>
 }
 
 export default function Header({
   searchQuery = "",
   searchCityId = "",
+  searchCategoryId,
+  searchAction,
   searchFilters = {},
 }: HeaderProps) {
   const t = useTranslations()
@@ -169,6 +174,8 @@ export default function Header({
             <HeaderSearch
               initialQuery={searchQuery}
               filters={activeSearchFilters}
+              categoryId={searchCategoryId}
+              action={searchAction}
             />
           </div>
         </div>
@@ -275,18 +282,23 @@ export default function Header({
                             index < 5 ? "border-e border-black/10 pe-4" : ""
                           }
                         >
-                          <p className="mb-4 text-base font-black tracking-tight normal-case text-primary">
+                          <Link
+                            href={categoryHref(parent.name)}
+                            onClick={() => setMegaOpen(false)}
+                            className="mb-4 block text-base font-black tracking-tight normal-case text-primary hover:text-deep-accent"
+                          >
                             {parent.name}
-                          </p>
+                          </Link>
                           <ul className="space-y-2.5 text-[13px] font-medium tracking-normal normal-case text-black/60">
                             {parent.subCategories?.map((child) => (
                               <li key={child.id}>
-                                <a
-                                  href="#shop"
+                                <Link
+                                  href={categoryHref(parent.name, child.name)}
+                                  onClick={() => setMegaOpen(false)}
                                   className="hover:text-deep-accent hover:underline"
                                 >
                                   {child.name}
-                                </a>
+                                </Link>
                               </li>
                             ))}
                           </ul>
@@ -297,13 +309,13 @@ export default function Header({
                 ))}
             </div>
             {categories.map((parent) => (
-              <a
+              <Link
                 key={parent.id}
-                href="#shop"
+                href={categoryHref(parent.name)}
                 className="hover:text-deep-accent"
               >
                 {parent.name}
-              </a>
+              </Link>
             ))}
           </nav>
         )}
@@ -358,6 +370,8 @@ export default function Header({
             <HeaderSearch
               initialQuery={searchQuery}
               filters={activeSearchFilters}
+              categoryId={searchCategoryId}
+              action={searchAction}
               mobile
             />
           </div>

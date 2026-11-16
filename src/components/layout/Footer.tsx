@@ -3,19 +3,25 @@
 import Link from "next/link"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { useTranslations } from "next-intl"
+import { useApiQuery } from "@/hooks/use-api-query"
+import { profileApi } from "@/lib/api"
+import { categoryHref } from "@/lib/category-utils"
 
 export default function Footer() {
   const t = useTranslations()
+  const { data: categories } = useApiQuery(profileApi.getCategories, {
+    loading: false,
+  })
 
   const columns = [
     {
       title: t("footer.discover"),
-      links: [
-        t("footer.discoverWomen"),
-        t("footer.discoverMen"),
-        t("footer.discoverKids"),
-        t("footer.discoverDesigners"),
-      ],
+      links: (categories ?? [])
+        .filter((category) => !category.parentId)
+        .map((category) => ({
+          name: category.name,
+          href: categoryHref(category.name),
+        })),
     },
     {
       title: t("footer.vestio"),
@@ -56,12 +62,8 @@ export default function Footer() {
               </p>
               <ul className="space-y-3 text-sm text-white/60">
                 {column.links.map((link) => (
-                  <li key={typeof link === "string" ? link : link.name}>
-                    {typeof link === "string" ? (
-                      <a href="#" className="hover:text-white">
-                        {link}
-                      </a>
-                    ) : link.href.startsWith("/") ? (
+                  <li key={link.href === "#" ? link.name : link.href}>
+                    {link.href.startsWith("/") ? (
                       <Link href={link.href} className="hover:text-white">
                         {link.name}
                       </Link>

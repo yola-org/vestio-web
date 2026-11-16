@@ -20,7 +20,7 @@ import { AUTH_INDICATOR_COOKIE } from "@/constants/auth"
 import { getListingAction } from "@/lib/actions/listings"
 import { getCategoriesAction } from "@/lib/actions/profile"
 import { ContactTypeSchema } from "@/lib/api/schemas"
-import { findCategoryWithParent } from "@/lib/category-utils"
+import { categoryHref, findCategoryPath } from "@/lib/category-utils"
 import { getListingImageUrls } from "@/lib/listing-images"
 
 export default async function ListingPage({
@@ -54,15 +54,27 @@ export default async function ListingPage({
     cookies(),
     listing.categoryId ? getCategoriesAction() : undefined,
   ])
-  const { category, parent } = findCategoryWithParent(
+  const categoryPath = findCategoryPath(
     categories?.success ? categories.data : [],
     listing.categoryId,
   )
-  const categoryName = category?.name || listing.categoryName
-  const breadcrumbs = [
-    ...(parent ? [{ id: parent.id, name: parent.name }] : []),
-    ...(categoryName ? [{ id: listing.categoryId, name: categoryName }] : []),
-  ]
+  const breadcrumbs = categoryPath.length
+    ? categoryPath.map(({ id, name }, index) => ({
+        id,
+        name,
+        href: categoryHref(
+          ...categoryPath.slice(0, index + 1).map((category) => category.name),
+        ),
+      }))
+    : listing.categoryName
+      ? [
+          {
+            id: listing.categoryId,
+            name: listing.categoryName,
+            href: undefined,
+          },
+        ]
+      : []
   const authenticated = cookieStore.get(AUTH_INDICATOR_COOKIE)?.value === "1"
   const colors = [
     ...new Set(listing.colors?.map((color) => color.trim()).filter(Boolean)),
@@ -102,14 +114,14 @@ export default async function ListingPage({
               {breadcrumbs.length > 0 && (
                 <nav aria-label={t("listingDetail.categoryBreadcrumb")}>
                   <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-primary/70">
-                    {breadcrumbs.map(({ id, name }, index) => (
+                    {breadcrumbs.map(({ id, name, href }, index) => (
                       <li key={id} className="flex min-w-0 items-center gap-2">
                         {index > 0 && (
                           <ChevronIcon className="size-3.5 shrink-0 -rotate-90 rtl:rotate-90" />
                         )}
-                        {id ? (
+                        {href ? (
                           <Link
-                            href={`/search?${new URLSearchParams({ categoryId: id })}`}
+                            href={href}
                             className="break-words font-semibold hover:text-primary hover:underline"
                           >
                             {name}

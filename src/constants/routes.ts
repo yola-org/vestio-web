@@ -1,6 +1,7 @@
 export const PUBLIC_PATHS = [
   "/welcome",
   "/search",
+  "/categories",
   "/login",
   "/register",
   "/500",

@@ -1,23 +1,58 @@
 import type { Category } from "@/lib/api/schemas"
 
-export function findCategoryWithParent(categories: Category[], id: string) {
-  const byId = new Map<string, Category>()
+export function categorySlug(name: string) {
+  return (
+    name
+      .normalize("NFKD")
+      .replace(/\p{Mark}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+      .replace(/^-|-$/g, "") || name.trim()
+  )
+}
 
-  function indexCategories(items: Category[], parentId?: string) {
-    for (const category of items) {
-      byId.set(category.id, {
-        ...category,
-        parentId:
-          category.parentId ?? parentId ?? byId.get(category.id)?.parentId,
-      })
-      indexCategories(category.subCategories ?? [], category.id)
-    }
+export function categoryHref(...names: string[]) {
+  return `/categories/${names.map((name) => encodeURIComponent(categorySlug(name))).join("/")}`
+}
+
+export function findCategoryPath(
+  categories: Category[],
+  id: string,
+): Category[] {
+  for (const category of categories) {
+    if (category.id === id) return [category]
+    const childPath = findCategoryPath(category.subCategories ?? [], id)
+    if (childPath.length) return [category, ...childPath]
   }
+  return []
+}
 
-  indexCategories(categories)
-  const category = byId.get(id)
-  const parent = category?.parentId ? byId.get(category.parentId) : undefined
-  return { category, parent }
+export function findCategoryPathBySlug(
+  categories: Category[],
+  slugs: string[],
+) {
+  const path: Category[] = []
+  let siblings = categories
+  for (const slug of slugs) {
+    const category = siblings.find((item) => categorySlug(item.name) === slug)
+    if (!category) return []
+    path.push(category)
+    siblings = category.subCategories ?? []
+  }
+  return path
+}
+
+export function categoryRedirectHref(
+  path: Category[],
+  searchParams: Record<string, string | string[] | undefined>,
+) {
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (key === "category" || key === "categoryId") continue
+    if (typeof value === "string" && value.trim()) params.set(key, value.trim())
+  }
+  const href = categoryHref(...path.map((category) => category.name))
+  return params.size ? `${href}?${params}` : href
 }
 
 /**

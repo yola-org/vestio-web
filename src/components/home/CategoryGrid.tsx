@@ -1,5 +1,7 @@
 "use client"
 // Only show root categories in the grid
+import Link from "next/link"
+import { categoryHref } from "@/lib/category-utils"
 import React, { useCallback } from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ArrowIcon, ChevronIcon } from "@/components/shared/Icons"
@@ -79,7 +81,10 @@ export default function CategoryGrid() {
           <div className="flex gap-4">
             {categories.map((category) => (
               <div key={category.id} className={tileClass}>
-                <a href="#" className="group block">
+                <Link
+                  href={categoryHref(category.name)}
+                  className="group block"
+                >
                   <div className="aspect-[4/5] overflow-hidden rounded-t-[6rem] bg-gray-200">
                     {category.image && (
                       <img
@@ -93,7 +98,7 @@ export default function CategoryGrid() {
                     <span className="font-bold">{category.name}</span>
                     <ArrowIcon className="h-4 w-4 transition group-hover:translate-x-1" />
                   </div>
-                </a>
+                </Link>
               </div>
             ))}
           </div>

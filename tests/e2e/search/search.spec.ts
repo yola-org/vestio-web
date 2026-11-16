@@ -98,3 +98,65 @@ test("shows a listing-specific message for missing items", async ({ page }) => {
   await page.getByRole("link", { name: "Voir les annonces" }).click()
   await expect(page).toHaveURL(/\/search$/)
 })
+
+test("browses a category and returns from a subcategory to its parent", async ({
+  page,
+}) => {
+  await page.goto("/welcome")
+  const categoryTile = page
+    .getByRole("main")
+    .getByRole("link", { name: "Homme", exact: true })
+  await categoryTile.scrollIntoViewIfNeeded()
+  await categoryTile.click()
+
+  await expect(page).toHaveURL(/\/categories\/homme$/)
+  const main = page.getByRole("main")
+  await expect(
+    main.getByRole("heading", { name: "Homme", exact: true }),
+  ).toBeVisible()
+  await expect(
+    main.getByRole("heading", { name: "Hoodie gris essentiel" }),
+  ).toBeVisible()
+  await expect(
+    main.getByRole("heading", { name: "Baskets rétro" }),
+  ).toBeVisible()
+  await expect(
+    main.getByRole("heading", { name: "Sac en cuir vintage" }),
+  ).toHaveCount(0)
+
+  await main.getByRole("link", { name: "T-shirts" }).click()
+  await expect(page).toHaveURL(/\/categories\/homme\/t-shirts$/)
+  await expect(
+    main.getByRole("heading", { name: "Baskets rétro" }),
+  ).toBeVisible()
+  await expect(
+    main.getByRole("heading", { name: "Hoodie gris essentiel" }),
+  ).toHaveCount(0)
+
+  await main.getByRole("spinbutton", { name: "Max" }).fill("300")
+  await main.getByRole("button", { name: "Appliquer les filtres" }).click()
+  await expect(page).toHaveURL(/\/categories\/homme\/t-shirts\?/)
+  await expect(main.getByText("Aucun article trouvé.")).toBeVisible()
+
+  await main.getByRole("link", { name: "Homme", exact: true }).click()
+  await expect(page).toHaveURL(/\/categories\/homme$/)
+  await expect(
+    main.getByRole("heading", { name: "Hoodie gris essentiel" }),
+  ).toBeVisible()
+})
+
+test("uses category names in search URLs and redirects older links", async ({
+  page,
+}) => {
+  await page.goto("/search?query=baskets")
+  const main = page.getByRole("main")
+  await main.getByRole("combobox", { name: "Catégories" }).selectOption("homme/t-shirts")
+  await main.getByRole("button", { name: "Appliquer les filtres" }).click()
+  await expect(page).toHaveURL(/\/categories\/homme\/t-shirts\?/)
+  expect(new URL(page.url()).searchParams.get("query")).toBe("baskets")
+  expect(new URL(page.url()).searchParams.has("categoryId")).toBe(false)
+  await expect(main.getByRole("heading", { name: "Baskets rétro" })).toBeVisible()
+
+  await page.goto("/categories/c21?query=baskets")
+  await expect(page).toHaveURL(/\/categories\/homme\/t-shirts\?query=baskets$/)
+})
