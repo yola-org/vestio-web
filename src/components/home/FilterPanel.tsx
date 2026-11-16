@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl"
 import { conditions, contactTypes } from "@/constants/data"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { profileApi } from "@/lib/api"
+import { categorySlug } from "@/lib/category-utils"
 import type { Category } from "@/lib/api/schemas"
 
 const fieldClass =
@@ -32,16 +33,24 @@ const colorOptions = [
 interface FilterPanelProps {
   query?: string
   filters?: Record<string, string>
+  action?: string
+  showCategoryFilter?: boolean
 }
 
-function categoryOptions(categories: Category[], parent = ""): ReactNode {
+function categoryOptions(
+  categories: Category[],
+  parent = "",
+  parentSlug = "",
+): ReactNode {
   return categories.map((category) => {
     const label = parent ? `${parent} / ${category.name}` : category.name
+    const slug = categorySlug(category.name)
+    const path = parentSlug ? `${parentSlug}/${slug}` : slug
     return (
       <Fragment key={category.id}>
-        <option value={category.id}>{label}</option>
+        <option value={path}>{label}</option>
         {category.subCategories &&
-          categoryOptions(category.subCategories, label)}
+          categoryOptions(category.subCategories, label, path)}
       </Fragment>
     )
   })
@@ -50,6 +59,8 @@ function categoryOptions(categories: Category[], parent = ""): ReactNode {
 export default function FilterPanel({
   query = "",
   filters = {},
+  action = "/search",
+  showCategoryFilter = true,
 }: FilterPanelProps) {
   const t = useTranslations()
   const { data, loading, error, refetch } = useApiQuery(
@@ -59,7 +70,7 @@ export default function FilterPanel({
     },
   )
   const resetParams = new URLSearchParams(query ? { query } : {})
-  const resetHref = query ? `/search?${resetParams}` : "/search"
+  const resetHref = query ? `${action}?${resetParams}` : action
   const activeColor = filters.color ?? ""
   const namedColor = colorOptions.find(
     ({ value }) => value.toLowerCase() === activeColor.toLowerCase(),
@@ -70,7 +81,7 @@ export default function FilterPanel({
 
   return (
     <aside className="w-full shrink-0 lg:w-64">
-      <Form action="/search" className="space-y-5">
+      <Form action={action} className="space-y-5">
         {query && <input type="hidden" name="query" value={query} />}
         {filters.brandId && (
           <input type="hidden" name="brandId" value={filters.brandId} />
@@ -87,20 +98,19 @@ export default function FilterPanel({
             </button>
           </p>
         )}
-        <label className="block space-y-2 text-sm font-bold">
-          <span>{t("filters.categories")}</span>
-          <select
-            key={String(Boolean(data))}
-            name="categoryId"
-            className={fieldClass}
-            defaultValue={filters.categoryId}
-          >
-            <option value="">{t("search.all")}</option>
-            {data
-              ? categoryOptions(data.categories)
-              : filters.categoryId && <option value={filters.categoryId} />}
-          </select>
-        </label>
+        {showCategoryFilter && (
+          <label className="block space-y-2 text-sm font-bold">
+            <span>{t("filters.categories")}</span>
+            <select
+              key={String(Boolean(data))}
+              name="category"
+              className={fieldClass}
+            >
+              <option value="">{t("search.all")}</option>
+              {data && categoryOptions(data.categories)}
+            </select>
+          </label>
+        )}
         <label className="block space-y-2 text-sm font-bold">
           <span>{t("sell.cities")}</span>
           <select

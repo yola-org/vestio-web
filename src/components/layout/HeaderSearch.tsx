@@ -11,12 +11,16 @@ import type { Listing } from "@/lib/api/schemas"
 interface HeaderSearchProps {
   initialQuery: string
   filters: Record<string, string>
+  categoryId?: string
+  action?: string
   mobile?: boolean
 }
 
 export default function HeaderSearch({
   initialQuery,
   filters,
+  categoryId,
+  action = "/search",
   mobile = false,
 }: HeaderSearchProps) {
   const t = useTranslations()
@@ -30,7 +34,11 @@ export default function HeaderSearch({
   }>()
   const term = query.trim()
   const showPreview = open && term.length >= 2
-  const params = new URLSearchParams({ ...filters, query: term })
+  const params = new URLSearchParams({
+    ...filters,
+    ...(categoryId && { categoryId, includeSubcategories: "true" }),
+    query: term,
+  })
   const previewKey = params.toString()
 
   useEffect(() => {
@@ -65,7 +73,7 @@ export default function HeaderSearch({
 
   return (
     <Form
-      action="/search"
+      action={action}
       role="search"
       className={mobile ? "relative" : "relative min-w-0 flex-1"}
       onSubmit={() => setOpen(false)}

@@ -71,6 +71,18 @@ const sizes = [
 
 const sizeNames = { s1: 'S', s2: 'M', s3: 'L' };
 const cityNames = Object.fromEntries(cities.map((c) => [c.id, c.name]));
+function findCategory(items, id) {
+  for (const category of items) {
+    if (category.id === id) return category;
+    const child = findCategory(category.subCategories ?? [], id);
+    if (child) return child;
+  }
+}
+
+function categoryTreeIds(category) {
+  return [category.id, ...(category.subCategories ?? []).flatMap(categoryTreeIds)];
+}
+
 const categoryNames = Object.fromEntries(
   categories.flatMap((c) => [c, ...(c.subCategories ?? [])].map((x) => [x.id, x.name]))
 );
@@ -308,6 +320,11 @@ async function handle(req, res, pathname, query) {
       const size = Number(query.get('size') ?? '12');
       const term = (query.get('query') ?? '').trim().toLowerCase();
       const cityId = query.get('cityId');
+      const categoryId = query.get('categoryId');
+      const category = findCategory(categories, categoryId);
+      const categoryIds = category && query.get('includeSubcategories') === 'true'
+        ? categoryTreeIds(category)
+        : [categoryId];
       const condition = query.get('condition');
       const minPrice = Number(query.get('minPrice') ?? 0);
       const maxPrice = Number(query.get('maxPrice') ?? Infinity);
@@ -315,6 +332,7 @@ async function handle(req, res, pathname, query) {
         listing.status === 'AVAILABLE' &&
         `${listing.title} ${listing.description ?? ''}`.toLowerCase().includes(term) &&
         (!cityId || listing.cityIds.includes(cityId)) &&
+        (!categoryId || categoryIds.includes(listing.categoryId)) &&
         (!condition || listing.condition === condition) &&
         listing.price >= minPrice && listing.price <= maxPrice
       );
