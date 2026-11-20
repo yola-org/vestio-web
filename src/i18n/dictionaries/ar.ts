@@ -143,6 +143,8 @@ const ar: Dictionary = {
   },
   pendingListings: {
     title: "الإعلانات قيد الانتظار",
+    pendingBadge: "قيد الانتظار",
+    processingBadge: "قيد التجهيز",
     empty: "ليس لديك أي إعلانات قيد الانتظار.",
     emptyPage: "لا توجد إعلانات أخرى قيد الانتظار.",
     loadError: "تعذّر تحميل إعلاناتك قيد الانتظار.",
@@ -345,8 +347,8 @@ const ar: Dictionary = {
     coverPhoto: "الصورة الرئيسية",
     removePhoto: "احذف {name}",
     loading: "جارٍ تحميل النموذج",
-    successTitle: "تم إرسال الإعلان",
-    successBody: "تم استلام صورك وهي قيد المعالجة.",
+    successTitle: "المنتج قيد الانتظار",
+    successBody: "منتجك قيد المعالجة. سنبلغك عندما تجهز صوره ويصبح منشوراً.",
     home: "العودة إلى الصفحة الرئيسية",
     validation: {
       photosRequired: "أضف صورة واحدة على الأقل للمتابعة.",
@@ -409,6 +411,23 @@ const ar: Dictionary = {
     logout: "تسجيل الخروج",
   },
   notifications: {
+    loadError: "تعذر تحديث الإشعارات.",
+    retry: "إعادة المحاولة",
+    loading: "جارٍ التحميل…",
+    loadMore: "عرض المزيد",
+    markRead: "تحديد كمقروء",
+
+    title: "الإشعارات",
+    bell: "الإشعارات، {count} غير مقروءة",
+    empty: "ستظهر إشعاراتك الجديدة هنا.",
+    listingPending: "منتجك «{title}» قيد الانتظار. جارٍ تجهيز صوره.",
+    listingReady: "منتجك «{title}» جاهز ومنشور الآن.",
+    viewReadyListing: "عرض منتجي",
+    newActivity: "نشاط جديد على حسابك.",
+    viewListing: "عرض إعلاناتي قيد التجهيز",
+    markAllRead: "تحديد الكل كمقروء",
+    unread: "غير مقروء",
+
     close: "إغلاق الإشعار",
   },
   errors: {

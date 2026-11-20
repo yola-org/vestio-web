@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
 import { useTranslations } from "next-intl"
 import ListingGrid from "@/components/shared/ListingGrid"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -18,6 +19,14 @@ export default function PendingListings({ columns }: { columns?: string }) {
     deps: [page],
     loading: false,
   })
+  const { notifications } = useRealtimeNotifications()
+  const readyNotifications = notifications
+    .filter((item) => item.type === "listing-published")
+    .map((item) => item.id)
+    .join(",")
+  useEffect(() => {
+    if (readyNotifications) void pending.refetch()
+  }, [readyNotifications, pending.refetch])
   const listings = pending.data ?? []
   const hasNextPage = !pending.error && listings.length === pageSize
 

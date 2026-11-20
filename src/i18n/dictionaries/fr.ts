@@ -144,6 +144,8 @@ const fr = {
   },
   pendingListings: {
     title: "Annonces en attente",
+    pendingBadge: "En attente",
+    processingBadge: "En préparation",
     empty: "Vous n’avez aucune annonce en attente.",
     emptyPage: "Il n’y a plus d’annonces en attente.",
     loadError: "Impossible de charger vos annonces en attente.",
@@ -351,8 +353,9 @@ const fr = {
     coverPhoto: "Photo principale",
     removePhoto: "Supprimer {name}",
     loading: "Chargement du formulaire",
-    successTitle: "Annonce envoyée",
-    successBody: "Vos photos ont été reçues. Leur traitement est en cours.",
+    successTitle: "Article en attente",
+    successBody:
+      "Votre article est en attente de traitement. Nous vous préviendrons dès que ses photos seront prêtes et qu’il sera en ligne.",
     home: "Retour à l’accueil",
     validation: {
       photosRequired: "Ajoutez au moins une photo pour continuer.",
@@ -419,6 +422,24 @@ const fr = {
     logout: "Se déconnecter",
   },
   notifications: {
+    loadError: "Impossible de mettre à jour les notifications.",
+    retry: "Réessayer",
+    loading: "Chargement…",
+    loadMore: "Voir plus",
+    markRead: "Marquer comme lue",
+
+    title: "Notifications",
+    bell: "Notifications, {count} non lues",
+    empty: "Vos nouvelles notifications apparaîtront ici.",
+    listingPending:
+      "Votre article « {title} » est en attente. Nous préparons ses photos.",
+    listingReady: "Votre article « {title} » est prêt et en ligne.",
+    viewReadyListing: "Voir mon article",
+    newActivity: "Nouvelle activité sur votre compte.",
+    viewListing: "Voir mes annonces en préparation",
+    markAllRead: "Tout marquer comme lu",
+    unread: "Non lue",
+
     close: "Fermer la notification",
   },
   errors: {
