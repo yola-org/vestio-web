@@ -38,6 +38,13 @@ The API base URL is resolved as `process.env.API_URL || process.env.NEXT_PUBLIC_
 Listing images use the public S3 endpoint for `vestio-dev-assets` in local development and `vestio-assets` in production builds. Set `NEXT_PUBLIC_LISTING_ASSETS_BASE_URL` at build time to point a deployment at a different bucket or CDN.
 
 ### Development
+AppSync event logging is optional. Set `NEXT_PUBLIC_APPSYNC_EVENTS_HTTP_ENDPOINT`
+and `NEXT_PUBLIC_APPSYNC_EVENTS_WEBSOCKET_ENDPOINT` in `.env.local` (see
+`.env.example`), then restart the dev server. The namespace variables default to
+`notifications` and `chat`. Logged-in clients use the backend-issued access token
+to listen on `/<namespace>/<userId>` and log `APPSYNC_EVENT` in the browser
+console. Logged-out clients skip the connection.
+
 ```bash
 npm run dev
 ```
@@ -102,3 +109,19 @@ Also see [AI_GUIDELINES.md](./AI_GUIDELINES.md) for design system and AI agent g
 ## Contributing
 
 See [Best Practices](./docs/guides/BEST_PRACTICES.md) for coding standards. Follow the patterns established in the codebase and refer to [AI_GUIDELINES.md](./AI_GUIDELINES.md) for design system rules.
+
+The authenticated header shows a notification bell on desktop and mobile. Incoming
+`notification` events match the common envelope (`id`, `type`,
+`payload`, and `occurredAt`) and are deduplicated by notification UUID.
+The bell loads saved history from `/api/notifications` through authenticated
+server actions, with pagination and a server-supplied unread count. Reading one
+notification or marking all read persists to the backend. AppSync events update
+the bell immediately; reconnecting or focusing the window refreshes saved state.
+Changing authentication clears the current inbox before loading the new one.
+Every AppSync data event, including other event types, is logged as
+`APPSYNC_EVENT` in the browser console using the existing sanitized logger.
+
+Listing notifications distinguish `listing-created` (waiting for images) from
+`listing-published` (all renditions processed and the listing is available). Ready
+notifications link to the published listing; the pending-listings view refreshes
+when it receives a ready notification. The optional listing ID is a notification field; display data is in its JSON payload.

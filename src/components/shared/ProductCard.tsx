@@ -1,6 +1,6 @@
 "use client"
 // Helper to handle both mock data and real API Listing
-import { PinIcon } from "@/components/shared/Icons"
+import { ClockIcon, PinIcon } from "@/components/shared/Icons"
 import FavoriteButton from "@/components/shared/FavoriteButton"
 import type { Condition, Listing } from "@/lib/api/schemas"
 import { getListingImageUrls } from "@/lib/listing-images"
@@ -58,6 +58,12 @@ export default function ProductCard({
       ? (product as any).seller || t("common.seller")
       : (product as any).seller
   const listing = "id" in product ? product : undefined
+  const pendingLabel =
+    listing?.status === "AWAITING_ASSETS"
+      ? t("pendingListings.processingBadge")
+      : listing?.status === "PENDING"
+        ? t("pendingListings.pendingBadge")
+        : undefined
   const flatImage = listing
     ? getListingImageUrls(listing, "thumbnail")[0]
     : undefined
@@ -95,6 +101,12 @@ export default function ProductCard({
               : "h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           }
         />
+        {pendingLabel && (
+          <span className="absolute start-3 top-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border border-primary/15 bg-sub-accent px-3 py-1.5 text-xs font-bold text-primary shadow-sm">
+            <ClockIcon className="size-3.5 shrink-0" aria-hidden="true" />
+            <span>{pendingLabel}</span>
+          </span>
+        )}
         {onToggleSave && (
           <FavoriteButton
             title={product.title}

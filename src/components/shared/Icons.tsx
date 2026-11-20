@@ -156,3 +156,9 @@ export const TrashIcon = (props: IconProps) => (
     <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
   </Icon>
 )
+
+export const BellIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+  </Icon>
+)

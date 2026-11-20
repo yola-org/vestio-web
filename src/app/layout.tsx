@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server"
 import NotificationProvider from "@/components/shared/NotificationProvider"
 import GlobalLoadingProvider from "@/components/shared/GlobalLoadingProvider"
 import SessionBootstrap from "@/components/shared/SessionBootstrap"
+import RealtimeProvider from "@/components/shared/RealtimeProvider"
 import { AUTH_INDICATOR_COOKIE, AUTH_TOKEN_COOKIE } from "@/constants/auth"
 import { localeDirection, type Locale } from "@/i18n/config"
 import "./globals.css"
@@ -36,7 +37,7 @@ export default async function RootLayout({
           <GlobalLoadingProvider>
             <NotificationProvider>
               <SessionBootstrap needsRefresh={needsRefresh}>
-                {children}
+                <RealtimeProvider>{children}</RealtimeProvider>
               </SessionBootstrap>
             </NotificationProvider>
           </GlobalLoadingProvider>

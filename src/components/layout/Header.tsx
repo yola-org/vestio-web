@@ -11,6 +11,7 @@ import {
   HomeIcon,
   UploadIcon,
 } from "@/components/shared/Icons"
+import NotificationBell from "@/components/layout/NotificationBell"
 import UserDropdown from "@/components/layout/UserDropdown"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { profileApi } from "@/lib/api"
@@ -199,6 +200,7 @@ export default function Header({
               >
                 <UploadIcon className="h-4 w-4" /> {t("header.sell")}
               </Link>
+              <NotificationBell />
               <UserDropdown displayName={displayName} />
             </>
           ) : (
@@ -226,8 +228,15 @@ export default function Header({
           </Link>
           <LanguageSwitcher />
         </nav>
+        {isAuthenticated && (
+          <div className="ms-auto lg:hidden">
+            <NotificationBell />
+          </div>
+        )}
         <button
-          className="ms-auto rounded-full border border-black/15 p-2.5 lg:hidden"
+          className={`${
+            isAuthenticated ? "ms-2" : "ms-auto"
+          } rounded-full border border-black/15 p-2.5 lg:hidden`}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? t("header.closeMenu") : t("header.openMenu")}
           aria-expanded={mobileOpen}
