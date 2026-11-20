@@ -422,6 +422,11 @@ const fr = {
     logout: "Se déconnecter",
   },
   notifications: {
+    offerReceived:
+      "Vous avez reçu une offre de {amount} {currency} de la part de {sender} pour « {title} ».",
+    viewOffer: "Voir l’offre",
+    unknownSender: "un membre",
+
     loadError: "Impossible de mettre à jour les notifications.",
     retry: "Réessayer",
     loading: "Chargement…",

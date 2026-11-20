@@ -12,6 +12,15 @@ export const NotificationSchema = z.object({
 })
 export type Notification = z.infer<typeof NotificationSchema>
 
+// Shared keys from com.vestio.common.event.payload.OfferSentPayload.
+export const OfferSentPayloadSchema = z.object({
+  offerId: z.uuid(),
+  amount: z.number().finite().positive(),
+  senderId: z.guid(),
+  senderName: z.string(),
+  listingTitle: z.string(),
+})
+
 export const NotificationPageSchema = z.object({
   items: z.array(NotificationSchema),
   page: z.number().int().nonnegative(),

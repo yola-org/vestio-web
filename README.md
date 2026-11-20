@@ -125,3 +125,9 @@ Listing notifications distinguish `listing-created` (waiting for images) from
 `listing-published` (all renditions processed and the listing is available). Ready
 notifications link to the published listing; the pending-listings view refreshes
 when it receives a ready notification. The optional listing ID is a notification field; display data is in its JSON payload.
+
+Offer notifications use `offer-sent` with the shared `OfferSentPayload` fields:
+`offerId`, numeric `amount`, `senderId`, `senderName` and `listingTitle`. The bell
+shows a localized amount, the sender name and listing, and links to received
+offers. The received-offers view refreshes when a new notification arrives.
+Saved history and live events use the same rendering and deduplication behavior.

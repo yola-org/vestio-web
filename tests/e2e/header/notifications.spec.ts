@@ -1,4 +1,5 @@
 import { test, expect, type WebSocketRoute } from "@playwright/test"
+import { readFileSync } from "node:fs"
 import { randomUUID } from "node:crypto"
 import { setupAuthenticatedSession } from "../../helpers/api-mock"
 
@@ -169,6 +170,47 @@ test("saved history, pagination, read controls, and AppSync reconnect stay synch
   await expect(
     page.getByRole("button", { name: "Marquer comme lue", exact: true }),
   ).toHaveCount(0)
+
+  const offerEvent = JSON.parse(
+    readFileSync(
+      new URL("../../fixtures/offer-sent-event.json", import.meta.url),
+      "utf8",
+    ),
+  )
+  offerEvent.id = randomUUID()
+  offerEvent.payload.id = offerEvent.id
+  offerEvent.payload.userId = userId
+  offerEvent.occurredAt = new Date().toISOString()
+  offerEvent.payload.createdAt = offerEvent.occurredAt
+  await seed([offerEvent.payload, ...(await all())])
+  const emitOffer = () =>
+    socket!.send(
+      JSON.stringify({
+        type: "data",
+        id: subscription,
+        event: [JSON.stringify(offerEvent)],
+      }),
+    )
+  emitOffer()
+  await expect(bell(1)).toBeVisible()
+  const offerMessage =
+    "Vous avez reçu une offre de 125,50 DH de la part de Sara Benali pour « Veste en jean »."
+  await expect(page.getByText(offerMessage, { exact: true })).toBeVisible()
+  await expect(
+    page.getByRole("link", { name: "Voir l’offre", exact: true }),
+  ).toHaveAttribute("href", "/offers/received")
+  emitOffer()
+  await expect(page.getByText(offerMessage, { exact: true })).toHaveCount(1)
+  await page
+    .getByRole("listitem")
+    .filter({ hasText: offerMessage })
+    .getByRole("button", { name: "Marquer comme lue", exact: true })
+    .click()
+  await expect(bell(0)).toBeVisible()
+  await page.reload()
+  await expect(bell(0)).toBeVisible()
+  await bell(0).click()
+  await expect(page.getByText(offerMessage, { exact: true })).toBeVisible()
 
   const missed = notification("Offline shirt")
   await seed([missed, ...(await all())])

@@ -411,6 +411,11 @@ const ar: Dictionary = {
     logout: "تسجيل الخروج",
   },
   notifications: {
+    offerReceived:
+      "تلقيت عرضًا بقيمة {amount} {currency} من {sender} لمنتج «{title}».",
+    viewOffer: "عرض العرض",
+    unknownSender: "أحد الأعضاء",
+
     loadError: "تعذر تحديث الإشعارات.",
     retry: "إعادة المحاولة",
     loading: "جارٍ التحميل…",
