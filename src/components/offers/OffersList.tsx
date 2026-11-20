@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from "react"
+import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
 import OffersSkeleton from "@/components/offers/OffersSkeleton"
 import Link from "next/link"
 import { useFormatter, useTranslations } from "next-intl"
@@ -18,6 +20,15 @@ export default function OffersList({
     () => getOffersAction(direction),
     { deps: [direction], loading: false },
   )
+
+  const { notifications } = useRealtimeNotifications()
+  const offerNotifications = notifications
+    .filter((notification) => notification.type === "offer-sent")
+    .map((notification) => notification.id)
+    .join(",")
+  useEffect(() => {
+    if (direction === "received" && offerNotifications) void refetch()
+  }, [direction, offerNotifications, refetch])
 
   if (loading) return <OffersSkeleton sent={direction === "sent"} />
 

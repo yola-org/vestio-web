@@ -3,13 +3,16 @@
 import { useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
 import { z } from "zod"
-import { useLocale, useTranslations } from "next-intl"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { BellIcon, CloseIcon, CheckIcon } from "@/components/shared/Icons"
+import { OfferSentPayloadSchema } from "@/lib/realtime-events"
 import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
 
 export default function NotificationBell() {
   const t = useTranslations("notifications")
   const locale = useLocale()
+  const format = useFormatter()
+  const common = useTranslations("common")
   const {
     notifications,
     unreadCount,
@@ -129,6 +132,13 @@ export default function NotificationBell() {
                 const isPending = item.type === "listing-created"
                 const isReady = item.type === "listing-published"
                 const listingId = z.uuid().safeParse(item.listingId).data
+                const offerResult =
+                  item.type === "offer-sent"
+                    ? OfferSentPayloadSchema.safeParse(item.payload)
+                    : undefined
+                const offer = offerResult?.success
+                  ? offerResult.data
+                  : undefined
                 return (
                   <li
                     key={item.id}
@@ -143,14 +153,25 @@ export default function NotificationBell() {
                           read ? "" : "font-semibold"
                         }`}
                       >
-                        {isPending || isReady
-                          ? t(isReady ? "listingReady" : "listingPending", {
-                              title:
-                                typeof item.payload.listingTitle === "string"
-                                  ? item.payload.listingTitle
-                                  : "",
+                        {offer
+                          ? t("offerReceived", {
+                              amount: format.number(offer.amount, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }),
+                              currency: common("currency"),
+                              sender:
+                                offer.senderName.trim() || t("unknownSender"),
+                              title: offer.listingTitle,
                             })
-                          : t("newActivity")}
+                          : isPending || isReady
+                            ? t(isReady ? "listingReady" : "listingPending", {
+                                title:
+                                  typeof item.payload.listingTitle === "string"
+                                    ? item.payload.listingTitle
+                                    : "",
+                              })
+                            : t("newActivity")}
                       </p>
                       <time
                         dateTime={item.createdAt}
@@ -161,12 +182,14 @@ export default function NotificationBell() {
                           timeStyle: "short",
                         }).format(new Date(item.createdAt))}
                       </time>
-                      {(isPending || (isReady && listingId)) && (
+                      {(offer || isPending || (isReady && listingId)) && (
                         <Link
                           href={
-                            isReady
-                              ? `/listings/${listingId}`
-                              : "/listings/pending"
+                            offer
+                              ? "/offers/received"
+                              : isReady
+                                ? `/listings/${listingId}`
+                                : "/listings/pending"
                           }
                           className="mt-2 inline-block text-sm font-semibold text-accent underline"
                           onClick={() => {
@@ -174,7 +197,13 @@ export default function NotificationBell() {
                             setOpen(false)
                           }}
                         >
-                          {t(isReady ? "viewReadyListing" : "viewListing")}
+                          {t(
+                            offer
+                              ? "viewOffer"
+                              : isReady
+                                ? "viewReadyListing"
+                                : "viewListing",
+                          )}
                         </Link>
                       )}
                     </div>
