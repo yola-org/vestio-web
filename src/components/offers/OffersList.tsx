@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
+import LocalTime from "@/components/shared/LocalTime"
 import OffersSkeleton from "@/components/offers/OffersSkeleton"
 import Link from "next/link"
 import { useFormatter, useTranslations } from "next-intl"
@@ -96,14 +97,10 @@ export default function OffersList({
                       listingTitle
                     )}
                   </h2>
-                  <time
+                  <LocalTime
                     dateTime={offer.createdAt}
                     className="text-sm text-primary/65"
-                  >
-                    {format.dateTime(new Date(offer.createdAt), {
-                      dateStyle: "medium",
-                    })}
-                  </time>
+                  />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="rounded-full bg-background px-3 py-1 text-sm font-semibold">
