@@ -184,7 +184,7 @@ export const UserProfileSchema = z.object({
   phoneNumber: z.string().nullish(),
   cityId: z.string().nullish(),
   cityName: z.string().nullish(),
-  createdAt: z.string().optional(),
+  createdAt: z.iso.datetime({ offset: true }).optional(),
 })
 
 export const paginatedResponseSchema = <T extends z.ZodType>(item: T) =>

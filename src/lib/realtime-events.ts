@@ -7,8 +7,8 @@ export const NotificationSchema = z.object({
   type: z.string(),
   payload: z.record(z.string(), z.unknown()),
   listingId: z.uuid().nullish(),
-  readAt: z.string().nullish(),
-  createdAt: z.string().refine((value) => Number.isFinite(Date.parse(value))),
+  readAt: z.iso.datetime({ offset: true }).nullish(),
+  createdAt: z.iso.datetime({ offset: true }),
 })
 export type Notification = z.infer<typeof NotificationSchema>
 
@@ -35,7 +35,9 @@ export const NotificationEventSchema = z.object({
   id: z.uuid(),
   type: z.literal("notification"),
   occurredAt: z.iso.datetime({ offset: true }),
-  payload: NotificationSchema.extend({ createdAt: z.string().nullish() }),
+  payload: NotificationSchema.extend({
+    createdAt: z.iso.datetime({ offset: true }).nullish(),
+  }),
 })
 
 export type NotificationEvent = z.infer<typeof NotificationEventSchema>

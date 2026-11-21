@@ -5,17 +5,16 @@ import { setupAuthenticatedSession } from "../../helpers/api-mock"
 
 const api = process.env.MOCK_API_URL || "http://localhost:8081"
 
-// This integration test needs the same public endpoints in the app and test environment.
-test.skip(
-  !process.env.NEXT_PUBLIC_APPSYNC_EVENTS_HTTP_ENDPOINT ||
-    !process.env.NEXT_PUBLIC_APPSYNC_EVENTS_WEBSOCKET_ENDPOINT,
-  "Realtime integration requires configured AppSync endpoints",
-)
-
 test("saved history, pagination, read controls, and AppSync reconnect stay synchronized", async ({
   page,
   request,
 }) => {
+  // This integration test needs the same public endpoints in the app and test environment.
+  test.skip(
+    !process.env.NEXT_PUBLIC_APPSYNC_EVENTS_HTTP_ENDPOINT ||
+      !process.env.NEXT_PUBLIC_APPSYNC_EVENTS_WEBSOCKET_ENDPOINT,
+    "Realtime integration requires configured AppSync endpoints",
+  )
   const userId = randomUUID()
   const token = `notification-test-${randomUUID()}`
   const headers = { Authorization: `Bearer ${token}` }
@@ -236,3 +235,71 @@ test("saved history, pagination, read controls, and AppSync reconnect stay synch
     page.getByRole("button", { name: /^Notifications,/ }),
   ).toHaveCount(0)
 })
+
+for (const timeZone of ["America/Toronto", "Asia/Tokyo"]) {
+  test.describe(timeZone, () => {
+    test.use({ timezoneId: timeZone })
+
+    test("displays UTC notification timestamps locally across midnight and DST", async ({
+      page,
+      request,
+    }) => {
+      const token = `notification-test-${randomUUID()}`
+      const createdTimes = [
+        "2026-11-20T02:30:00Z",
+        "2026-11-01T05:30:00Z",
+        "2026-11-01T06:30:00Z",
+      ]
+      const userId = randomUUID()
+      const response = await request.post(`${api}/__test/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+        data: createdTimes.map((createdAt) => ({
+          id: randomUUID(),
+          userId,
+          type: "listing-created",
+          payload: { listingTitle: `UTC ${createdAt}` },
+          listingId: null,
+          readAt: null,
+          createdAt,
+        })),
+      })
+      expect(response.ok()).toBeTruthy()
+      await setupAuthenticatedSession(page)
+      await page.context().addCookies([
+        { name: "vestio_token", value: token, domain: "localhost", path: "/" },
+        { name: "vestio_locale", value: "fr", domain: "localhost", path: "/" },
+      ])
+      await page.goto("/")
+      const bell = page
+        .getByRole("button", { name: "Notifications, 3 non lues", exact: true })
+        .filter({ visible: true })
+      await expect(bell).toBeVisible()
+      await bell.click()
+      for (const createdAt of createdTimes) {
+        const expected = new Intl.DateTimeFormat("fr", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone,
+        }).format(new Date(createdAt))
+        await expect(page.locator(`time[datetime="${createdAt}"]`)).toHaveText(
+          expected,
+        )
+      }
+      if (timeZone === "America/Toronto") {
+        await expect(
+          page.locator(`time[datetime="${createdTimes[0]}"]`),
+        ).toContainText("19")
+        // The two UTC instants straddle the DST fallback and share one local wall time.
+        expect(
+          await page
+            .locator(`time[datetime="${createdTimes[1]}"]`)
+            .textContent(),
+        ).toBe(
+          await page
+            .locator(`time[datetime="${createdTimes[2]}"]`)
+            .textContent(),
+        )
+      }
+    })
+  })
+}

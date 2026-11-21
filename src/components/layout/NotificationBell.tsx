@@ -3,14 +3,14 @@
 import { useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
 import { z } from "zod"
-import { useFormatter, useLocale, useTranslations } from "next-intl"
+import { useFormatter, useTranslations } from "next-intl"
+import LocalTime from "@/components/shared/LocalTime"
 import { BellIcon, CloseIcon, CheckIcon } from "@/components/shared/Icons"
 import { OfferSentPayloadSchema } from "@/lib/realtime-events"
 import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
 
 export default function NotificationBell() {
   const t = useTranslations("notifications")
-  const locale = useLocale()
   const format = useFormatter()
   const common = useTranslations("common")
   const {
@@ -173,15 +173,11 @@ export default function NotificationBell() {
                               })
                             : t("newActivity")}
                       </p>
-                      <time
+                      <LocalTime
                         dateTime={item.createdAt}
                         className="mt-1 block text-xs text-black/60"
-                      >
-                        {new Intl.DateTimeFormat(locale, {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        }).format(new Date(item.createdAt))}
-                      </time>
+                        showTime
+                      />
                       {(offer || isPending || (isReady && listingId)) && (
                         <Link
                           href={

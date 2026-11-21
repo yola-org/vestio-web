@@ -13,7 +13,7 @@ const OfferSummarySchema = z.object({
     deliveryTypes: z.array(ContactTypeSchema),
     message: z.string(),
     status: z.enum(["PENDING", "ACCEPTED"]),
-    createdAt: z.string(),
+    createdAt: z.iso.datetime({ offset: true }),
   }),
   listingTitle: z.string(),
   listingStatus: ListingStatusSchema,
