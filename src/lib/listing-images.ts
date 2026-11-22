@@ -1,3 +1,4 @@
+import { assetsBaseUrl } from "./assets"
 import type { Listing } from "@/lib/api/schemas"
 
 const suffixes = {
@@ -6,12 +7,6 @@ const suffixes = {
   mobile: ["_thumbnail_mobile.webp", "/original-thumbnail-mobile.webp"],
 } as const
 
-const defaultBucket =
-  process.env.NODE_ENV === "production" ? "vestio-assets" : "vestio-dev-assets"
-const assetsBaseUrl = (
-  process.env.NEXT_PUBLIC_LISTING_ASSETS_BASE_URL?.trim() ||
-  `https://${defaultBucket}.s3.ca-central-1.amazonaws.com`
-).replace(/\/+$/, "")
 
 export function getListingImageUrls(
   listing: Pick<Listing, "id" | "assetKeys" | "image" | "imageUrls" | "status">,

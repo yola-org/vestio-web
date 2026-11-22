@@ -7,16 +7,14 @@ import { isAuthenticated } from "@/lib/auth"
 import { logger } from "@/lib/logger"
 import {
   notificationsNamespace,
+  chatNamespace,
   type RealtimeEvent,
 } from "@/lib/realtime-events"
 
 const httpEndpoint = process.env.NEXT_PUBLIC_APPSYNC_EVENTS_HTTP_ENDPOINT
 const websocketEndpoint =
   process.env.NEXT_PUBLIC_APPSYNC_EVENTS_WEBSOCKET_ENDPOINT
-const namespaces = [
-  notificationsNamespace,
-  process.env.NEXT_PUBLIC_APPSYNC_EVENTS_CHAT_NAMESPACE || "chat",
-]
+const namespaces = [notificationsNamespace, chatNamespace]
 
 export default function RealtimeListener({
   onEvent,

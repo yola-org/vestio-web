@@ -4,7 +4,10 @@ import { useState } from "react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import PendingListings from "@/components/listings/PendingListings"
+import { getProfileImageUrl } from "@/lib/profile-images"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
+import ProfileImageUpload from "@/components/profile/ProfileImageUpload"
+import Modal from "@/components/shared/Modal"
 import {
   ProfileContentSkeleton,
   profileListingColumns,
@@ -33,12 +36,18 @@ function ProfileContent() {
   const t = useTranslations()
   const [activeTab, setActiveTab] =
     useState<typeof listingTabs[number]>("articles")
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [imageUploading, setImageUploading] = useState(false)
+  const [uploadedImageKey, setUploadedImageKey] = useState<string | null>()
   const profileQuery = useApiQuery(profileApi.get, { loading: false })
   const listingsQuery = useApiQuery(() => listingsApi.list(0, 50), {
     loading: false,
   })
 
   const profile = profileQuery.data
+  const imageKey = uploadedImageKey !== undefined
+    ? uploadedImageKey
+    : profile?.profileImageKey
   const listings = (listingsQuery.data?.content ?? []).filter(
     (listing) => listing.status === "AVAILABLE",
   )
@@ -67,11 +76,32 @@ function ProfileContent() {
 
   return (
     <main className="py-12 main-container">
+      {imageModalOpen && (
+        <Modal
+          title={t("settings.changeImage")}
+          onClose={() => setImageModalOpen(false)}
+          dismissDisabled={imageUploading}
+        >
+          <ProfileImageUpload
+            firstName={profile.firstName}
+            lastName={profile.lastName}
+            imageKey={imageKey}
+            onUploaded={(key) => setUploadedImageKey(key ?? null)}
+            onUploadingChange={setImageUploading}
+          />
+        </Modal>
+      )}
       <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-black/5 mb-10">
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-          <div className="relative group">
+          <button
+            type="button"
+            onClick={() => setImageModalOpen(true)}
+            aria-label={t("settings.changeImage")}
+            className="relative group rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-accent"
+          >
             <div className="h-32 w-32 rounded-full overflow-hidden border-[#f7f3ea]">
               <ProfileAvatar
+                src={getProfileImageUrl(imageKey)}
                 firstName={profile.firstName}
                 lastName={profile.lastName}
                 size="xl"
@@ -80,10 +110,12 @@ function ProfileContent() {
                 })}
               />
             </div>
-            <button className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-black/5 hover:bg-[#f7f3ea] transition">
+            <span
+              className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-black/5 group-hover:bg-[#f7f3ea] transition"
+            >
               <CameraIcon className="h-5 w-5" />
-            </button>
-          </div>
+            </span>
+          </button>
 
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-4 mb-2">

@@ -151,6 +151,7 @@ export const ListingSchema = z.object({
 })
 
 export const AccountDisplayNameSchema = z.object({
+  profileImageKey: z.string().nullish(),
   firstName: z.string().nullish(),
   lastName: z.string().nullish(),
 })
@@ -176,6 +177,7 @@ export const StaticDataSchema = z.object({
 })
 
 export const UserProfileSchema = z.object({
+  profileImageKey: z.string().nullish(),
   id: z.string(),
   email: z.string(),
   firstName: z.string(),

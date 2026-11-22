@@ -1,5 +1,6 @@
 "use client"
 
+import Checkbox from "@/components/shared/forms/Checkbox"
 import { useState } from "react"
 import { ChevronIcon } from "@/components/shared/Icons"
 import type { Category } from "@/lib/api/schemas"
@@ -55,11 +56,9 @@ export default function CategoryFilter({
           <div key={parent.id} className="space-y-2">
             <div className="flex items-center justify-between group">
               <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={selected}
                   onChange={() => handleParentToggle(parent)}
-                  className="h-4 w-4 rounded border-black/15 text-[#173fdb] focus:ring-[#173fdb]"
                 />
                 <span className="text-sm font-bold text-black/80 group-hover:text-[#173fdb]">
                   {parent.name}
@@ -86,11 +85,9 @@ export default function CategoryFilter({
                     key={child.id}
                     className="flex items-center gap-3 cursor-pointer group"
                   >
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedCategoryIds.includes(child.id)}
                       onChange={() => onToggle(child.id)}
-                      className="h-4 w-4 rounded border-black/15 text-[#173fdb] focus:ring-[#173fdb]"
                     />
                     <span className="text-sm font-medium text-black/60 group-hover:text-[#173fdb]">
                       {child.name}

@@ -4,6 +4,8 @@ import Link from "next/link"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { ArrowIcon } from "@/components/shared/Icons"
+import Input from "@/components/shared/forms/Input"
+import Field from "@/components/shared/forms/Field"
 import Button from "@/components/shared/Button"
 import { authApi } from "@/lib/api"
 import { useApiForm } from "@/hooks/use-api-form"
@@ -48,45 +50,30 @@ export default function RegisterPage() {
           <p className="text-black/60 mb-8">{t("auth.register.subtitle")}</p>
 
           <form className="space-y-5" action={formAction}>
-            <div>
-              <label className="block text-sm font-bold mb-2" htmlFor="name">
-                {t("auth.register.fullName")}
-              </label>
-              <input
+            <Field id="name" label={t("auth.register.fullName")}>
+              <Input
                 type="text"
                 id="name"
                 name="name"
                 placeholder={t("auth.register.fullNamePlaceholder")}
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2" htmlFor="email">
-                {t("auth.register.email")}
-              </label>
-              <input
+            </Field>
+            <Field id="email" label={t("auth.register.email")}>
+              <Input
                 type="email"
                 id="email"
                 name="email"
                 placeholder={t("auth.register.emailPlaceholder")}
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
-            </div>
-            <div>
-              <label
-                className="block text-sm font-bold mb-2"
-                htmlFor="password"
-              >
-                {t("auth.register.password")}
-              </label>
-              <input
+            </Field>
+            <Field id="password" label={t("auth.register.password")}>
+              <Input
                 type="password"
                 id="password"
                 name="password"
                 placeholder={t("auth.register.passwordPlaceholder")}
-                className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition"
               />
-            </div>
+            </Field>
             <Button
               type="submit"
               loading={pending}

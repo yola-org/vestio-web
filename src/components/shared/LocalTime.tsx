@@ -12,10 +12,12 @@ export default function LocalTime({
   dateTime,
   className,
   showTime = false,
+  compact = false,
 }: {
   dateTime: string
   className?: string
   showTime?: boolean
+  compact?: boolean
 }) {
   const locale = useLocale()
   const timeZone = useSyncExternalStore(
@@ -27,7 +29,7 @@ export default function LocalTime({
   return (
     <time dateTime={dateTime} className={className}>
       {new Intl.DateTimeFormat(locale, {
-        dateStyle: "medium",
+        dateStyle: compact ? "short" : "medium",
         ...(showTime ? { timeStyle: "short" as const } : {}),
         timeZone,
       }).format(new Date(dateTime))}

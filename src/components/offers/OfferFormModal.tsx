@@ -3,6 +3,10 @@
 import Link from "next/link"
 import { useRef, useState, type FormEvent } from "react"
 import { useTranslations } from "next-intl"
+import Input from "@/components/shared/forms/Input"
+import Textarea from "@/components/shared/forms/Textarea"
+import Checkbox from "@/components/shared/forms/Checkbox"
+import Field from "@/components/shared/forms/Field"
 import Button from "@/components/shared/Button"
 import Modal from "@/components/shared/Modal"
 import type { OfferDetailsInput } from "@/lib/actions/listings"
@@ -130,9 +134,12 @@ export default function OfferFormModal({
           aria-busy={pending}
           className="grid gap-4 text-sm"
         >
-          <label className="grid gap-1.5 font-bold">
-            {t("listingDetail.offerAmount", { currency: t("common.currency") })}
-            <input
+          <Field
+            label={t("listingDetail.offerAmount", {
+              currency: t("common.currency"),
+            })}
+          >
+            <Input
               autoFocus
               type="number"
               inputMode="decimal"
@@ -142,9 +149,8 @@ export default function OfferFormModal({
               step="0.01"
               defaultValue={initial?.price}
               disabled={pending}
-              className="min-w-0 rounded-xl border border-black/20 px-3 py-2.5 font-normal"
             />
-          </label>
+          </Field>
           <fieldset disabled={pending} className="grid gap-2">
             <legend className="mb-2 font-bold">{t("sell.contact")}</legend>
             {deliveryTypes.map((type) => (
@@ -152,8 +158,7 @@ export default function OfferFormModal({
                 key={type}
                 className="flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   name="deliveryTypes"
                   value={type}
                   defaultChecked={
@@ -161,22 +166,19 @@ export default function OfferFormModal({
                       ? initial.deliveryTypes.includes(type)
                       : deliveryTypes.length === 1
                   }
-                  className="size-4 accent-accent"
                 />
                 {t(`sell.contactTypes.${type}`)}
               </label>
             ))}
           </fieldset>
-          <label className="grid gap-1.5 font-bold">
-            {t("listingDetail.offerNote")}
-            <textarea
+          <Field label={t("listingDetail.offerNote")}>
+            <Textarea
               name="message"
               rows={3}
               defaultValue={initial?.message}
               disabled={pending}
-              className="rounded-xl border border-black/20 px-3 py-2.5 font-normal"
             />
-          </label>
+          </Field>
           {error && (
             <p role="alert" className="text-red-700">
               {error}

@@ -13,6 +13,10 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { CameraIcon, CheckIcon } from "@/components/shared/Icons"
+import Field from "@/components/shared/forms/Field"
+import Input from "@/components/shared/forms/Input"
+import Textarea from "@/components/shared/forms/Textarea"
+import NativeSelect from "@/components/shared/forms/NativeSelect"
 import Button from "@/components/shared/Button"
 import ProductCard from "@/components/shared/ProductCard"
 import { listingsApi, profileApi } from "@/lib/api"
@@ -33,8 +37,6 @@ const maxPhotos = 10
 const maxPhotoBytes = 10 * 1024 * 1024
 const maxPhotoTotal = 49 * 1024 * 1024
 const photoAccept = ".jpg,.jpeg,.png,.webp"
-const fieldClass =
-  "w-full rounded-xl border border-black/15 bg-white px-4 py-3 focus:border-deep-accent focus:outline-none"
 const primaryClass =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white transition disabled:opacity-50"
 const nextClass = `${primaryClass} bg-deep-accent hover:bg-deep-accent/90`
@@ -492,33 +494,33 @@ export default function SellForm() {
 
             {step === 1 && (
               <>
-                <label className="block space-y-2 text-sm font-bold">
-                  <span>
-                    {t("sell.listingTitle")}
-                    <RequiredMark />
-                  </span>
-                  <input
+                <Field
+                  label={
+                    <>
+                      {t("sell.listingTitle")}
+                      <RequiredMark />
+                    </>
+                  }
+                >
+                  <Input
                     required
-                    className={fieldClass}
                     value={formData.title}
                     placeholder={t("sell.listingTitlePlaceholder")}
                     onChange={(event) =>
                       changeDetails({ title: event.target.value })
                     }
                   />
-                </label>
-                <label className="block space-y-2 text-sm font-bold">
-                  <span>{t("sell.description")}</span>
-                  <textarea
+                </Field>
+                <Field label={<>{t("sell.description")}</>}>
+                  <Textarea
                     rows={5}
-                    className={fieldClass}
                     value={formData.description ?? ""}
                     placeholder={t("sell.descriptionPlaceholder")}
                     onChange={(event) =>
                       changeDetails({ description: event.target.value })
                     }
                   />
-                </label>
+                </Field>
                 <fieldset>
                   <legend className="mb-3 text-sm font-bold">
                     {t("sell.condition")}
@@ -642,18 +644,20 @@ export default function SellForm() {
             {step === 3 && (
               <>
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <label className="block space-y-2 text-sm font-bold">
-                    <span>
-                      {t("sell.price", { currency: t("common.currency") })}
-                      <RequiredMark />
-                    </span>
-                    <input
+                  <Field
+                    label={
+                      <>
+                        {t("sell.price", { currency: t("common.currency") })}
+                        <RequiredMark />
+                      </>
+                    }
+                  >
+                    <Input
                       required
                       type="number"
                       min="0.01"
                       step="any"
                       inputMode="decimal"
-                      className={fieldClass}
                       value={
                         Number.isNaN(formData.price) || formData.price === 0
                           ? ""
@@ -663,18 +667,20 @@ export default function SellForm() {
                         changeDetails({ price: event.target.valueAsNumber })
                       }
                     />
-                  </label>
-                  <label className="block space-y-2 text-sm font-bold">
-                    <span>
-                      {t("sell.quantity")}
-                      <RequiredMark />
-                    </span>
-                    <input
+                  </Field>
+                  <Field
+                    label={
+                      <>
+                        {t("sell.quantity")}
+                        <RequiredMark />
+                      </>
+                    }
+                  >
+                    <Input
                       required
                       type="number"
                       min="1"
                       max="2147483647"
-                      className={fieldClass}
                       value={
                         Number.isNaN(formData.quantity) ? "" : formData.quantity
                       }
@@ -682,7 +688,7 @@ export default function SellForm() {
                         changeDetails({ quantity: event.target.valueAsNumber })
                       }
                     />
-                  </label>
+                  </Field>
                 </div>
                 <fieldset>
                   <legend className="mb-3 text-sm font-bold">
@@ -705,14 +711,16 @@ export default function SellForm() {
                     ))}
                   </div>
                 </fieldset>
-                <label className="block space-y-2 text-sm font-bold">
-                  <span>
-                    {t("sell.contact")}
-                    <RequiredMark />
-                  </span>
-                  <select
+                <Field
+                  label={
+                    <>
+                      {t("sell.contact")}
+                      <RequiredMark />
+                    </>
+                  }
+                >
+                  <NativeSelect
                     required
-                    className={fieldClass}
                     value={formData.contactTypes[0]}
                     onChange={(event) =>
                       changeDetails({
@@ -725,8 +733,8 @@ export default function SellForm() {
                         {t(`sell.contactTypes.${type}`)}
                       </option>
                     ))}
-                  </select>
-                </label>
+                  </NativeSelect>
+                </Field>
               </>
             )}
 

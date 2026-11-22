@@ -1,3 +1,4 @@
+import { metadataApi } from "@/lib/api/metadata"
 import {
   createListingAction,
   deleteListingAction,
@@ -10,17 +11,11 @@ import {
 } from "@/lib/actions/listings"
 import { loginAction, logoutAction, signupAction } from "@/lib/actions/auth"
 import {
-  getCategoriesAction,
-  getCategoryGroupsAction,
-  getCitiesAction,
-  getSizesAction,
-  getConditionsAction,
-  getContactTypesAction,
   getPreferencesAction,
   getProfileAction,
-  getStaticDataAction,
   updatePreferencesAction,
   updateProfileAction,
+  uploadProfileImageAction,
 } from "@/lib/actions/profile"
 import type {
   Category,
@@ -73,25 +68,13 @@ export const profileApi = {
   get: () => getProfileAction(),
   /** Update user profile */
   update: (profile: Partial<UserProfile>) => updateProfileAction(profile),
+  uploadImage: (image: File) => uploadProfileImageAction(image),
   /** Get user preferences */
   getPreferences: () => getPreferencesAction(),
   /** Update user preferences */
   updatePreferences: (preferences: UserPreferencesInput) =>
     updatePreferencesAction(preferences),
-  /** Get all categories */
-  getCategories: () => getCategoriesAction(),
-  /** Get category groups */
-  getCategoryGroups: () => getCategoryGroupsAction(),
-  /** Get all cities */
-  getCities: () => getCitiesAction(),
-  /** Get all sizes */
-  getSizes: () => getSizesAction(),
-  /** Get all conditions */
-  getConditions: () => getConditionsAction(),
-  /** Get contact types */
-  getContactTypes: () => getContactTypesAction(),
-  /** Get static data bundle */
-  getStaticData: () => getStaticDataAction(),
+  ...metadataApi,
 }
 
 export type { Listing }

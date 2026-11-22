@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { UserIcon } from "@/components/shared/Icons"
 
@@ -6,6 +8,8 @@ type ProfileAvatarProps = {
   alt?: string
   firstName?: string
   lastName?: string
+  className?: string
+  shape?: "circle" | "square"
   size?: "sm" | "md" | "lg" | "xl"
 }
 
@@ -15,8 +19,10 @@ export default function ProfileAvatar({
   firstName,
   lastName,
   size = "md",
+  className,
+  shape = "circle",
 }: ProfileAvatarProps) {
-  const [imageFailed, setImageFailed] = useState(false)
+  const [failedSrc, setFailedSrc] = useState<string>()
 
   const initials = [firstName, lastName]
     .filter(Boolean)
@@ -33,16 +39,18 @@ export default function ProfileAvatar({
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-black/15 font-bold text-[#173fdb] ${sizeClasses[size]}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden bg-background font-bold text-[#173fdb] ${
+        shape === "circle" ? "rounded-full border border-black/15" : ""
+      } ${className ?? sizeClasses[size]}`}
       role="img"
       aria-label={alt}
     >
-      {src && !imageFailed ? (
+      {src && failedSrc !== src ? (
         <img
           src={src}
           alt=""
           className="h-full w-full object-cover"
-          onError={() => setImageFailed(true)}
+          onError={() => setFailedSrc(src)}
         />
       ) : initials ? (
         <span className="translate-y-[1.5px]">{initials}</span>

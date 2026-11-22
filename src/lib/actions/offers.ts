@@ -2,6 +2,7 @@
 
 import { z } from "zod"
 import { runAction } from "@/lib/api/action-result"
+import { parseInput } from "@/lib/api/validation"
 import { request } from "@/lib/api/request"
 import { ContactTypeSchema, ListingStatusSchema } from "@/lib/api/schemas"
 
@@ -12,10 +13,13 @@ const OfferSummarySchema = z.object({
     price: z.number(),
     deliveryTypes: z.array(ContactTypeSchema),
     message: z.string(),
-    status: z.enum(["PENDING", "ACCEPTED"]),
+    status: z.enum(["PENDING", "ACCEPTED", "REFUSED"]),
     createdAt: z.iso.datetime({ offset: true }),
   }),
   listingTitle: z.string(),
+  listingCoverAssetKey: z.uuid().nullish(),
+  senderName: z.string().optional(),
+  senderProfileImageKey: z.string().nullish(),
   listingStatus: ListingStatusSchema,
   listingDeliveryTypes: z.array(ContactTypeSchema).nullish(),
 })
@@ -26,5 +30,27 @@ export async function getOffersAction(direction: "sent" | "received") {
     return z
       .array(OfferSummarySchema)
       .parse(await request<unknown>(`/api/offers/${type}`))
+  })
+}
+
+export async function acceptOfferAction(listingId: string, offerId: string) {
+  return runAction(async () => {
+    const id = parseInput(z.uuid(), listingId)
+    const offerKey = parseInput(z.uuid(), offerId)
+    await request(`/api/listings/${id}/offers/${offerKey}/accept`, {
+      method: "PUT",
+    })
+    return null
+  })
+}
+
+export async function refuseOfferAction(listingId: string, offerId: string) {
+  return runAction(async () => {
+    const id = parseInput(z.uuid(), listingId)
+    const offerKey = parseInput(z.uuid(), offerId)
+    await request(`/api/listings/${id}/offers/${offerKey}/refuse`, {
+      method: "PUT",
+    })
+    return null
   })
 }

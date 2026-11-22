@@ -98,3 +98,22 @@ html[dir='rtl'] [data-icon='arrow'] {
   scale: -1 1;
 }
 
+@keyframes chat-panel-in {
+  from { transform: translateX(var(--chat-panel-offset, 100%)); }
+  to { transform: none; }
+}
+@keyframes chat-panel-out {
+  from { transform: none; }
+  to { transform: translateX(var(--chat-panel-offset, 100%)); }
+}
+.chat-panel[open], .offers-panel[open], .notifications-panel[open] {
+  display: block;
+  animation: chat-panel-in 220ms ease-out backwards;
+}
+.chat-panel[data-closing='true'], .offers-panel[data-closing='true'], .notifications-panel[data-closing='true'] {
+  animation: chat-panel-out 220ms ease-in both;
+}
+html[dir='rtl'] .chat-panel, html[dir='rtl'] .offers-panel, html[dir='rtl'] .notifications-panel { --chat-panel-offset: -100%; }
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel[open], .offers-panel[open], .notifications-panel[open] { animation-duration: 0.01ms; }
+}

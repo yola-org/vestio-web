@@ -2,8 +2,14 @@ import Skeleton, { SkeletonGroup } from "@/components/shared/Skeleton"
 
 export default function FilterPanelSkeleton() {
   return (
-    <aside className="w-full shrink-0 lg:w-64">
+    <aside className="w-full shrink-0 self-start lg:w-64">
       <SkeletonGroup className="space-y-5">
+        <Skeleton className="h-4 w-16" />
+        <div className="grid grid-cols-2 gap-2">
+          {[0, 1].map((item) => (
+            <Skeleton key={item} className="h-10 rounded-xl" />
+          ))}
+        </div>
         {Array.from({ length: 5 }, (_, index) => (
           <div key={index} className="space-y-2">
             <Skeleton className="h-4 w-24" />

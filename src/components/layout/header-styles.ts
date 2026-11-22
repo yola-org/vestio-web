@@ -1,0 +1,2 @@
+export const headerActionClassName =
+  "relative flex size-10 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-white/60 pt-0.5 text-primary/70 transition hover:border-primary/20 hover:bg-white hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-[current=page]:border-accent/20 aria-[current=page]:bg-accent/10 aria-[current=page]:text-accent aria-[expanded=true]:border-accent/20 aria-[expanded=true]:bg-accent/10 aria-[expanded=true]:text-accent lg:size-11"

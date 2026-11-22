@@ -2,6 +2,7 @@
 
 // Form state
 
+import ProfileImageUpload from "@/components/profile/ProfileImageUpload"
 import SettingsFormSkeleton from "@/components/profile/SettingsFormSkeleton"
 import { useState } from "react"
 import Header from "@/components/layout/Header"
@@ -11,6 +12,9 @@ import { notifyAuthChanged } from "@/lib/auth"
 import { useApiForm } from "@/hooks/use-api-form"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { ArrowIcon, UserIcon } from "@/components/shared/Icons"
+import Input from "@/components/shared/forms/Input"
+import Field from "@/components/shared/forms/Field"
+import Textarea from "@/components/shared/forms/Textarea"
 import Button from "@/components/shared/Button"
 import { useNotifications } from "@/components/shared/NotificationProvider"
 import { useTranslations } from "next-intl"
@@ -23,11 +27,14 @@ export default function SettingsPage() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [bio, setBio] = useState("")
+  const [profileImageKey, setProfileImageKey] =
+    useState<string | null | undefined>()
   const [phoneNumber, setPhoneNumber] = useState("")
 
   const { loading: isLoading } = useApiQuery(profileApi.get, {
     loading: false,
     onSuccess: (data) => {
+      setProfileImageKey(data.profileImageKey)
       setFirstName(data.firstName)
       setLastName(data.lastName)
       setBio(data.bio || "")
@@ -75,86 +82,69 @@ export default function SettingsPage() {
             {isLoading ? (
               <SettingsFormSkeleton />
             ) : (
-              <form action={formAction} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      className="block text-sm font-bold mb-2"
-                      htmlFor="firstName"
-                    >
-                      {t("settings.firstName")}
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                      required
-                    />
+              <>
+                <ProfileImageUpload
+                  firstName={firstName}
+                  lastName={lastName}
+                  imageKey={profileImageKey}
+                  onUploaded={setProfileImageKey}
+                />
+                <form action={formAction} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field id="firstName" label={t("settings.firstName")}>
+                      <Input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </Field>
+                    <Field id="lastName" label={t("settings.lastName")}>
+                      <Input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </Field>
                   </div>
-                  <div>
-                    <label
-                      className="block text-sm font-bold mb-2"
-                      htmlFor="lastName"
-                    >
-                      {t("settings.lastName")}
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                      required
+
+                  <Field id="bio" label={t("settings.bio")}>
+                    <Textarea
+                      id="bio"
+                      name="bio"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder={t("settings.bioPlaceholder")}
                     />
+                  </Field>
+
+                  <Field id="phone" label={t("settings.phone")}>
+                    <Input
+                      type="tel"
+                      id="phone"
+                      name="phoneNumber"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder={t("settings.phonePlaceholder")}
+                    />
+                  </Field>
+
+                  <div className="pt-4">
+                    <Button
+                      type="submit"
+                      loading={pending}
+                      className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {t("settings.submit")} <ArrowIcon className="h-5 w-5" />
+                    </Button>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-2" htmlFor="bio">
-                    {t("settings.bio")}
-                  </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder={t("settings.bioPlaceholder")}
-                    className="w-full p-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition min-h-[120px]"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className="block text-sm font-bold mb-2"
-                    htmlFor="phone"
-                  >
-                    {t("settings.phone")}
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phoneNumber"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder={t("settings.phonePlaceholder")}
-                    className="w-full h-12 px-4 rounded-xl border border-black/15 focus:border-[#173fdb] focus:ring-2 focus:ring-[#173fdb]/10 outline-none transition"
-                  />
-                </div>
-
-                <div className="pt-4">
-                  <Button
-                    type="submit"
-                    loading={pending}
-                    className="w-full bg-[#173fdb] text-white h-12 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#1335b8] transition disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {t("settings.submit")} <ArrowIcon className="h-5 w-5" />
-                  </Button>
-                </div>
-              </form>
+                </form>
+              </>
             )}
           </div>
         </div>

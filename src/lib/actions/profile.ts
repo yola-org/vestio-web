@@ -9,7 +9,6 @@
 
 import { z } from "zod"
 import { cookies } from "next/headers"
-import { AUTH_DISPLAY_NAME_COOKIE } from "@/constants/auth"
 import { writeAccountDisplayName } from "@/lib/api/auth-cookies"
 
 import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
@@ -39,6 +38,12 @@ const ProfileResponseSchema = UserProfileSchema.extend({
 type ProfileResponse = z.infer<typeof ProfileResponseSchema>
 const CategoryRefSchema = z.union([z.string(), z.object({ id: z.string() })])
 
+// Public metadata is shared across users and refreshed hourly.
+const metadataOptions = {
+  cache: "force-cache",
+  next: { revalidate: 3600, tags: ["metadata"] },
+} satisfies RequestInit
+
 const PreferencesResponseSchema = z.object({
   gender: z.string().nullish(),
   categoryIds: z.array(CategoryRefSchema).nullish(),
@@ -50,9 +55,9 @@ type PreferencesResponse = z.infer<typeof PreferencesResponseSchema>
 export async function getStaticDataAction(): Promise<ApiResult<StaticData>> {
   return runAction(async () => {
     const [categories, cities, sizes] = await Promise.all([
-      request<Category[]>("/api/categories", {}, false),
-      request<City[]>("/api/cities", {}, false),
-      request<SizeGroup[]>("/api/sizes", {}, false),
+      request<Category[]>("/api/categories", metadataOptions, false),
+      request<City[]>("/api/cities", metadataOptions, false),
+      request<SizeGroup[]>("/api/sizes", metadataOptions, false),
     ])
 
     const data: StaticData = {
@@ -72,9 +77,7 @@ export async function getProfileAction(): Promise<ApiResult<UserProfile>> {
   return runAction(async () => {
     const profile = await request<ProfileResponse>("/api/profile")
     const cookieStore = await cookies()
-    if (!cookieStore.has(AUTH_DISPLAY_NAME_COOKIE)) {
-      writeAccountDisplayName(cookieStore, profile)
-    }
+    writeAccountDisplayName(cookieStore, profile)
     return {
       ...profile,
       cityId: profile.city?.id || profile.cityId || null,
@@ -97,6 +100,29 @@ export async function updateProfileAction(
     })
     writeAccountDisplayName(await cookies(), updated)
     return updated
+  })
+}
+
+export async function uploadProfileImageAction(
+  image: File,
+): Promise<ApiResult<UserProfile>> {
+  return runAction(async () => {
+    if (
+      !(image instanceof File) ||
+      image.size === 0 ||
+      image.size > 10 * 1024 * 1024 ||
+      !["image/jpeg", "image/png", "image/webp"].includes(image.type)
+    ) {
+      throw new Error("Use a JPEG, PNG or WebP image up to 10 MB")
+    }
+    const data = new FormData()
+    data.set("image", image)
+    const profile = await request<UserProfile>("/api/profile/image", {
+      method: "POST",
+      body: data,
+    })
+    writeAccountDisplayName(await cookies(), profile)
+    return profile
   })
 }
 
@@ -137,26 +163,26 @@ export async function updatePreferencesAction(
 
 export async function getCategoriesAction(): Promise<ApiResult<Category[]>> {
   return runAction(async () => {
-    const categories = await request<Category[]>("/api/categories", {}, false)
+    const categories = await request<Category[]>("/api/categories", metadataOptions, false)
     return categories
   })
 }
 
 export async function getSizesAction(): Promise<ApiResult<SizeGroup[]>> {
   return runAction(async () => {
-    const sizes = await request<SizeGroup[]>("/api/sizes", {}, false)
+    const sizes = await request<SizeGroup[]>("/api/sizes", metadataOptions, false)
     return sizes
   })
 }
 
 export async function getCategoryGroupsAction(): Promise<ApiResult<CategoryGroup[]>> {
   return runAction(() =>
-    request<CategoryGroup[]>("/api/categories/groups", {}, false),
+    request<CategoryGroup[]>("/api/categories/groups", metadataOptions, false),
   )
 }
 
 export async function getCitiesAction(): Promise<ApiResult<City[]>> {
-  return runAction(() => request<City[]>("/api/cities", {}, false))
+  return runAction(() => request<City[]>("/api/cities", metadataOptions, false))
 }
 export async function getConditionsAction(): Promise<ApiResult<Condition[]>> {
   return runAction(async () => [...conditions])
