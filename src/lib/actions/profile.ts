@@ -7,6 +7,8 @@
 // Normalize category IDs from backend (which might be objects or strings)
 // The backend expects objects { id: UUID } for categories
 
+// Public metadata is shared across users and refreshed hourly.
+
 import { z } from "zod"
 import { cookies } from "next/headers"
 import { writeAccountDisplayName } from "@/lib/api/auth-cookies"
@@ -37,8 +39,6 @@ const ProfileResponseSchema = UserProfileSchema.extend({
 
 type ProfileResponse = z.infer<typeof ProfileResponseSchema>
 const CategoryRefSchema = z.union([z.string(), z.object({ id: z.string() })])
-
-// Public metadata is shared across users and refreshed hourly.
 const metadataOptions = {
   cache: "force-cache",
   next: { revalidate: 3600, tags: ["metadata"] },
@@ -163,14 +163,22 @@ export async function updatePreferencesAction(
 
 export async function getCategoriesAction(): Promise<ApiResult<Category[]>> {
   return runAction(async () => {
-    const categories = await request<Category[]>("/api/categories", metadataOptions, false)
+    const categories = await request<Category[]>(
+      "/api/categories",
+      metadataOptions,
+      false,
+    )
     return categories
   })
 }
 
 export async function getSizesAction(): Promise<ApiResult<SizeGroup[]>> {
   return runAction(async () => {
-    const sizes = await request<SizeGroup[]>("/api/sizes", metadataOptions, false)
+    const sizes = await request<SizeGroup[]>(
+      "/api/sizes",
+      metadataOptions,
+      false,
+    )
     return sizes
   })
 }

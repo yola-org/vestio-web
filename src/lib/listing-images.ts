@@ -7,7 +7,6 @@ const suffixes = {
   mobile: ["_thumbnail_mobile.webp", "/original-thumbnail-mobile.webp"],
 } as const
 
-
 export function getListingImageUrls(
   listing: Pick<Listing, "id" | "assetKeys" | "image" | "imageUrls" | "status">,
   rendition: keyof typeof suffixes = "original",

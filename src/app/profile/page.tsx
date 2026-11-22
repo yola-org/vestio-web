@@ -45,9 +45,8 @@ function ProfileContent() {
   })
 
   const profile = profileQuery.data
-  const imageKey = uploadedImageKey !== undefined
-    ? uploadedImageKey
-    : profile?.profileImageKey
+  const imageKey =
+    uploadedImageKey !== undefined ? uploadedImageKey : profile?.profileImageKey
   const listings = (listingsQuery.data?.content ?? []).filter(
     (listing) => listing.status === "AVAILABLE",
   )
@@ -110,9 +109,7 @@ function ProfileContent() {
                 })}
               />
             </div>
-            <span
-              className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-black/5 group-hover:bg-[#f7f3ea] transition"
-            >
+            <span className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-black/5 group-hover:bg-[#f7f3ea] transition">
               <CameraIcon className="h-5 w-5" />
             </span>
           </button>

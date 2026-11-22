@@ -1,4 +1,5 @@
 "use client"
+// The upper end represents no price limit; expand it for saved filters.
 
 import { useState } from "react"
 import * as Slider from "@radix-ui/react-slider"
@@ -8,7 +9,11 @@ import { localeDirection, type Locale } from "@/i18n/config"
 function price(value?: string) {
   if (!value?.trim()) return undefined
   const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined
+  return Number.isFinite(parsed) &&
+    parsed >=
+      0
+    ? parsed
+    : undefined
 }
 
 export default function PriceRangeFilter({
@@ -21,9 +26,10 @@ export default function PriceRangeFilter({
   const t = useTranslations()
   const format = useFormatter()
   const locale = useLocale() as Locale
-  const initialMin = price(minPrice) ?? 0
+  const initialMin =
+    price(minPrice) ??
+    0
   const initialMax = price(maxPrice)
-  // The upper end represents no price limit; expand it for saved filters.
   const ceiling =
     Math.ceil(Math.max(5000, initialMin + 1000, initialMax ?? 0) / 1000) * 1000
   const [values, setValues] = useState([

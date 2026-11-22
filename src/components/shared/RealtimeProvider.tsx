@@ -304,9 +304,10 @@ export default function RealtimeProvider({
       mutating.current = true
       const currentSession = session.current
       const knownIds = new Set(
-        [...stateRef.current.notifications, ...stateRef.current.unreadOffers].map(
-          (item) => item.id,
-        ),
+        [
+          ...stateRef.current.notifications,
+          ...stateRef.current.unreadOffers,
+        ].map((item) => item.id),
       )
       ++request.current
       setState((value) => ({

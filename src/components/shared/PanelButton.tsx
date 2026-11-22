@@ -5,15 +5,13 @@ import { useChatPanel } from "@/components/chats/ChatPanelProvider"
 import { useOffersPanel } from "@/components/offers/OffersPanelProvider"
 import { isAuthenticated } from "@/lib/auth"
 
-export type PanelTarget =
-  | {
-      type: "chat"
-      chatId?: string
-    }
-  | {
-      type: "offers"
-      direction?: "received" | "sent"
-    }
+export type PanelTarget = {
+  type: "chat"
+  chatId?: string
+} | {
+  type: "offers"
+  direction?: "received" | "sent"
+}
 
 export default function PanelButton({
   panel,
