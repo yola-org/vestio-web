@@ -91,7 +91,7 @@ export default function UserDropdown({
       onClick: () => setIsPreferencesOpen(true),
       icon: SettingsIcon,
     },
-    { label: t("userMenu.help"), href: "/help", icon: HelpIcon },
+    { label: t("userMenu.help"), href: "/faq", icon: HelpIcon },
     { label: t("userMenu.contact"), href: "/contact", icon: ContactIcon },
   ]
 
