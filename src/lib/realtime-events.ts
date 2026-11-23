@@ -21,6 +21,17 @@ export const OfferSentPayloadSchema = z.object({
   listingTitle: z.string(),
 })
 
+// Shared keys from com.vestio.common.event.payload.OfferAcceptedPayload.
+export const OfferAcceptedPayloadSchema = z.object({
+  offerId: z.uuid(),
+  chatId: z.uuid(),
+  amount: z.number().finite().positive(),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  ownerName: z.string(),
+  buyerName: z.string(),
+  listingTitle: z.string(),
+})
+
 export const NotificationPageSchema = z.object({
   items: z.array(NotificationSchema),
   page: z.number().int().nonnegative(),
@@ -41,6 +52,46 @@ export const NotificationEventSchema = z.object({
 })
 
 export type NotificationEvent = z.infer<typeof NotificationEventSchema>
+
+// Matches MessageDto and com.vestio.common.event.ChatEvent.Payload.
+const messageFields = {
+  id: z.uuid(),
+  chatId: z.uuid(),
+  createdAt: z.iso.datetime({ offset: true }),
+}
+export const MessageSchema = z.discriminatedUnion("system", [
+  z.object({
+    ...messageFields,
+    system: z.literal(false),
+    senderId: z.guid(),
+    content: z
+      .string()
+      .min(1)
+      .max(4000)
+      .refine((text) => text.trim().length > 0),
+    systemType: z.null(),
+    params: z.null(),
+  }),
+  z.object({
+    ...messageFields,
+    system: z.literal(true),
+    senderId: z.guid().nullable(),
+    content: z.string().nullable(),
+    systemType: z.string().min(1),
+    params: z.record(z.string(), z.unknown()),
+  }),
+])
+export type ChatMessage = z.infer<typeof MessageSchema>
+export const ChatEventSchema = z
+  .object({
+    id: z.uuid(),
+    type: z.literal("chat"),
+    occurredAt: z.iso.datetime({ offset: true }),
+    payload: MessageSchema,
+  })
+  .refine((event) => event.id === event.payload.id)
+export type ChatEvent = z.infer<typeof ChatEventSchema>
+
 export interface RealtimeEvent {
   channel: string
   payload: unknown
@@ -48,3 +99,5 @@ export interface RealtimeEvent {
 export const notificationsNamespace =
   process.env.NEXT_PUBLIC_APPSYNC_EVENTS_NOTIFICATIONS_NAMESPACE ||
   "notifications"
+export const chatNamespace =
+  process.env.NEXT_PUBLIC_APPSYNC_EVENTS_CHAT_NAMESPACE || "chat"

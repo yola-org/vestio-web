@@ -1,17 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import {
-  HeartIcon,
-  UserIcon,
-  MenuIcon,
-  CloseIcon,
-  ChevronIcon,
-  PinIcon,
-  HomeIcon,
-  UploadIcon,
-} from "@/components/shared/Icons"
-import NotificationBell from "@/components/layout/NotificationBell"
+import { MessageIcon, ChevronIcon, PinIcon } from "@/components/shared/Icons"
+import MessagesLink from "@/components/layout/MessagesLink"
+import OffersLink from "@/components/layout/OffersLink"
+import HeaderActions from "@/components/layout/HeaderActions"
 import UserDropdown from "@/components/layout/UserDropdown"
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 import { profileApi } from "@/lib/api"
@@ -32,7 +25,7 @@ import {
 
 interface HeaderProps {
   searchQuery?: string
-  searchCityId?: string
+  searchCityIds?: string
   searchCategoryId?: string
   searchAction?: string
   searchFilters?: Record<string, string>
@@ -40,7 +33,7 @@ interface HeaderProps {
 
 export default function Header({
   searchQuery = "",
-  searchCityId = "",
+  searchCityIds = "",
   searchCategoryId,
   searchAction,
   searchFilters = {},
@@ -48,11 +41,14 @@ export default function Header({
   const t = useTranslations()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
-  const [selectedCityId, setSelectedCityId] = useState(searchCityId)
+  const [selectedCityId, setSelectedCityId] = useState(
+    searchCityIds.split(",")[0] ?? "",
+  )
   const [citySelectorOpen, setCitySelectorOpen] = useState(false)
+  const citySelectorRef = useRef<HTMLDivElement>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [displayName, setDisplayName] = useState<AccountDisplayName>()
-  const citySelectorRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
 
   const citiesQuery = useApiQuery(profileApi.getCities, {
     critical: true,
@@ -80,6 +76,26 @@ export default function Header({
   }, [])
 
   useEffect(() => {
+    if (!mobileOpen) return
+    const outside = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node))
+        setMobileOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        setMobileOpen(false)
+        document.getElementById("header-mobile-toggle")?.focus()
+      }
+    }
+    document.addEventListener("pointerdown", outside)
+    document.addEventListener("keydown", escape)
+    return () => {
+      document.removeEventListener("pointerdown", outside)
+      document.removeEventListener("keydown", escape)
+    }
+  }, [mobileOpen])
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         citySelectorRef.current &&
@@ -99,25 +115,28 @@ export default function Header({
   }, [citySelectorOpen])
 
   const activeSearchFilters = selectedCityId
-    ? { ...searchFilters, cityId: selectedCityId }
+    ? { ...searchFilters, cityIds: selectedCityId }
     : searchFilters
 
   return (
-    <header className="relative z-50 border-b border-black/10 bg-background">
+    <header
+      ref={headerRef}
+      className="relative z-50 border-b border-primary/8 bg-background"
+    >
       <div className="bg-deep-accent py-2 text-center text-[11px] font-bold tracking-[0.16em] text-white uppercase sm:text-xs content-padding">
         {t("header.banner")}
       </div>
-      <div className="flex h-20 items-center gap-7 main-container">
+      <div className="flex h-20 items-center gap-3 main-container lg:gap-5 xl:gap-7">
         <Link
           href="/"
-          className="shrink-0 text-[28px] font-black tracking-[-0.06em]"
+          className="shrink-0 text-[26px] sm:text-[28px] font-black tracking-[-0.06em]"
           aria-label={t("header.homeAria")}
         >
           VESTIO<span className="text-accent">.</span>
         </Link>
 
-        <div className="relative hidden flex-1 lg:block">
-          <div className="flex items-center rounded-full border border-black/15 bg-white transition focus-within:border-deep-accent focus-within:ring-2 focus-within:ring-deep-accent/10">
+        <div className="relative hidden min-w-0 flex-1 lg:block">
+          <div className="flex min-w-0 items-center rounded-full border border-primary/10 bg-white transition focus-within:border-deep-accent focus-within:ring-2 focus-within:ring-deep-accent/10">
             <div
               className="relative border-e border-black/10"
               ref={mobileOpen ? undefined : citySelectorRef}
@@ -181,157 +200,105 @@ export default function Header({
           </div>
         </div>
 
-        <nav
-          className="ms-auto hidden items-center gap-6 lg:flex"
-          aria-label={t("header.mainActionsAria")}
-        >
-          <Link
-            href="/favorites"
-            className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent"
-          >
-            <HeartIcon className="h-5 w-5" aria-hidden="true" />{" "}
-            {t("header.favorites")}
-          </Link>
-          {isAuthenticated ? (
-            <>
-              <Link
-                href="/listings/new"
-                className="rounded-full bg-accent px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-90 flex items-center gap-2"
-              >
-                <UploadIcon className="h-4 w-4" /> {t("header.sell")}
-              </Link>
-              <NotificationBell />
-              <UserDropdown displayName={displayName} />
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent"
-              >
-                <UserIcon className="h-5 w-5" /> {t("header.login")}
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-full bg-accent px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-90"
-              >
-                {t("header.sell")}
-              </Link>
-            </>
-          )}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm font-semibold hover:text-deep-accent"
-            aria-label={t("header.homeAriaShort")}
-          >
-            <HomeIcon className="h-5 w-5" />
-          </Link>
-          <LanguageSwitcher />
-        </nav>
-        {isAuthenticated && (
-          <div className="ms-auto lg:hidden">
-            <NotificationBell />
-          </div>
-        )}
-        <button
-          className={`${
-            isAuthenticated ? "ms-2" : "ms-auto"
-          } rounded-full border border-black/15 p-2.5 lg:hidden`}
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? t("header.closeMenu") : t("header.openMenu")}
-          aria-expanded={mobileOpen}
-        >
-          {mobileOpen ? (
-            <CloseIcon className="h-6 w-6" />
-          ) : (
-            <MenuIcon className="h-6 w-6" />
-          )}
-        </button>
+        <HeaderActions
+          authenticated={isAuthenticated}
+          displayName={displayName}
+          mobileOpen={mobileOpen}
+          onMenuToggle={() => {
+            setMobileOpen(!mobileOpen)
+          }}
+        />
       </div>
 
-      <div className="border-t border-black/10">
-        {loading ? (
-          <HeaderNavSkeleton />
-        ) : (
-          <nav
-            className="flex h-12 items-center gap-8 overflow-x-auto text-xs font-bold tracking-[0.08em] whitespace-nowrap uppercase main-container"
-            aria-label={t("header.categoriesAria")}
-          >
-            <div
-              className="group h-full"
-              onMouseEnter={() => setMegaOpen(true)}
-              onMouseLeave={() => setMegaOpen(false)}
-              onFocus={() => setMegaOpen(true)}
-              onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget))
-                  setMegaOpen(false)
-              }}
+      <div className="border-t border-primary/8">
+        <div className="main-container flex items-center gap-3 sm:gap-6">
+          {loading ? (
+            <HeaderNavSkeleton />
+          ) : (
+            <nav
+              className="flex h-12 min-w-0 flex-1 items-center gap-5 overflow-x-auto text-[11px] font-bold tracking-[0.06em] whitespace-nowrap uppercase sm:gap-8 sm:text-xs"
+              aria-label={t("header.categoriesAria")}
             >
-              <button
-                className="flex h-full items-center gap-1.5 text-deep-accent"
-                aria-expanded={megaOpen}
+              <div
+                className="group h-full"
+                onMouseEnter={() => setMegaOpen(true)}
+                onMouseLeave={() => setMegaOpen(false)}
+                onFocus={() => setMegaOpen(true)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget))
+                    setMegaOpen(false)
+                }}
               >
-                {t("header.allCategories")}{" "}
-                <ChevronIcon
-                  className={`h-4 w-4 transition ${
-                    megaOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {megaOpen &&
-                (loading ? (
-                  <MegaMenuSkeleton />
-                ) : (
-                  <div className="absolute top-full end-0 start-0 border-t border-black/10 bg-background shadow-[0_22px_50px_rgba(0,0,0,0.16)]">
-                    <div className="mx-auto grid max-w-[1440px] grid-cols-6 gap-8 py-10 content-padding">
-                      {categories.map((parent, index) => (
-                        <div
-                          key={parent.id}
-                          className={
-                            index < 5 ? "border-e border-black/10 pe-4" : ""
-                          }
-                        >
-                          <Link
-                            href={categoryHref(parent.name)}
-                            onClick={() => setMegaOpen(false)}
-                            className="mb-4 block text-base font-black tracking-tight normal-case text-primary hover:text-deep-accent"
+                <button
+                  className="flex h-full items-center gap-1.5 text-deep-accent"
+                  aria-expanded={megaOpen}
+                >
+                  {t("header.allCategories")}{" "}
+                  <ChevronIcon
+                    className={`h-4 w-4 transition ${
+                      megaOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {megaOpen &&
+                  (loading ? (
+                    <MegaMenuSkeleton />
+                  ) : (
+                    <div className="absolute top-full end-0 start-0 border-t border-black/10 bg-background shadow-[0_22px_50px_rgba(0,0,0,0.16)]">
+                      <div className="mx-auto grid max-w-[1440px] grid-cols-6 gap-8 py-10 content-padding">
+                        {categories.map((parent, index) => (
+                          <div
+                            key={parent.id}
+                            className={
+                              index < 5 ? "border-e border-black/10 pe-4" : ""
+                            }
                           >
-                            {parent.name}
-                          </Link>
-                          <ul className="space-y-2.5 text-[13px] font-medium tracking-normal normal-case text-black/60">
-                            {parent.subCategories?.map((child) => (
-                              <li key={child.id}>
-                                <Link
-                                  href={categoryHref(parent.name, child.name)}
-                                  onClick={() => setMegaOpen(false)}
-                                  className="hover:text-deep-accent hover:underline"
-                                >
-                                  {child.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+                            <Link
+                              href={categoryHref(parent.name)}
+                              onClick={() => setMegaOpen(false)}
+                              className="mb-4 block text-base font-black tracking-tight normal-case text-primary hover:text-deep-accent"
+                            >
+                              {parent.name}
+                            </Link>
+                            <ul className="space-y-2.5 text-[13px] font-medium tracking-normal normal-case text-black/60">
+                              {parent.subCategories?.map((child) => (
+                                <li key={child.id}>
+                                  <Link
+                                    href={categoryHref(parent.name, child.name)}
+                                    onClick={() => setMegaOpen(false)}
+                                    className="hover:text-deep-accent hover:underline"
+                                  >
+                                    {child.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </div>
-            {categories.map((parent) => (
-              <Link
-                key={parent.id}
-                href={categoryHref(parent.name)}
-                className="hover:text-deep-accent"
-              >
-                {parent.name}
-              </Link>
-            ))}
-          </nav>
-        )}
+                  ))}
+              </div>
+              {categories.map((parent) => (
+                <Link
+                  key={parent.id}
+                  href={categoryHref(parent.name)}
+                  className="hover:text-deep-accent"
+                >
+                  {parent.name}
+                </Link>
+              ))}
+            </nav>
+          )}
+          <LanguageSwitcher className="shrink-0 border-s border-primary/10 ps-3 sm:ps-5" />
+        </div>
       </div>
 
       {mobileOpen && (
-        <div className="absolute top-full end-0 start-0 border-t border-black/10 bg-background p-5 shadow-xl lg:hidden">
+        <div
+          id="header-mobile-menu"
+          className="absolute top-full end-0 start-0 max-h-[calc(100dvh-11rem)] overflow-y-auto border-t border-primary/8 bg-white p-5 shadow-xl lg:hidden"
+        >
           <div className="mb-5 flex flex-col gap-3">
             <div className="relative" ref={citySelectorRef}>
               <button
@@ -384,51 +351,35 @@ export default function Header({
               mobile
             />
           </div>
-          <div className="grid gap-3 text-sm font-bold">
-            <a href="#shop" onClick={() => setMobileOpen(false)}>
-              {t("header.buy")}
-            </a>
-            <Link
-              href="/favorites"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2"
-            >
-              <HeartIcon className="h-5 w-5" aria-hidden="true" />{" "}
-              {t("header.favorites")}
-            </Link>
+          <div className="grid grid-cols-2 gap-2 text-sm font-semibold">
             {isAuthenticated ? (
               <>
-                <Link
-                  href="/listings/new"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-accent"
-                >
-                  <UploadIcon className="h-5 w-5" /> {t("header.sellItem")}
-                </Link>
-                <div
-                  className="flex items-center"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <UserDropdown displayName={displayName} />
-                </div>
+                <OffersLink menu onNavigate={() => setMobileOpen(false)} />
+                <MessagesLink menu onNavigate={() => setMobileOpen(false)} />
               </>
             ) : (
-              <>
-                <Link href="/register" onClick={() => setMobileOpen(false)}>
-                  {t("header.sellItem")}
-                </Link>
-                <Link
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-start"
-                >
-                  {t("header.login")}
-                </Link>
-              </>
+              <Link
+                href="/search"
+                onClick={() => setMobileOpen(false)}
+                className="col-span-2 flex items-center gap-3 rounded-2xl border border-primary/8 bg-background/50 px-4 py-4"
+              >
+                <MessageIcon className="size-5 text-primary/60" />
+                {t("header.buy")}
+              </Link>
             )}
-            <div className="mt-2 border-t border-black/10 pt-4">
-              <LanguageSwitcher />
-            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-3 border-t border-primary/8 pt-4">
+            {isAuthenticated ? (
+              <UserDropdown displayName={displayName} inline />
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="w-full rounded-full border border-primary/15 px-4 py-3 text-center text-sm font-bold"
+              >
+                {t("header.login")}
+              </Link>
+            )}
           </div>
         </div>
       )}

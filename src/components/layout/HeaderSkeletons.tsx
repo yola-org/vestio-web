@@ -21,7 +21,7 @@ export function MegaMenuSkeleton() {
 
 export function HeaderNavSkeleton() {
   return (
-    <div className="flex h-12 items-center gap-8 overflow-x-auto main-container">
+    <div className="flex h-12 min-w-0 flex-1 items-center gap-8 overflow-x-hidden">
       <Skeleton className="h-4 w-32" />
       {[...Array(6)].map((_, i) => (
         <Skeleton key={i} className="h-4 w-20" />

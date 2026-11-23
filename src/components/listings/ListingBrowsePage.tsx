@@ -19,12 +19,12 @@ const pageSize = 12
 const searchKeys = [
   "query",
   "brandId",
-  "cityId",
-  "sizeId",
+  "cityIds",
+  "sizeIds",
   "gender",
-  "color",
-  "condition",
-  "contactType",
+  "colors",
+  "conditions",
+  "contactTypes",
   "minPrice",
   "maxPrice",
 ]
@@ -49,14 +49,29 @@ export default async function ListingBrowsePage({
   const params = new URLSearchParams()
   for (const key of searchKeys) {
     const value = input[key]
-    if (typeof value === "string" && value.trim()) params.set(key, value.trim())
+    if (
+      ["colors", "cityIds", "sizeIds", "conditions", "contactTypes"].includes(
+        key,
+      )
+    ) {
+      const values = [
+        ...new Set(
+          (Array.isArray(value) ? value : [value ?? ""])
+            .flatMap((item) => item.split(","))
+            .map((item) => item.trim())
+            .filter(Boolean),
+        ),
+      ]
+      if (values.length) params.set(key, values.join(","))
+    } else if (typeof value === "string" && value.trim())
+      params.set(key, value.trim())
   }
 
   const rawPage = typeof input.page === "string" ? input.page : ""
   const page =
     /^\d+$/.test(rawPage) && Number(rawPage) <= 2147483647 ? Number(rawPage) : 0
   const { query = "", ...filters } = Object.fromEntries(params)
-  const { cityId = "", ...headerFilters } = filters
+  const { cityIds = "", ...headerFilters } = filters
   const minPrice = params.get("minPrice")
   const maxPrice = params.get("maxPrice")
   const invalidRange =
@@ -68,9 +83,9 @@ export default async function ListingBrowsePage({
   return (
     <div className="min-h-screen bg-background text-primary">
       <Header
-        key={JSON.stringify([query, cityId])}
+        key={JSON.stringify([query, cityIds])}
         searchQuery={query}
-        searchCityId={cityId}
+        searchCityIds={cityIds}
         searchFilters={headerFilters}
         searchCategoryId={category?.id}
         searchAction={path}
@@ -122,11 +137,12 @@ export default async function ListingBrowsePage({
         )}
         <div className="mt-8 flex flex-col gap-10 lg:flex-row">
           <FilterPanel
-            key={params.toString()}
+            key={`${path}:${params}`}
             query={query}
             filters={filters}
             action={path}
             showCategoryFilter={!category}
+            categoryId={category?.id}
           />
           <div className="min-w-0 flex-1">
             {invalidRange ? (

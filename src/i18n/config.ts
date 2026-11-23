@@ -1,4 +1,4 @@
-export const locales = ["fr", "ar"] as const
+export const locales = ["fr", "ar", "en"] as const
 
 export type Locale = typeof locales[number]
 
@@ -22,4 +22,5 @@ export const localeNames: Record<Locale, {
 }> = {
   fr: { label: "Français", short: "FR", native: "Français" },
   ar: { label: "Arabe", short: "AR", native: "العربية" },
+  en: { label: "English", short: "EN", native: "English" },
 }

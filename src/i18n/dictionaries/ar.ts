@@ -1,6 +1,46 @@
 import type { Dictionary } from "./index"
 
 const ar: Dictionary = {
+  chats: {
+    close: "إغلاق الرسائل",
+    time: {
+      today: "اليوم",
+      yesterday: "أمس",
+      at: "{date} الساعة {time}",
+    },
+    newMessage: "رسالة جديدة",
+    badge: "الرسائل، {count} غير مقروءة",
+    inbox: "المحادثات",
+    inboxSubtitle: "لكل قطعة حكاية ومحادثة.",
+    conversation: "المحادثة",
+    selectConversation: "محادثاتك تبدأ هنا",
+    selectHint: "اختر محادثة لمناقشة المنتج وطرح أسئلتك وترتيب التسليم.",
+    openChat: "فتح المحادثة حول {title}",
+    noCover: "الصورة غير متوفرة",
+    viewListing: "عرض المنتج",
+    messagePlaceholder: "اكتب رسالتك…",
+    composerHint: "Enter للإرسال · Shift + Enter لسطر جديد",
+    title: "الرسائل",
+    history: "سجل الرسائل",
+    message: "رسالتك",
+    send: "إرسال",
+    sending: "جارٍ الإرسال...",
+    loading: "جارٍ التحميل...",
+    loadError: "تعذّر تحميل المحادثة.",
+    sendError: "تعذّر إرسال الرسالة. حاول مجدداً.",
+    retry: "إعادة المحاولة",
+    login: "سجّل الدخول للاطلاع على رسائلك",
+    empty: "ستظهر محادثاتك هنا بعد قبول عرض.",
+    emptyMessages: "لا توجد رسائل بعد.",
+    back: "جميع المحادثات",
+    previous: "السابق",
+    next: "التالي",
+    older: "الرسائل الأقدم",
+    newer: "الرسائل الأحدث",
+    systemMessage: "رسالة نظام",
+    offerAccepted:
+      "وافق {owner} على عرض {buyer} بقيمة {amount} للمنتج «{title}».",
+  },
   common: {
     language: "اللغة",
     french: "الفرنسية",
@@ -126,6 +166,15 @@ const ar: Dictionary = {
     },
   },
   offers: {
+    badge: "العروض، {count} جديدة",
+    close: "إغلاق العروض",
+    accept: "قبول العرض",
+    refuse: "رفض العرض",
+    actionsFor: "إجراءات العرض على «{title}»",
+    acceptFailed: "تعذّر قبول العرض. حاول مرة أخرى.",
+    refuseFailed: "تعذّر رفض العرض. حاول مرة أخرى.",
+    decisionNotPending: "لم يعد هذا العرض قيد الانتظار. تم تحديث القائمة.",
+
     title: "العروض",
     sent: "العروض المرسلة",
     received: "العروض المستلمة",
@@ -139,7 +188,7 @@ const ar: Dictionary = {
     editFailed: "تعذّر تعديل العرض. حاول مرة أخرى.",
     cancelFailed: "تعذّر إلغاء العرض. حاول مرة أخرى.",
     notPending: "يمكن تعديل العروض قيد الانتظار أو إلغاؤها فقط.",
-    status: { PENDING: "قيد الانتظار", ACCEPTED: "مقبول" },
+    status: { PENDING: "قيد الانتظار", ACCEPTED: "مقبول", REFUSED: "مرفوض" },
   },
   pendingListings: {
     title: "الإعلانات قيد الانتظار",
@@ -162,6 +211,18 @@ const ar: Dictionary = {
     empty: "لم يتم العثور على أي قطعة.",
   },
   listingDetail: {
+    updateError: "تعذر حفظ التغييرات. حاول مجددًا.",
+    manage: "إدارة",
+    edit: "تعديل الإعلان",
+    delete: "حذف الإعلان",
+    deleteTitle: "حذف هذا الإعلان؟",
+    deleteDescription: "سيتم حذف «{title}» نهائيًا.",
+    deleteError: "تعذر حذف الإعلان. حاول مجددًا.",
+    deleting: "جارٍ الحذف…",
+    saveChanges: "حفظ التغييرات",
+    editUnavailable: "تعذر تحميل هذا الإعلان أو ليس لديك إذن لتعديله.",
+    backToListing: "العودة إلى الإعلان",
+
     genderUnspecified: "الجنس غير محدد",
     categoryBreadcrumb: "مسار التصنيفات",
     showAll: "عرض الكل ({count, number})",
@@ -204,6 +265,18 @@ const ar: Dictionary = {
     filtersError: "تعذّر تحميل خيارات التصفية.",
   },
   filters: {
+    noOptions: "لا توجد خيارات مطابقة",
+    male: "ذكر",
+    female: "أنثى",
+    showAllColors: "عرض كل الألوان",
+    showLessColors: "عرض ألوان أقل",
+
+    noPriceLimit: "بدون حد",
+    title: "الفلاتر",
+    subtitle: "خصّص نتائج بحثك",
+    gender: "الجنس",
+    active: "{count} فلاتر نشطة",
+
     color: "اللون",
     colors: {
       black: "أسود",
@@ -304,6 +377,14 @@ const ar: Dictionary = {
     avatarAlt: "صورة الملف الشخصي لـ {name}",
   },
   settings: {
+    profileImage: "صورة الملف الشخصي",
+    changeImage: "تغيير الصورة",
+    imageUploading: "جارٍ الرفع…",
+    imageHint: "JPEG أو PNG أو WebP، حتى 10 ميغابايت. تُحفظ فورًا.",
+    imageInvalid: "اختر صورة JPEG أو PNG أو WebP بحجم لا يتجاوز 10 ميغابايت.",
+    imageError: "تعذر رفع الصورة. حاول مرة أخرى.",
+    imageSaved: "تم تحديث صورة الملف الشخصي.",
+
     loading: "جارٍ تحميل الإعدادات...",
     title: "الإعدادات",
     personalInfo: "المعلومات الشخصية",
@@ -411,9 +492,13 @@ const ar: Dictionary = {
     logout: "تسجيل الخروج",
   },
   notifications: {
+    viewAll: "عرض جميع الإشعارات",
+    closePanel: "إغلاق الإشعارات",
+    offerAccepted: "وافق {owner} على عرضك بقيمة {amount} للمنتج «{title}».",
     offerReceived:
       "تلقيت عرضًا بقيمة {amount} {currency} من {sender} لمنتج «{title}».",
     viewOffer: "عرض العرض",
+    viewChat: "فتح المحادثة",
     unknownSender: "أحد الأعضاء",
 
     loadError: "تعذر تحديث الإشعارات.",

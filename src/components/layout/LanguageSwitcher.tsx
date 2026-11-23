@@ -59,13 +59,13 @@ export default function LanguageSwitcher({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="flex items-center gap-1.5 text-sm font-semibold transition hover:opacity-70"
+        className="flex h-9 items-center gap-1.5 rounded-full px-2 pt-0.5 text-xs font-semibold text-primary/65 transition hover:bg-white hover:text-primary focus-visible:outline-2 focus-visible:outline-accent"
         aria-label={t("common.language")}
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <GlobeIcon className="h-5 w-5 opacity-70" />
-        <span className="relative top-0.5">{localeNames[locale].short}</span>
+        <GlobeIcon className="size-4 opacity-70" />
+        <span>{localeNames[locale].short}</span>
         <ChevronIcon
           className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`}
         />

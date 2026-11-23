@@ -1,18 +1,19 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useId } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   UserIcon,
   ClockIcon,
-  MessageIcon,
+  HeartIcon,
   LogOutIcon,
   HelpIcon,
   ContactIcon,
   SettingsIcon,
   ChevronIcon,
 } from "@/components/shared/Icons"
+import { getProfileImageUrl } from "@/lib/profile-images"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
 import PreferencesModal from "@/components/profile/PreferencesModal"
 import { authApi } from "@/lib/api"
@@ -20,16 +21,21 @@ import type { AccountDisplayName } from "@/lib/api/schemas"
 import { useApiAction } from "@/hooks/use-api-action"
 import { clearAuthTracking, notifyAuthChanged } from "@/lib/auth"
 import { useTranslations } from "next-intl"
+import { headerActionClassName } from "./header-styles"
 
 export default function UserDropdown({
   displayName,
+  inline = false,
 }: {
   displayName?: AccountDisplayName
+  inline?: boolean
 }) {
   const t = useTranslations()
   const [isOpen, setIsOpen] = useState(false)
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuId = useId()
   const router = useRouter()
   const logout = useApiAction(authApi.logout, {
     onSuccess: () => {
@@ -49,12 +55,20 @@ export default function UserDropdown({
       }
     }
 
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("keydown", escape)
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", escape)
     }
   }, [isOpen])
 
@@ -66,7 +80,7 @@ export default function UserDropdown({
 
   const menuItems = [
     { label: t("userMenu.profile"), href: "/profile", icon: UserIcon },
-    { label: t("offers.title"), href: "/offers", icon: MessageIcon },
+    { label: t("header.favorites"), href: "/favorites", icon: HeartIcon },
     {
       label: t("pendingListings.title"),
       href: "/listings/pending",
@@ -82,29 +96,50 @@ export default function UserDropdown({
   ]
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={`relative ${inline ? "w-full" : ""}`} ref={dropdownRef}>
       <button
+        ref={triggerRef}
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full p-1 transition hover:bg-black/5"
+        className={
+          inline
+            ? "flex w-full items-center gap-3 rounded-2xl bg-background/50 p-3 text-start focus-visible:outline-2 focus-visible:outline-accent"
+            : `${headerActionClassName} gap-1.5 lg:w-auto lg:px-1.5`
+        }
         aria-label={t("userMenu.account")}
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-controls={menuId}
+        title={t("userMenu.account")}
       >
         <ProfileAvatar
+          src={getProfileImageUrl(displayName?.profileImageKey)}
           firstName={displayName?.firstName ?? undefined}
           lastName={displayName?.lastName ?? undefined}
-          size="md"
+          size="sm"
         />
+        {inline && (
+          <span className="flex-1 text-sm font-semibold">
+            {t("userMenu.account")}
+          </span>
+        )}
         <ChevronIcon
-          className={`h-4 w-4 text-black/40 transition lg:block hidden ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`h-4 w-4 text-black/40 transition ${
+            inline ? "" : "hidden lg:block"
+          } ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute end-0 mt-2 w-64 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl z-50 animate-in fade-in zoom-in duration-200">
-          <div className="border-b border-black/5 p-4 bg-[#f7f3ea]/30">
+        <div
+          id={menuId}
+          className={
+            inline
+              ? "mt-3 overflow-hidden rounded-2xl border border-primary/10 bg-white"
+              : "absolute end-0 mt-3 w-64 max-h-[60dvh] overflow-y-auto rounded-3xl border border-primary/10 bg-white shadow-xl z-50"
+          }
+        >
+          <div className="border-b border-primary/5 p-4 bg-background/50">
             <p className="text-xs font-bold uppercase tracking-wider text-black/40">
               {t("userMenu.account")}
             </p>
@@ -122,10 +157,10 @@ export default function UserDropdown({
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-[#173fdb]/5 hover:text-[#173fdb]"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-background hover:text-deep-accent"
                 >
                   <item.icon className="h-5 w-5 opacity-70" />
-                  {item.label}
+                  <span className="translate-y-px">{item.label}</span>
                 </Link>
               ) : (
                 <button
@@ -134,10 +169,10 @@ export default function UserDropdown({
                     item.onClick?.()
                     setIsOpen(false)
                   }}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-[#173fdb]/5 hover:text-[#173fdb]"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-background hover:text-deep-accent"
                 >
                   <item.icon className="h-5 w-5 opacity-70" />
-                  {item.label}
+                  <span className="translate-y-px">{item.label}</span>
                 </button>
               ),
             )}
@@ -149,7 +184,7 @@ export default function UserDropdown({
               className="flex w-full items-center gap-3 px-4 py-3 text-start text-sm font-semibold text-red-600 transition hover:bg-red-50"
             >
               <LogOutIcon className="h-5 w-5 opacity-70" />
-              {t("userMenu.logout")}
+              <span className="translate-y-px">{t("userMenu.logout")}</span>
             </button>
           </div>
         </div>

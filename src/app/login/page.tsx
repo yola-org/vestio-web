@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { ArrowIcon } from "@/components/shared/Icons"
+import Input from "@/components/shared/forms/Input"
+import Field from "@/components/shared/forms/Field"
 import Button from "@/components/shared/Button"
 import { authApi } from "@/lib/api"
 import { useApiForm } from "@/hooks/use-api-form"
@@ -59,11 +61,8 @@ export default function LoginPage() {
             action={formAction}
             onChange={() => setLoginError("")}
           >
-            <div>
-              <label className="block text-sm font-bold mb-2" htmlFor="email">
-                {t("auth.register.email")}
-              </label>
-              <input
+            <Field id="email" label={t("auth.register.email")}>
+              <Input
                 type="email"
                 id="email"
                 name="email"
@@ -77,19 +76,10 @@ export default function LoginPage() {
                   setEmail(event.target.value)
                   setLoginError("")
                 }}
-                className={`w-full h-12 px-4 rounded-xl border ${
-                  loginError ? "border-red-500" : "border-black/15"
-                } focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition`}
               />
-            </div>
-            <div>
-              <label
-                className="block text-sm font-bold mb-2"
-                htmlFor="password"
-              >
-                {t("auth.register.password")}
-              </label>
-              <input
+            </Field>
+            <Field id="password" label={t("auth.register.password")}>
+              <Input
                 type="password"
                 id="password"
                 name="password"
@@ -103,11 +93,8 @@ export default function LoginPage() {
                   setPassword(event.target.value)
                   setLoginError("")
                 }}
-                className={`w-full h-12 px-4 rounded-xl border ${
-                  loginError ? "border-red-500" : "border-black/15"
-                } focus:border-deep-accent focus:ring-2 focus:ring-deep-accent/10 outline-none transition`}
               />
-            </div>
+            </Field>
             <Button
               type="submit"
               loading={pending}

@@ -6,6 +6,12 @@ import NotificationProvider from "@/components/shared/NotificationProvider"
 import GlobalLoadingProvider from "@/components/shared/GlobalLoadingProvider"
 import SessionBootstrap from "@/components/shared/SessionBootstrap"
 import RealtimeProvider from "@/components/shared/RealtimeProvider"
+import ChatPanelProvider from "@/components/chats/ChatPanelProvider"
+import ChatDrawer from "@/components/chats/ChatDrawer"
+import OffersPanelProvider from "@/components/offers/OffersPanelProvider"
+import OffersDrawer from "@/components/offers/OffersDrawer"
+import NotificationsPanelProvider from "@/components/notifications/NotificationsPanelProvider"
+import NotificationsDrawer from "@/components/notifications/NotificationsDrawer"
 import { AUTH_INDICATOR_COOKIE, AUTH_TOKEN_COOKIE } from "@/constants/auth"
 import { localeDirection, type Locale } from "@/i18n/config"
 import "./globals.css"
@@ -35,11 +41,22 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <GlobalLoadingProvider>
-            <NotificationProvider>
-              <SessionBootstrap needsRefresh={needsRefresh}>
-                <RealtimeProvider>{children}</RealtimeProvider>
-              </SessionBootstrap>
-            </NotificationProvider>
+            <ChatPanelProvider>
+              <OffersPanelProvider>
+                <NotificationsPanelProvider>
+                  <NotificationProvider>
+                    <SessionBootstrap needsRefresh={needsRefresh}>
+                      <RealtimeProvider>
+                        {children}
+                        <ChatDrawer />
+                        <OffersDrawer />
+                        <NotificationsDrawer />
+                      </RealtimeProvider>
+                    </SessionBootstrap>
+                  </NotificationProvider>
+                </NotificationsPanelProvider>
+              </OffersPanelProvider>
+            </ChatPanelProvider>
           </GlobalLoadingProvider>
         </NextIntlClientProvider>
       </body>

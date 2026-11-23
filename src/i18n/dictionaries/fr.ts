@@ -1,4 +1,46 @@
 const fr = {
+  chats: {
+    close: "Fermer les messages",
+    time: {
+      today: "Aujourd’hui",
+      yesterday: "Hier",
+      at: "{date} à {time}",
+    },
+    newMessage: "Nouveau message",
+    badge: "Messages, {count} non lus",
+    inbox: "Discussions",
+    inboxSubtitle: "Un article, une conversation.",
+    conversation: "Conversation",
+    selectConversation: "Vos échanges commencent ici",
+    selectHint:
+      "Choisissez une conversation pour discuter d’un article, poser vos questions et organiser la remise.",
+    openChat: "Ouvrir la conversation pour {title}",
+    noCover: "Photo non disponible",
+    viewListing: "Voir l’article",
+    messagePlaceholder: "Écrivez votre message…",
+    composerHint: "Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne",
+    title: "Messages",
+    history: "Historique des messages",
+    message: "Votre message",
+    send: "Envoyer",
+    sending: "Envoi...",
+    loading: "Chargement...",
+    loadError: "Impossible de charger la conversation.",
+    sendError: "Impossible d’envoyer le message. Réessayez.",
+    retry: "Réessayer",
+    login: "Connectez-vous pour accéder à vos messages",
+    empty:
+      "Vos conversations apparaîtront ici après l’acceptation d’une offre.",
+    emptyMessages: "Aucun message pour le moment.",
+    back: "Toutes les conversations",
+    previous: "Précédent",
+    next: "Suivant",
+    older: "Messages précédents",
+    newer: "Messages récents",
+    systemMessage: "Message système",
+    offerAccepted:
+      "{owner} a accepté l’offre de {buyer} de {amount} pour « {title} ».",
+  },
   common: {
     language: "Langue",
     french: "Français",
@@ -126,6 +168,16 @@ const fr = {
     },
   },
   offers: {
+    badge: "Offres, {count} nouvelles",
+    close: "Fermer les offres",
+    accept: "Accepter l’offre",
+    refuse: "Refuser l’offre",
+    actionsFor: "Actions pour l’offre sur « {title} »",
+    acceptFailed: "Impossible d’accepter l’offre. Réessayez.",
+    refuseFailed: "Impossible de refuser l’offre. Réessayez.",
+    decisionNotPending:
+      "Cette offre n’est plus en attente. La liste a été actualisée.",
+
     title: "Offres",
     sent: "Offres envoyées",
     received: "Offres reçues",
@@ -140,7 +192,7 @@ const fr = {
     cancelFailed: "Impossible d’annuler l’offre. Réessayez.",
     notPending:
       "Seules les offres en attente peuvent être modifiées ou annulées.",
-    status: { PENDING: "En attente", ACCEPTED: "Acceptée" },
+    status: { PENDING: "En attente", ACCEPTED: "Acceptée", REFUSED: "Refusée" },
   },
   pendingListings: {
     title: "Annonces en attente",
@@ -163,6 +215,19 @@ const fr = {
     empty: "Aucun article trouvé.",
   },
   listingDetail: {
+    updateError: "Impossible d’enregistrer les modifications. Réessayez.",
+    manage: "Gérer",
+    edit: "Modifier l’annonce",
+    delete: "Supprimer l’annonce",
+    deleteTitle: "Supprimer cette annonce ?",
+    deleteDescription: "« {title} » sera supprimée définitivement.",
+    deleteError: "Impossible de supprimer l’annonce. Réessayez.",
+    deleting: "Suppression…",
+    saveChanges: "Enregistrer les modifications",
+    editUnavailable:
+      "Cette annonce est indisponible ou vous n’avez pas l’autorisation de la modifier.",
+    backToListing: "Retour à l’annonce",
+
     genderUnspecified: "Genre non précisé",
     categoryBreadcrumb: "Fil d’Ariane des catégories",
     showAll: "Tout afficher ({count, number})",
@@ -208,6 +273,18 @@ const fr = {
     filtersError: "Impossible de charger les options de filtrage.",
   },
   filters: {
+    noOptions: "Aucune option correspondante",
+    male: "Homme",
+    female: "Femme",
+    showAllColors: "Voir toutes les couleurs",
+    showLessColors: "Voir moins de couleurs",
+
+    noPriceLimit: "Sans limite",
+    title: "Filtres",
+    subtitle: "Affinez votre recherche",
+    gender: "Genre",
+    active: "{count} filtres actifs",
+
     color: "Couleur",
     colors: {
       black: "Noir",
@@ -310,6 +387,14 @@ const fr = {
     avatarAlt: "Photo de profil de {name}",
   },
   settings: {
+    profileImage: "Photo de profil",
+    changeImage: "Changer la photo",
+    imageUploading: "Envoi en cours…",
+    imageHint: "JPEG, PNG ou WebP, 10 Mo maximum. Enregistrée immédiatement.",
+    imageInvalid: "Choisissez une image JPEG, PNG ou WebP de 10 Mo maximum.",
+    imageError: "Impossible d’envoyer la photo. Réessayez.",
+    imageSaved: "Photo de profil mise à jour.",
+
     loading: "Chargement des paramètres...",
     title: "Paramètres",
     personalInfo: "Informations personnelles",
@@ -422,9 +507,14 @@ const fr = {
     logout: "Se déconnecter",
   },
   notifications: {
+    viewAll: "Voir toutes les notifications",
+    closePanel: "Fermer les notifications",
+    offerAccepted:
+      "Votre offre de {amount} pour « {title} » a été acceptée par {owner}.",
     offerReceived:
       "Vous avez reçu une offre de {amount} {currency} de la part de {sender} pour « {title} ».",
     viewOffer: "Voir l’offre",
+    viewChat: "Ouvrir la conversation",
     unknownSender: "un membre",
 
     loadError: "Impossible de mettre à jour les notifications.",

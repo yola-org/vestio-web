@@ -2,12 +2,17 @@
 
 import { useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import Modal from "@/components/shared/Modal"
+import { ChevronIcon } from "@/components/shared/Icons"
+import { getProfileAction } from "@/lib/actions/profile"
+import { useApiQuery } from "@/hooks/use-api-query"
 import { useFormatter, useTranslations } from "next-intl"
 import { ArrowIcon } from "@/components/shared/Icons"
 import OfferFormModal from "@/components/offers/OfferFormModal"
 import FavoriteButton from "@/components/shared/FavoriteButton"
 import { useFavorites } from "@/hooks/use-favorites"
-import { createOfferAction } from "@/lib/actions/listings"
+import { createOfferAction, deleteListingAction } from "@/lib/actions/listings"
 import type { ContactType, Listing } from "@/lib/api/schemas"
 
 function ListingDetailBackdrop({ photo }: { photo: string }) {
@@ -248,5 +253,178 @@ export function ListingDetailFavorite({
       disabled={favorites.loading || favorites.saving}
       onToggle={() => void favorites.toggle(listing)}
     />
+  )
+}
+
+export function ListingDetailActions({
+  listing,
+  deliveryTypes,
+  authenticated,
+}: {
+  deliveryTypes: ContactType[]
+  listing: Listing
+  authenticated: boolean
+}) {
+  const profile = useApiQuery(getProfileAction, {
+    enabled: authenticated,
+    loading: false,
+  })
+  const isOwner = Boolean(
+    authenticated && listing.userId && profile.data?.id === listing.userId,
+  )
+  if (authenticated && profile.loading) return null
+  if (isOwner) return <ListingDetailManage listing={listing} />
+  return (
+    <>
+      {listing.status !== "SOLD" && deliveryTypes.length > 0 && (
+        <ListingDetailOffer
+          listingId={listing.id}
+          title={listing.title}
+          deliveryTypes={deliveryTypes}
+          authenticated={authenticated}
+        />
+      )}
+      <ListingDetailFavorite listing={listing} authenticated={authenticated} />
+    </>
+  )
+}
+
+function ListingDetailManage({ listing }: { listing: Listing }) {
+  const t = useTranslations("listingDetail")
+  const common = useTranslations("common")
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState(false)
+  const container = useRef<HTMLDivElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const id = useId()
+
+  useEffect(() => {
+    if (!open) return
+    const outside = (event: PointerEvent) => {
+      if (!container.current?.contains(event.target as Node)) setOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false)
+        trigger.current?.focus()
+      }
+    }
+    document.addEventListener("pointerdown", outside)
+    document.addEventListener("keydown", escape)
+    return () => {
+      document.removeEventListener("pointerdown", outside)
+      document.removeEventListener("keydown", escape)
+    }
+  }, [open])
+
+  async function remove() {
+    if (deleting) return
+    setDeleting(true)
+    setError(false)
+    try {
+      const result = await deleteListingAction(listing.id)
+      if (!result.success) {
+        setError(true)
+        return
+      }
+      router.push("/profile")
+      router.refresh()
+    } catch {
+      setError(true)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <>
+      <div
+        ref={container}
+        className="relative"
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
+        }}
+      >
+        <button
+          ref={trigger}
+          type="button"
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={() => setOpen(!open)}
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3.5 text-sm font-bold text-white transition hover:brightness-95"
+        >
+          {t("manage")}{" "}
+          <ChevronIcon
+            aria-hidden="true"
+            className={`size-4 transition ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+        {open && (
+          <div
+            id={id}
+            className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-black/10 bg-white py-2 shadow-xl"
+          >
+            <Link
+              href={`/listings/${listing.id}/edit`}
+              className="block px-5 py-3 text-sm font-bold hover:bg-background focus-visible:bg-background"
+            >
+              {t("edit")}
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setConfirming(true)
+                setOpen(false)
+                setError(false)
+              }}
+              className="block w-full px-5 py-3 text-start text-sm font-bold text-red-700 hover:bg-red-50 focus-visible:bg-red-50"
+            >
+              {t("delete")}
+            </button>
+          </div>
+        )}
+      </div>
+      {confirming && (
+        <Modal
+          title={t("deleteTitle")}
+          description={t("deleteDescription", { title: listing.title })}
+          onClose={() => {
+            setConfirming(false)
+            requestAnimationFrame(() => trigger.current?.focus())
+          }}
+          dismissDisabled={deleting}
+        >
+          {error && (
+            <p role="alert" className="mb-4 text-sm text-red-700">
+              {t("deleteError")}
+            </p>
+          )}
+          <div className="flex flex-wrap justify-end gap-3">
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => {
+                setConfirming(false)
+                requestAnimationFrame(() => trigger.current?.focus())
+              }}
+              className="rounded-full border border-black/10 px-5 py-3 text-sm font-bold disabled:opacity-50"
+            >
+              {common("cancel")}
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => void remove()}
+              className="rounded-full bg-red-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {t(deleting ? "deleting" : "delete")}
+            </button>
+          </div>
+        </Modal>
+      )}
+    </>
   )
 }

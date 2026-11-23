@@ -26,6 +26,7 @@ test('saves a listing across reloads and removes it from favorites', async ({ pa
 
   await page.reload();
   await expect(remove).toBeEnabled();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).filter({ visible: true }).click();
   await page.getByRole('link', { name: 'Favoris', exact: true }).click();
   await expect(page).toHaveURL('/favorites');
   await expect(page.getByRole('heading', { name: 'Vos favoris' })).toBeVisible();
@@ -43,6 +44,7 @@ test('opens favorites from the mobile menu', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: /ouvrir le menu/i }).click();
+  await page.getByRole('button', { name: 'Mon compte', exact: true }).filter({ visible: true }).click();
   await page.getByRole('link', { name: 'Favoris', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Vos favoris' })).toBeVisible();
 });

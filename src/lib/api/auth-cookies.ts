@@ -45,17 +45,15 @@ export function writeTokenCookies(
 
 export function writeAccountDisplayName(
   cookieStore: CookieStore,
-  { firstName, lastName }: AccountDisplayName,
+  { firstName, lastName, profileImageKey }: AccountDisplayName,
 ) {
-  cookieStore.set(
-    AUTH_DISPLAY_NAME_COOKIE,
-    JSON.stringify({ firstName, lastName }),
-    {
-      ...cookieOptions,
-      httpOnly: false,
-      maxAge: SESSION_MAX_AGE,
-    },
-  )
+  const value = JSON.stringify({ firstName, lastName, profileImageKey })
+  if (cookieStore.get(AUTH_DISPLAY_NAME_COOKIE)?.value === value) return
+  cookieStore.set(AUTH_DISPLAY_NAME_COOKIE, value, {
+    ...cookieOptions,
+    httpOnly: false,
+    maxAge: SESSION_MAX_AGE,
+  })
 }
 
 export function startAuthSession(

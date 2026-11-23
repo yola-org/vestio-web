@@ -73,6 +73,14 @@ const categories = [
 
 const categoryGroups = [{ title: "Aukci Style", items: ["c1", "c2"] }]
 
+for (const category of categories) {
+  for (const child of category.subCategories ?? []) child.sizeGroupId = "sg1"
+}
+categories.push(
+  { id: "c3", name: "Shoes", parentId: null, sizeGroupId: "sg2", subCategories: [] },
+  { id: "c4", name: "Accessories", parentId: null, sizeGroupId: null, subCategories: [] },
+)
+
 const sizes = [
   {
     id: "sg1",
@@ -86,6 +94,10 @@ const sizes = [
 ]
 
 const sizeNames = { s1: "S", s2: "M", s3: "L" }
+sizes.push({ id: "sg2", name: "Shoe sizes", sizes: [
+  { id: "shoe40", name: "40", categoryId: null, sizeGroup: "sg2" },
+  { id: "shoe41", name: "41", categoryId: null, sizeGroup: "sg2" },
+] })
 const cityNames = Object.fromEntries(cities.map((c) => [c.id, c.name]))
 function findCategory(items, id) {
   for (const category of items) {
@@ -115,8 +127,8 @@ const listings = [
     title: "Sac en cuir vintage",
     description: "Magnifique sac en cuir vintage.",
     price: 380,
-    colors: ["#8B4513"],
-    contactTypes: ["WHATSAPP"],
+    colors: ["#8B4513", "Brown"],
+    contactTypes: ["DELIVERY"],
     condition: "VERY_GOOD",
     status: "AVAILABLE",
     quantity: 1,
@@ -133,8 +145,8 @@ const listings = [
     title: "Hoodie gris essentiel",
     description: null,
     price: 290,
-    colors: null,
-    contactTypes: ["PHONE", "WHATSAPP"],
+    colors: ["Gray", "Blue"],
+    contactTypes: ["MEETUP", "DELIVERY"],
     condition: "GOOD",
     status: "AVAILABLE",
     quantity: 3,
@@ -151,8 +163,8 @@ const listings = [
     title: "Baskets rétro",
     description: "Pointure 40, comme neuves.",
     price: 520,
-    colors: ["#FFFFFF"],
-    contactTypes: ["CHAT"],
+    colors: ["#FFFFFF", "White"],
+    contactTypes: ["PARCEL"],
     condition: "NEW_WITHOUT_TAGS",
     status: "AVAILABLE",
     quantity: 1,
@@ -214,11 +226,217 @@ function findListing(id) {
   return listings.find((l) => l.id === id)
 }
 
+const profileImages = new Map()
 const notificationInboxes = new Map()
+const offerInboxes = new Map()
+const chatInboxes = new Map()
 
 async function handle(req, res, pathname, query) {
   const route = `${req.method} ${pathname}`
   const body = await readBody(req)
+
+  if (pathname === "/__test/chats" || pathname.startsWith("/api/chats")) {
+    const token = req.headers.authorization
+    if (!token?.startsWith("Bearer notification-test-"))
+      return apiError(
+        res,
+        401,
+        "ERR_UNAUTHORIZED",
+        "Invalid access token",
+        pathname,
+      )
+    if (route === "POST /__test/chats") {
+      chatInboxes.set(token, { ...body, calls: [] })
+      return json(res, 200, {})
+    }
+    const state = chatInboxes.get(token) || {
+      chats: [],
+      messages: [],
+      calls: [],
+    }
+    if (route === "GET /__test/chats") return json(res, 200, state)
+    const sort = (items) =>
+      [...items].sort(
+        (a, b) =>
+          Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
+          b.id.localeCompare(a.id),
+      )
+    const paginate = (items) => {
+      const page = Number(query.get("page") || 0)
+      const size = Number(query.get("size") || 20)
+      return {
+        items: items.slice(page * size, (page + 1) * size),
+        page,
+        size,
+        totalElements: items.length,
+        totalPages: Math.ceil(items.length / size),
+      }
+    }
+    const summary = (chat) => ({
+      ...chat,
+      listingCoverAssetKey: chat.listingCoverAssetKey ?? null,
+      lastMessage:
+        sort(
+          state.messages.filter((message) => message.chatId === chat.id),
+        )[0] || null,
+    })
+    if (route === "GET /api/chats") {
+      const chats = state.chats
+        .map(summary)
+        .sort(
+          (a, b) =>
+            Date.parse(b.lastMessage?.createdAt || b.createdAt) -
+              Date.parse(a.lastMessage?.createdAt || a.createdAt) ||
+            b.id.localeCompare(a.id),
+        )
+      return json(res, 200, paginate(chats))
+    }
+    const match = pathname.match(/^\/api\/chats\/([^/]+)(\/messages)?$/)
+    const chat = state.chats.find((item) => item.id === match?.[1])
+    if (!chat)
+      return apiError(
+        res,
+        404,
+        "ERR_RESOURCE_NOT_FOUND",
+        "Chat not found",
+        pathname,
+      )
+    if (req.method === "GET")
+      return json(
+        res,
+        200,
+        match[2]
+          ? paginate(
+              sort(
+                state.messages.filter((message) => message.chatId === chat.id),
+              ),
+            )
+          : summary(chat),
+      )
+    if (req.method === "POST" && match[2]) {
+      state.calls.push(body)
+      if (state.failNext) {
+        state.failNext = false
+        return apiError(res, 503, "NETWORK_ERROR", "Try again", pathname)
+      }
+      const message = {
+        id: randomUUID(),
+        chatId: chat.id,
+        senderId: state.senderId,
+        content: body.content,
+        system: false,
+        systemType: null,
+        params: null,
+        createdAt: new Date().toISOString(),
+      }
+      state.messages.push(message)
+      return json(res, 201, message)
+    }
+  }
+
+  const decisionMatch = pathname.match(
+    /^\/api\/listings\/([^/]+)\/offers\/([^/]+)\/(accept|refuse)$/,
+  )
+  if (
+    pathname === "/__test/offers" ||
+    /^\/api\/offers\/(sent|received)$/.test(pathname) ||
+    decisionMatch
+  ) {
+    const token = req.headers.authorization
+    if (
+      !token?.startsWith("Bearer notification-test-") &&
+      token !== "Bearer mock-access-token"
+    ) {
+      return apiError(
+        res,
+        401,
+        "ERR_UNAUTHORIZED",
+        "Invalid access token",
+        pathname,
+      )
+    }
+    if (route === "POST /__test/offers") {
+      offerInboxes.set(token, {
+        items: body.items,
+        failNext: body.failNext || false,
+        staleNext: body.staleNext || false,
+        delay: body.delay || 0,
+        calls: [],
+      })
+      return json(res, 200, {})
+    }
+    const state = offerInboxes.get(token) || { items: [], calls: [] }
+    if (route === "GET /__test/offers") return json(res, 200, state)
+    if (req.method === "GET" && pathname.startsWith("/api/offers/")) {
+      const direction = pathname.split("/").at(-1)
+      return json(
+        res,
+        200,
+        state.items.filter(
+          (item) => (item.direction || "received") === direction,
+        ),
+      )
+    }
+    if (req.method === "PUT" && decisionMatch) {
+      const [, listingId, offerId, action] = decisionMatch
+      const item = state.items.find(
+        (item) =>
+          item.offer.id === offerId && item.offer.listingId === listingId,
+      )
+      if (!item)
+        return apiError(
+          res,
+          404,
+          "ERR_RESOURCE_NOT_FOUND",
+          "Offer not found",
+          pathname,
+        )
+      if (item.direction === "sent")
+        return apiError(
+          res,
+          401,
+          "ERR_UNAUTHORIZED",
+          "Only the owner can respond",
+          pathname,
+        )
+      state.calls.push({ listingId, offerId, action })
+      if (state.delay)
+        await new Promise((resolve) => setTimeout(resolve, state.delay))
+      if (state.failNext) {
+        state.failNext = false
+        return apiError(
+          res,
+          500,
+          "ERR_INTERNAL_SERVER_ERROR",
+          "Try again",
+          pathname,
+        )
+      }
+      if (state.staleNext) {
+        state.staleNext = false
+        item.offer.status = "ACCEPTED"
+        return apiError(
+          res,
+          400,
+          "ERR_OFFER_NOT_PENDING",
+          "Offer already answered",
+          pathname,
+        )
+      }
+      const status = action === "accept" ? "ACCEPTED" : "REFUSED"
+      if (item.offer.status !== "PENDING" && item.offer.status !== status) {
+        return apiError(
+          res,
+          400,
+          "ERR_OFFER_NOT_PENDING",
+          "Offer already answered",
+          pathname,
+        )
+      }
+      item.offer.status = status
+      return json(res, 200, item.offer)
+    }
+  }
 
   if (
     pathname === "/__test/notifications" ||
@@ -391,7 +609,20 @@ async function handle(req, res, pathname, query) {
           pathname,
         )
       }
-      return json(res, 200, profile)
+      return json(res, 200, {
+        ...profile,
+        profileImageKey: profileImages.get(req.headers.authorization) ?? null,
+        id: chatInboxes.get(req.headers.authorization)?.senderId || profile.id,
+      })
+
+    case "POST /api/profile/image": {
+      if (!req.headers.authorization) return apiError(res, 401, "ERR_UNAUTHORIZED", "Unauthorized", pathname)
+      if (typeof body !== "string" || !body.includes('name="image"')) return apiError(res, 400, "ERR_BAD_REQUEST", "Missing image", pathname)
+      if (body.includes('filename="fail.png"')) return apiError(res, 503, "ERR_STORAGE", "Storage unavailable", pathname)
+      const key = `00000000-0000-4000-8000-000000000001/profile/${randomUUID()}.png`
+      profileImages.set(req.headers.authorization, key)
+      return json(res, 200, { ...profile, profileImageKey: key })
+    }
 
     case "PUT /api/profile": {
       const updated = {
@@ -472,14 +703,18 @@ async function handle(req, res, pathname, query) {
       const page = Number(query.get("page") ?? "0")
       const size = Number(query.get("size") ?? "12")
       const term = (query.get("query") ?? "").trim().toLowerCase()
-      const cityId = query.get("cityId")
+      const selected = (key) => query.getAll(key).flatMap((value) => value.split(",")).filter(Boolean)
+      const colors = selected("colors").map((color) => color.trim().toLowerCase())
+      const cityIds = selected("cityIds")
+      const sizeIds = selected("sizeIds")
+      const contactTypes = selected("contactTypes")
       const categoryId = query.get("categoryId")
       const category = findCategory(categories, categoryId)
       const categoryIds =
         category && query.get("includeSubcategories") === "true"
           ? categoryTreeIds(category)
           : [categoryId]
-      const condition = query.get("condition")
+      const conditions = selected("conditions")
       const minPrice = Number(query.get("minPrice") ?? 0)
       const maxPrice = Number(query.get("maxPrice") ?? Infinity)
       const matches = listings.filter(
@@ -488,9 +723,12 @@ async function handle(req, res, pathname, query) {
           `${listing.title} ${listing.description ?? ""}`
             .toLowerCase()
             .includes(term) &&
-          (!cityId || listing.cityIds.includes(cityId)) &&
+          (!colors.length || listing.colors?.some((color) => colors.includes(color.toLowerCase()))) &&
+          (!cityIds.length || cityIds.some((id) => listing.cityIds.includes(id))) &&
           (!categoryId || categoryIds.includes(listing.categoryId)) &&
-          (!condition || listing.condition === condition) &&
+          (!conditions.length || conditions.includes(listing.condition)) &&
+          (!sizeIds.length || sizeIds.some((id) => listing.sizeIds?.includes(id))) &&
+          (!contactTypes.length || contactTypes.some((type) => listing.contactTypes.includes(type))) &&
           listing.price >= minPrice &&
           listing.price <= maxPrice,
       )
@@ -519,7 +757,7 @@ async function handle(req, res, pathname, query) {
         description: input.description ?? null,
         price: input.price ?? 0,
         colors: input.colors ?? null,
-        contactTypes: input.contactTypes ?? ["WHATSAPP"],
+        contactTypes: input.contactTypes ?? ["DELIVERY"],
         condition: input.condition ?? "GOOD",
         status: input.status ?? "AVAILABLE",
         quantity: input.quantity ?? 1,

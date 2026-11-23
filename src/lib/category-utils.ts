@@ -49,7 +49,9 @@ export function categoryRedirectHref(
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(searchParams)) {
     if (key === "category" || key === "categoryId") continue
-    if (typeof value === "string" && value.trim()) params.set(key, value.trim())
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (item?.trim()) params.append(key, item.trim())
+    }
   }
   const href = categoryHref(...path.map((category) => category.name))
   return params.size ? `${href}?${params}` : href

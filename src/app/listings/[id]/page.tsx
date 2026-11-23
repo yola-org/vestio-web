@@ -5,9 +5,8 @@ import { getFormatter, getTranslations } from "next-intl/server"
 import Footer from "@/components/layout/Footer"
 import Header from "@/components/layout/Header"
 import {
-  ListingDetailFavorite,
+  ListingDetailActions,
   ListingDetailCarousel,
-  ListingDetailOffer,
   ListingDetailValues,
 } from "@/components/listings/ListingDetailActions"
 import {
@@ -150,17 +149,10 @@ export default async function ListingPage({
               {format.number(listing.price)} {t("common.currency")}
             </p>
             <div className="mt-4 grid gap-2">
-              {listing.status !== "SOLD" && deliveryTypes.length > 0 && (
-                <ListingDetailOffer
-                  key={listing.id}
-                  listingId={listing.id}
-                  title={listing.title}
-                  deliveryTypes={deliveryTypes}
-                  authenticated={authenticated}
-                />
-              )}
-              <ListingDetailFavorite
+              <ListingDetailActions
+                key={listing.id}
                 listing={listing}
+                deliveryTypes={deliveryTypes}
                 authenticated={authenticated}
               />
             </div>
