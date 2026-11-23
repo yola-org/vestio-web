@@ -2,16 +2,22 @@
 
 Welcome to the Vestio Web documentation. This documentation provides comprehensive information about the codebase architecture, modules, components, and best practices.
 
+## Working guides
+
+- [Testing and mocks](testing.md) — runners, isolated servers, fixtures, seeding, realtime and CI.
+- [Styling](styling.md) — tokens, typography, components, mobile and RTL.
+- [Business behavior](business.md) — discovery, listings, offers, chat, notifications and accounts.
+
 ## Table of Contents
 
 ### Getting Started
-- [Main README](../README.md) - Project overview, setup, and quick start
+- [Main README](./project.md) - Project overview, setup, and quick start
 - [Development Guide](./guides/DEVELOPMENT.md) - Development workflow, tips, and troubleshooting
 - [Best Practices](./guides/BEST_PRACTICES.md) - Coding standards and conventions
 
 ### Architecture
 - [Architecture Overview](./ARCHITECTURE.md) - High-level architecture, patterns, and design system
-- [AI Guidelines](../AI_GUIDELINES.md) - Design system, colors, typography, and component rules
+- [AI Guidelines](./AI_GUIDELINES.md) - Design system, colors, typography, and component rules
 
 ### Core Modules
 - [API Layer](./api/API_LAYER.md) - HTTP client, error handling, endpoint definitions
@@ -26,12 +32,12 @@ Welcome to the Vestio Web documentation. This documentation provides comprehensi
 - **New to the project?** Start with [Development Guide](./guides/DEVELOPMENT.md)
 - **Adding features?** Check [Best Practices](./guides/BEST_PRACTICES.md)
 - **Working with API?** See [API Layer](./api/API_LAYER.md)
-- **Styling?** See [Architecture - Design System](./ARCHITECTURE.md#design-system) and [AI Guidelines](../AI_GUIDELINES.md)
+- **Styling?** See [Architecture - Design System](./ARCHITECTURE.md#design-system) and [AI Guidelines](./AI_GUIDELINES.md)
 
 ### Key Concepts
-- **Framework**: Next.js 15 App Router
+- **Framework**: Next.js 16 App Router
 - **Styling**: Tailwind CSS v4 with custom design tokens
-- **i18n**: next-intl (French/Arabic, RTL support)
+- **i18n**: next-intl (French/English/Arabic, RTL support)
 - **Auth**: Cookie-based authentication
 - **API**: Centralized client with error handling
 

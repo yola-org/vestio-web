@@ -2,7 +2,7 @@
 
 ## Overview
 
-Vestio Web is a Next.js 15 application using the App Router architecture. It follows a modular structure with clear separation of concerns between UI components, business logic, API communication, and internationalization.
+Vestio Web is a Next.js 16 application using the App Router architecture. It follows a modular structure with clear separation of concerns between UI components, business logic, API communication, and internationalization.
 
 ## Core Architecture Principles
 
