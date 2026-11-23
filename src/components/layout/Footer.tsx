@@ -35,8 +35,8 @@ export default function Footer() {
     {
       title: t("footer.help"),
       links: [
-        { name: t("footer.helpCenter"), href: "#" },
-        { name: t("footer.contact"), href: "#" },
+        { name: t("footer.helpCenter"), href: "/faq" },
+        { name: t("footer.contact"), href: "/contact" },
         { name: t("footer.meetupTips"), href: "#" },
         { name: t("footer.terms"), href: "#" },
       ],

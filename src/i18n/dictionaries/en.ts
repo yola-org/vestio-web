@@ -548,6 +548,104 @@ const en: Dictionary = {
     description:
       "The Moroccan community where every wardrobe finds a new story.",
   },
+  faq: {
+    meta: {
+      title: "FAQ · Vestio",
+      description:
+        "How does Vestio work? Find all the answers about buying, selling, and staying safe.",
+    },
+    eyebrow: "Help centre",
+    title: "Frequently asked questions",
+    subtitle: "Everything you need to buy, sell, and trade with confidence.",
+    sections: {
+      howItWorks: {
+        title: "How does Vestio work?",
+        q1: "What is Vestio?",
+        a1: "Vestio is Morocco's peer-to-peer fashion marketplace. You list your pieces, chat directly, and arrange the exchange however you like. New or secondhand, it all moves here.",
+        q2: "Is it free?",
+        a2: "Completely. Listing is free and Vestio takes no commission on your sales. You sell, you keep everything.",
+        q3: "Do I need an account to buy?",
+        a3: "Not to browse. But to make an offer, save favourites, or message a seller, you'll need to create an account.",
+      },
+      whatToSell: {
+        title: "What can I sell?",
+        q1: "Which categories can I list?",
+        a1: "Anything fashion: women's, men's, and children's clothing, shoes, bags, accessories, and traditional Moroccan pieces. Just make sure your items are clean and accurately described.",
+        q2: "Can I sell new items too?",
+        a2: "Of course. New with tags, new without tags, or secondhand — it's all welcome. Just be transparent about the condition.",
+        q3: "What's not allowed?",
+        a3: "Counterfeits, dangerous items, and anything that violates Moroccan law. If a listing breaks these rules, we remove it without notice.",
+      },
+      howToSell: {
+        title: "How do I sell on Vestio?",
+        q1: "How do I list an item?",
+        a1: 'Create your account, click "Sell", add photos, and fill in the details: title, description, price, category, city. Once the images are ready, your listing goes live.',
+        q2: "How many photos can I add?",
+        a2: "Several per listing. Pro tip: clear shots on a neutral background attract more buyers.",
+        q3: "Can I edit or delete my listing later?",
+        a3: 'Yes. Go to your item, open the "Manage" menu, and change what you need or delete the listing.',
+      },
+      contactSeller: {
+        title: "How do I connect with a seller?",
+        q1: "How do I send an offer?",
+        a1: 'On the item page, click "Make an offer", suggest your price, choose how you want to collect the item (meetup, delivery, parcel), and send. The seller gets a notification and responds.',
+        q2: "What happens if my offer is accepted?",
+        a2: "A private chat opens right away with the seller. You coordinate everything there: where, when, how. Simple and direct.",
+        q3: "How does the handover work?",
+        a3: "You agree in the chat: in-person meetup in your city, parcel, or delivery. You decide together — Vestio doesn't handle logistics.",
+      },
+      safety: {
+        title: "Safety & trust",
+        q1: "How do I stay safe during a meetup?",
+        a1: "Always choose busy public places: a café, a shopping centre. Never share banking details or your full address in the chat. Something feels off? Cancel and report.",
+        q2: "What if the item doesn't match the description?",
+        a2: "Contact the seller through the chat first to find a solution. If that doesn't work, report the listing from the item page. We review and act if needed.",
+      },
+    },
+    cta: {
+      title: "Ready to start?",
+      subtitle: "Join the community and give your wardrobe a second life.",
+      sell: "Start selling",
+      browse: "Browse listings",
+    },
+  },
+  contact: {
+    meta: {
+      title: "Contact us · Vestio",
+      description:
+        "A question or an issue? We'll get back to you within 48 hours.",
+    },
+    eyebrow: "Contact",
+    title: "We're listening",
+    subtitle: "A question, an issue, or just saying hello? Drop us a line.",
+    channels: {
+      email: {
+        title: "By email",
+        body: "Send us a message any time. We usually reply within 48 business hours.",
+      },
+      faq: {
+        title: "Frequently asked questions",
+        body: "Most answers are already in our help centre. Check there first.",
+        link: "See FAQ",
+      },
+      response: {
+        title: "Our hours",
+        body: "Monday to Friday, 9 am – 6 pm. Weekend messages are handled on Monday.",
+      },
+    },
+    form: {
+      name: "Name",
+      email: "Email address",
+      subject: "Subject",
+      message: "Your message",
+      send: "Send",
+      sending: "Sending…",
+      error: "Something went wrong. Try again.",
+      successTitle: "Message sent!",
+      successBody: "Thanks. We'll get back to you as soon as we can.",
+      another: "Send another message",
+    },
+  },
 }
 
 export default en

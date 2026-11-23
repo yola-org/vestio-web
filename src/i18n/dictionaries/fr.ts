@@ -561,6 +561,106 @@ const fr = {
     description:
       "La communauté marocaine où chaque dressing trouve une nouvelle histoire.",
   },
+  faq: {
+    meta: {
+      title: "Questions fréquentes · Vestio",
+      description:
+        "Comment fonctionne Vestio ? Trouvez toutes les réponses sur l'achat, la vente et la sécurité.",
+    },
+    eyebrow: "Centre d'aide",
+    title: "Questions fréquentes",
+    subtitle:
+      "Toutes les réponses pour acheter, vendre et échanger en toute confiance.",
+    sections: {
+      howItWorks: {
+        title: "Comment fonctionne Vestio ?",
+        q1: "C'est quoi Vestio ?",
+        a1: "Vestio, c'est le marché marocain de la mode entre particuliers. Vous publiez vos pièces, vous discutez directement et vous organisez l'échange comme vous voulez. Neuf ou seconde main, tout circule ici.",
+        q2: "C'est gratuit ?",
+        a2: "Totalement. Publier une annonce ne coûte rien et Vestio ne prend aucune commission sur vos ventes. Vous vendez, vous gardez tout.",
+        q3: "J'ai besoin d'un compte pour acheter ?",
+        a3: "Pour parcourir les annonces, non. Mais pour faire une offre, sauvegarder vos coups de cœur ou discuter avec un vendeur, il faut créer un compte.",
+      },
+      whatToSell: {
+        title: "Que peut-on vendre ?",
+        q1: "Quelles catégories j'ai le droit de publier ?",
+        a1: "Tout ce qui touche à la mode : vêtements femme, homme et enfant, chaussures, sacs, accessoires et pièces traditionnelles marocaines. L'essentiel, c'est que vos articles soient propres et fidèles à votre description.",
+        q2: "Je peux vendre du neuf aussi ?",
+        a2: "Bien sûr. Neuf avec étiquette, neuf sans étiquette ou seconde main : tout est bienvenu. L'important, c'est d'être transparent sur l'état.",
+        q3: "Qu'est-ce qui est interdit ?",
+        a3: "Les contrefaçons, les articles dangereux et tout ce qui enfreint la loi marocaine. Si une annonce ne respecte pas ces règles, on la retire sans préavis.",
+      },
+      howToSell: {
+        title: "Comment vendre sur Vestio ?",
+        q1: "Comment je mets en ligne une annonce ?",
+        a1: "Créez votre compte, cliquez sur « Vendre », ajoutez vos photos et remplissez les infos : titre, description, prix, catégorie, ville. Dès que les images sont prêtes, votre annonce est en ligne.",
+        q2: "Combien de photos je peux ajouter ?",
+        a2: "Plusieurs par annonce. Conseil : des photos claires sur fond neutre, ça attire plus d'acheteurs.",
+        q3: "Je peux modifier ou supprimer mon annonce après ?",
+        a3: "Oui. Allez sur votre article, ouvrez le menu « Gérer » et modifiez ce que vous voulez ou supprimez l'annonce si besoin.",
+      },
+      contactSeller: {
+        title: "Comment échanger avec un vendeur ?",
+        q1: "Comment j'envoie une offre ?",
+        a1: "Sur la page de l'article, cliquez sur « Faire une offre », proposez votre prix, choisissez comment vous voulez récupérer l'article (main propre, livraison, colis) et envoyez. Le vendeur reçoit une notif et vous répond.",
+        q2: "Que se passe-t-il si mon offre est acceptée ?",
+        a2: "Une conversation privée s'ouvre direct avec le vendeur. Vous coordonnez tout là : où, quand, comment. C'est simple et sans intermédiaire.",
+        q3: "Comment se passe la remise de l'article ?",
+        a3: "Vous vous mettez d'accord dans la messagerie : rendez-vous en personne dans votre ville, envoi en colis ou livraison. C'est vous qui décidez ensemble, Vestio ne gère pas la logistique.",
+      },
+      safety: {
+        title: "Sécurité et confiance",
+        q1: "Comment je reste en sécurité pendant un rendez-vous ?",
+        a1: "Privilégiez toujours les lieux publics fréquentés : un café, un centre commercial. Ne partagez jamais vos infos bancaires ou votre adresse complète dans la messagerie. Un doute ? Annulez et signalez.",
+        q2: "L'article reçu ne correspond pas à la description, je fais quoi ?",
+        a2: "Contactez d'abord le vendeur via la messagerie pour trouver une solution. Si ça ne marche pas, signalez l'annonce depuis la page de l'article. On regarde et on agit si nécessaire.",
+      },
+    },
+    cta: {
+      title: "Prêt à vous lancer ?",
+      subtitle:
+        "Rejoignez la communauté et donnez une seconde vie à vos pièces.",
+      sell: "Vendre maintenant",
+      browse: "Explorer les annonces",
+    },
+  },
+  contact: {
+    meta: {
+      title: "Nous contacter · Vestio",
+      description: "Une question, un souci ? On vous répond sous 48 h.",
+    },
+    eyebrow: "Contact",
+    title: "On vous écoute",
+    subtitle:
+      "Une question, un problème, un simple bonjour ? Écrivez-nous, on vous lit.",
+    channels: {
+      email: {
+        title: "Par e-mail",
+        body: "Envoyez-nous un message quand vous voulez. On répond généralement sous 48 heures ouvrées.",
+      },
+      faq: {
+        title: "Questions fréquentes",
+        body: "Beaucoup de réponses sont déjà dans notre centre d'aide. Jetez-y un œil avant de nous écrire.",
+        link: "Voir la FAQ",
+      },
+      response: {
+        title: "Nos horaires",
+        body: "Du lundi au vendredi, 9 h – 18 h. Les messages envoyés le week-end seront traités dès le lundi.",
+      },
+    },
+    form: {
+      name: "Nom",
+      email: "Adresse e-mail",
+      subject: "Sujet",
+      message: "Votre message",
+      send: "Envoyer",
+      sending: "Envoi…",
+      error: "Quelque chose a planté. Réessayez.",
+      successTitle: "Message envoyé !",
+      successBody: "Merci. On revient vers vous dès que possible.",
+      another: "Envoyer un autre message",
+    },
+  },
 }
 
 export default fr
