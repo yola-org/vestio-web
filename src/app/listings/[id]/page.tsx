@@ -9,6 +9,9 @@ import {
   ListingDetailCarousel,
   ListingDetailValues,
 } from "@/components/listings/ListingDetailActions"
+import ProfileAvatar from "@/components/shared/ProfileAvatar"
+import PublishedDate from "@/components/shared/PublishedDate"
+import { getProfileImageUrl } from "@/lib/profile-images"
 import {
   ArrowIcon,
   ChevronIcon,
@@ -156,6 +159,29 @@ export default async function ListingPage({
                 authenticated={authenticated}
               />
             </div>
+
+            {(listing.sellerFirstName || listing.sellerLastName) && (
+              <div className="mt-4 flex items-center gap-2 border-t border-black/10 pt-4">
+                <ProfileAvatar
+                  src={getProfileImageUrl(listing.sellerProfileImageKey)}
+                  firstName={listing.sellerFirstName ?? undefined}
+                  lastName={listing.sellerLastName ?? undefined}
+                  size="sm"
+                />
+                <div>
+                  <span className="text-sm font-semibold">
+                    {[listing.sellerFirstName, listing.sellerLastName]
+                      .filter(Boolean)
+                      .join(" ")}
+                  </span>
+                  {listing.createdAt && (
+                    <p className="text-xs text-black/50">
+                      <PublishedDate dateTime={listing.createdAt} />
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {listing.description?.trim() && (
               <section className="mt-4 border-t border-black/10 pt-4">

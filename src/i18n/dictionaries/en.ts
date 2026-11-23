@@ -254,6 +254,9 @@ const en: Dictionary = {
     saved: "Remove from favorites",
     missingTitle: "Listing not found",
     missingDescription: "This listing is no longer available.",
+    seller: "Seller",
+    publishedAgo: "Published {relative}",
+    publishedOn: "Published on {date}",
   },
   search: {
     previewTitle: "Results preview",

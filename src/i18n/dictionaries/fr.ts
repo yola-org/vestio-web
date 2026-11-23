@@ -257,6 +257,9 @@ const fr = {
     saved: "Retirer des favoris",
     missingTitle: "Annonce introuvable",
     missingDescription: "Cette annonce n’est plus disponible.",
+    seller: "Vendeur",
+    publishedAgo: "Publié {relative}",
+    publishedOn: "Publié le {date}",
   },
   search: {
     previewTitle: "Aperçu des résultats",

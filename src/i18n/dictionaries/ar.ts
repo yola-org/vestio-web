@@ -250,6 +250,9 @@ const ar: Dictionary = {
     saved: "أزل من المفضلة",
     missingTitle: "الإعلان غير موجود",
     missingDescription: "هذا الإعلان لم يعد متاحًا.",
+    seller: "البائع",
+    publishedAgo: "نُشر {relative}",
+    publishedOn: "نُشر في {date}",
   },
   search: {
     previewTitle: "معاينة النتائج",

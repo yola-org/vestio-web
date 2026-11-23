@@ -1,9 +1,11 @@
 "use client"
 // Helper to handle both mock data and real API Listing
-import { ClockIcon, PinIcon } from "@/components/shared/Icons"
+import { PinIcon, ClockIcon } from "@/components/shared/Icons"
 import FavoriteButton from "@/components/shared/FavoriteButton"
+import ProfileAvatar from "@/components/shared/ProfileAvatar"
 import type { Condition, Listing } from "@/lib/api/schemas"
 import { getListingImageUrls } from "@/lib/listing-images"
+import { getProfileImageUrl } from "@/lib/profile-images"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
@@ -57,6 +59,18 @@ export default function ProductCard({
     "userId" in product
       ? (product as any).seller || t("common.seller")
       : (product as any).seller
+  const sellerFirstName =
+    "sellerFirstName" in product ? product.sellerFirstName : undefined
+  const sellerLastName =
+    "sellerLastName" in product ? product.sellerLastName : undefined
+  const sellerProfileImageKey =
+    "sellerProfileImageKey" in product
+      ? product.sellerProfileImageKey
+      : undefined
+  const sellerAvatarSrc = getProfileImageUrl(sellerProfileImageKey)
+  const sellerName = sellerFirstName
+    ? [sellerFirstName, sellerLastName].filter(Boolean).join(" ")
+    : displaySeller
   const listing = "id" in product ? product : undefined
   const pendingLabel =
     listing?.status === "AWAITING_ASSETS"
@@ -157,7 +171,16 @@ export default function ProductCard({
           <strong className="shrink-0">{displayPrice}</strong>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-black/10 pt-3 text-[11px] text-black/55">
-          <span>{displaySeller}</span>
+          <span className="flex items-center gap-1.5 min-w-0">
+            <ProfileAvatar
+              src={sellerAvatarSrc}
+              firstName={sellerFirstName ?? undefined}
+              lastName={sellerLastName ?? undefined}
+              size="sm"
+              className="h-5 w-5 text-[8px]"
+            />
+            <span className="truncate">{sellerName}</span>
+          </span>
           {displayCities && (
             <span
               className="flex items-center gap-1"
