@@ -28,8 +28,10 @@ import {
   ListingInputSchema,
   type ContactType,
   type ListingInput,
+  type Listing,
 } from "@/lib/api/schemas"
 import styles from "./SellForm.module.css"
+import { getListingImageUrls } from "@/lib/listing-images"
 
 const steps = ["photos", "details", "category", "sale", "review"] as const
 const reviewStep = steps.length - 1
@@ -82,10 +84,10 @@ function Choice({
   )
 }
 
-export default function SellForm() {
+export default function SellForm({ listing }: { listing?: Listing }) {
   const router = useRouter()
   const t = useTranslations()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(listing ? 1 : 0)
   const [backward, setBackward] = useState(false)
   const [error, setError] = useState<FormError | null>(null)
   const [photos, setPhotos] = useState<Photo[]>([])
@@ -93,17 +95,24 @@ export default function SellForm() {
   const [previewPhoto, setPreviewPhoto] = useState<string>()
   const [published, setPublished] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [formData, setFormData] = useState<ListingInput>({
-    title: "",
-    description: "",
-    price: 0,
-    quantity: 1,
-    condition: "VERY_GOOD",
-    contactTypes: ["MEETUP"],
-    cityIds: [],
-    categoryId: "",
-    sizeIds: [],
-  })
+  const [formData, setFormData] = useState<ListingInput>(
+    listing
+      ? {
+          ...listing,
+          sizeIds: listing.sizeIds ?? [],
+        }
+      : {
+          title: "",
+          description: "",
+          price: 0,
+          quantity: 1,
+          condition: "VERY_GOOD",
+          contactTypes: ["MEETUP"],
+          cityIds: [],
+          categoryId: "",
+          sizeIds: [],
+        },
+  )
   const [parentId, setParentId] = useState("")
   const heading = useRef<HTMLHeadingElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
@@ -147,6 +156,16 @@ export default function SellForm() {
     sizesQuery.data?.find((group) => group.id === selectedCategory?.sizeGroupId)
       ?.sizes ??
     []
+  useEffect(() => {
+    if (!listing || !categoriesQuery.data) return
+    const category = categoriesQuery.data.find(
+      (item) =>
+        item.id === listing.categoryId ||
+        item.subCategories?.some((child) => child.id === listing.categoryId),
+    )
+    setParentId(category?.parentId ?? category?.id ?? "")
+  }, [listing, categoriesQuery.data])
+
   const loading =
     citiesQuery.loading || categoriesQuery.loading || sizesQuery.loading
 
@@ -274,6 +293,16 @@ export default function SellForm() {
 
     let failure: FormError = "publishError"
     try {
+      if (listing) {
+        const result = await update.execute(listing.id, formData)
+        if (!result.success) {
+          setError(failure)
+          return
+        }
+        router.push(`/listings/${listing.id}`)
+        router.refresh()
+        return
+      }
       const saved = draft.current
       let listingId: string
       if (saved?.formData === formData) {
@@ -357,7 +386,14 @@ export default function SellForm() {
   }
 
   const currentPhoto =
-    photos.find((photo) => photo.url === previewPhoto) ?? photos[0]
+    photos.find((photo) => photo.url === previewPhoto) ??
+    photos[0] ??
+    (listing
+      ? {
+          url:
+            getListingImageUrls(listing)[0] ?? "/listing-image-unavailable.png",
+        }
+      : undefined)
   const sizeNames = availableSizes
     .filter((size) => formData.sizeIds?.includes(size.id))
     .map((size) => size.name)
@@ -369,35 +405,39 @@ export default function SellForm() {
     <form onSubmit={handleSubmit} noValidate className="mx-auto max-w-3xl">
       <ol
         aria-label={t("sell.progress")}
-        className="mb-6 grid grid-cols-5 gap-1.5 sm:gap-3"
+        className={`mb-6 grid ${
+          listing ? "grid-cols-4" : "grid-cols-5"
+        } gap-1.5 sm:gap-3`}
       >
-        {steps.map((name, index) => (
-          <li key={name} aria-current={index === step ? "step" : undefined}>
-            <button
-              type="button"
-              disabled={index >= step || submitting}
-              onClick={() => moveTo(index)}
-              className={`flex w-full flex-col items-center gap-2 border-t-4 px-0.5 pt-3 text-center text-[10px] font-bold leading-tight sm:text-xs ${
-                index <= step
-                  ? "border-deep-accent text-deep-accent"
-                  : "border-black/10 text-black/55"
-              } enabled:hover:bg-deep-accent/5`}
-            >
-              <span
-                className={`grid h-7 w-7 place-items-center rounded-full text-xs ${
-                  index <= step ? "bg-deep-accent text-white" : "bg-black/5"
-                }`}
+        {steps.map((name, index) =>
+          listing && index === 0 ? null : (
+            <li key={name} aria-current={index === step ? "step" : undefined}>
+              <button
+                type="button"
+                disabled={index >= step || submitting}
+                onClick={() => moveTo(index)}
+                className={`flex w-full flex-col items-center gap-2 border-t-4 px-0.5 pt-3 text-center text-[10px] font-bold leading-tight sm:text-xs ${
+                  index <= step
+                    ? "border-deep-accent text-deep-accent"
+                    : "border-black/10 text-black/55"
+                } enabled:hover:bg-deep-accent/5`}
               >
-                {index < step ? (
-                  <CheckIcon className="h-3.5 w-3.5" />
-                ) : (
-                  index + 1
-                )}
-              </span>
-              {t(`sell.steps.${name}`)}
-            </button>
-          </li>
-        ))}
+                <span
+                  className={`grid h-7 w-7 place-items-center rounded-full text-xs ${
+                    index <= step ? "bg-deep-accent text-white" : "bg-black/5"
+                  }`}
+                >
+                  {index < step ? (
+                    <CheckIcon className="h-3.5 w-3.5" />
+                  ) : (
+                    index + (listing ? 0 : 1)
+                  )}
+                </span>
+                {t(`sell.steps.${name}`)}
+              </button>
+            </li>
+          ),
+        )}
       </ol>
 
       <div className="overflow-hidden rounded-3xl border border-black/10 bg-white shadow-sm">
@@ -841,13 +881,17 @@ export default function SellForm() {
                 role="alert"
                 className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
               >
-                {t(`sell.validation.${error}`)}
+                {t(
+                  listing && error === "publishError"
+                    ? "listingDetail.updateError"
+                    : `sell.validation.${error}`,
+                )}
               </p>
             )}
           </section>
 
           <div className="flex items-center justify-between gap-3 border-t border-black/10 px-5 py-4 sm:px-8">
-            {step > 0 ? (
+            {step > (listing ? 1 : 0) ? (
               <Button onClick={() => moveTo(step - 1)} className={backClass}>
                 {t("sell.back")}
               </Button>
@@ -863,7 +907,13 @@ export default function SellForm() {
                   : nextClass
               }
             >
-              {t(step === reviewStep ? "sell.submit" : "sell.next")}
+              {t(
+                step === reviewStep
+                  ? listing
+                    ? "listingDetail.saveChanges"
+                    : "sell.submit"
+                  : "sell.next",
+              )}
             </Button>
           </div>
         </fieldset>

@@ -213,6 +213,19 @@ const en: Dictionary = {
     empty: "No items found.",
   },
   listingDetail: {
+    updateError: "Unable to save your changes. Try again.",
+    manage: "Manage",
+    edit: "Edit listing",
+    delete: "Delete listing",
+    deleteTitle: "Delete this listing?",
+    deleteDescription: "“{title}” will be permanently deleted.",
+    deleteError: "Unable to delete the listing. Try again.",
+    deleting: "Deleting…",
+    saveChanges: "Save changes",
+    editUnavailable:
+      "This listing could not be loaded, or you do not have permission to edit it.",
+    backToListing: "Back to listing",
+
     genderUnspecified: "Gender not specified",
     categoryBreadcrumb: "Category breadcrumb",
     showAll: "Show all ({count, number})",

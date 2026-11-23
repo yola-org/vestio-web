@@ -215,6 +215,19 @@ const fr = {
     empty: "Aucun article trouvé.",
   },
   listingDetail: {
+    updateError: "Impossible d’enregistrer les modifications. Réessayez.",
+    manage: "Gérer",
+    edit: "Modifier l’annonce",
+    delete: "Supprimer l’annonce",
+    deleteTitle: "Supprimer cette annonce ?",
+    deleteDescription: "« {title} » sera supprimée définitivement.",
+    deleteError: "Impossible de supprimer l’annonce. Réessayez.",
+    deleting: "Suppression…",
+    saveChanges: "Enregistrer les modifications",
+    editUnavailable:
+      "Cette annonce est indisponible ou vous n’avez pas l’autorisation de la modifier.",
+    backToListing: "Retour à l’annonce",
+
     genderUnspecified: "Genre non précisé",
     categoryBreadcrumb: "Fil d’Ariane des catégories",
     showAll: "Tout afficher ({count, number})",

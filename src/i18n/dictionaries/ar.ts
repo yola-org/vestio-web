@@ -211,6 +211,18 @@ const ar: Dictionary = {
     empty: "لم يتم العثور على أي قطعة.",
   },
   listingDetail: {
+    updateError: "تعذر حفظ التغييرات. حاول مجددًا.",
+    manage: "إدارة",
+    edit: "تعديل الإعلان",
+    delete: "حذف الإعلان",
+    deleteTitle: "حذف هذا الإعلان؟",
+    deleteDescription: "سيتم حذف «{title}» نهائيًا.",
+    deleteError: "تعذر حذف الإعلان. حاول مجددًا.",
+    deleting: "جارٍ الحذف…",
+    saveChanges: "حفظ التغييرات",
+    editUnavailable: "تعذر تحميل هذا الإعلان أو ليس لديك إذن لتعديله.",
+    backToListing: "العودة إلى الإعلان",
+
     genderUnspecified: "الجنس غير محدد",
     categoryBreadcrumb: "مسار التصنيفات",
     showAll: "عرض الكل ({count, number})",

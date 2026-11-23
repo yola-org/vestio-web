@@ -47,7 +47,7 @@ test("searches from the desktop header and applies filters to the same query", a
 
   await limitPrice(page)
   await page.getByRole("button", { name: "Appliquer les filtres" }).click()
-  await expect(page.getByText("Aucun article trouvé.")).toBeVisible()
+  await expect(page.getByRole("main").filter({ visible: true }).getByText("Aucun article trouvé.")).toBeVisible()
 
   await page.getByRole("link", { name: "Réinitialiser les filtres" }).click()
   await expect(
@@ -80,7 +80,7 @@ test("keeps a previous page link when a shared page has no results", async ({
   page,
 }) => {
   await page.goto("/search?query=cuir+vintage&page=1")
-  await expect(page.getByText("Aucun article trouvé.")).toBeVisible()
+  await expect(page.getByRole("main").filter({ visible: true }).getByText("Aucun article trouvé.")).toBeVisible()
   await page.getByRole("link", { name: "Page précédente" }).click()
   await expect(
     page.getByRole("heading", { name: "Sac en cuir vintage" }),
@@ -218,24 +218,20 @@ for (const locale of ["en", "ar"] as const) {
 }
 
 for (const mobile of [false, true]) {
-  test(`header search keeps multiple cities (${mobile ? "mobile" : "desktop"})`, async ({ page }) => {
+  test(`header search changes city and preserves other filters (${mobile ? "mobile" : "desktop"})`, async ({ page }) => {
     if (mobile) await page.setViewportSize({ width: 390, height: 844 })
     await page.goto("/search?cityIds=1,2&conditions=GOOD,VERY_GOOD")
     if (mobile) await page.getByRole("button", { name: "Ouvrir le menu" }).click()
     const header = page.locator("header")
-    const cities = header.locator('[data-multiselect="cityIds"]').filter({ visible: true })
-    await cities.getByRole("combobox").click()
-    await expect(cities.getByRole("option", { name: "Casablanca", exact: true })).toHaveAttribute("aria-selected", "true")
-    await expect(cities.getByRole("option", { name: "Rabat", exact: true })).toHaveAttribute("aria-selected", "true")
-    await cities.getByRole("combobox").press("Escape")
-    await setMulti(header, "cityIds", "3")
+    await header.getByRole("button", { name: "Casablanca", exact: true }).click()
+    await header.getByRole("button", { name: "Rabat", exact: true }).click()
     const search = page.getByRole("searchbox")
     await search.fill("hoodie")
     await expect(page.getByRole("search").getByText("Hoodie gris essentiel")).toBeVisible()
     await search.press("Enter")
     await expect.poll(() => new URL(page.url()).searchParams.get("query")).toBe("hoodie")
     await expect(page.getByRole("heading", { name: "Hoodie gris essentiel" })).toBeVisible()
-    expect(selected(page.url(), "cityIds")).toEqual(["1", "2", "3"])
+    expect(selected(page.url(), "cityIds")).toEqual(["2"])
     expect(selected(page.url(), "conditions")).toEqual(["GOOD", "VERY_GOOD"])
     expect(new URL(page.url()).searchParams.has("cityId")).toBe(false)
   })

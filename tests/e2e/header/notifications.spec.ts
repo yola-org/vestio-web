@@ -455,16 +455,16 @@ for (const locale of ["fr", "ar"] as const) {
         : `وافق Alex Owner على عرضك بقيمة ${amount} للمنتج «Veste en jean».`
     await expect(page.getByText(text, { exact: true })).toBeVisible()
     const row = page.getByRole("listitem").filter({ hasText: text })
-    const link = row.getByRole("link", {
+    const link = row.getByRole("button", {
       name: locale === "fr" ? "Ouvrir la conversation" : "فتح المحادثة",
       exact: true,
     })
-    await expect(link).toHaveAttribute(
-      "href",
-      `/chats/${accepted.payload.chatId}`,
-    )
+    await expect(link).toBeVisible()
     await expect(
-      page.locator('a[href="/offers/received"]').filter({ visible: true }),
+      page.getByRole("button", {
+        name: locale === "fr" ? "Voir l’offre" : "عرض العرض",
+        exact: true,
+      }),
     ).toHaveCount(1)
     const fallback = page.getByRole("listitem").filter({
       hasText:
@@ -474,6 +474,12 @@ for (const locale of ["fr", "ar"] as const) {
     })
     await expect(fallback).toHaveCount(1)
     await expect(fallback.getByRole("link")).toHaveCount(0)
+    await expect(
+      fallback.getByRole("button", {
+        name: locale === "fr" ? "Ouvrir la conversation" : "فتح المحادثة",
+        exact: true,
+      }),
+    ).toHaveCount(0)
     await link.click()
     await expect(page).toHaveURL(/\/$/)
     const chatDialog = page.getByRole("dialog", {
@@ -549,7 +555,11 @@ for (const locale of ["fr", "ar"] as const) {
       { name: "vestio_token", value: token, domain: "localhost", path: "/" },
       { name: "vestio_locale", value: locale, domain: "localhost", path: "/" },
     ])
-    await page.goto("/offers/received")
+    await page.goto("/")
+    await page
+      .locator("[data-offers-trigger]")
+      .filter({ visible: true })
+      .click()
     const labels =
       locale === "fr"
         ? {
@@ -600,13 +610,21 @@ for (const locale of ["fr", "ar"] as const) {
       state.calls.map((call: { offerId: string }) => call.offerId),
     ).toEqual([items[0].offer.id, items[1].offer.id])
     await page.reload()
+    await expect(page.locator("dialog[data-offers-panel]")).toBeVisible()
     await expect(
       row("Accept this shirt").getByText(labels.accepted, { exact: true }),
     ).toBeVisible()
     await expect(
       row("Refuse this shirt").getByText(labels.refused, { exact: true }),
     ).toBeVisible()
-    await page.goto("/offers/sent")
+    await page
+      .locator("dialog[data-offers-panel]")
+      .getByRole("navigation")
+      .getByRole("button", {
+        name: locale === "fr" ? "Offres envoyées" : "العروض المرسلة",
+        exact: true,
+      })
+      .click()
     await expect(row("Sent pending")).toBeVisible()
     await expect(
       page.getByRole("button", { name: labels.accept, exact: true }),
@@ -653,7 +671,8 @@ test("owner actions recover from a failed request and refresh stale decisions", 
     .addCookies([
       { name: "vestio_token", value: token, domain: "localhost", path: "/" },
     ])
-  await page.goto("/offers/received")
+  await page.goto("/")
+  await page.locator("[data-offers-trigger]").filter({ visible: true }).click()
   await page
     .getByRole("button", { name: "Accepter l’offre", exact: true })
     .click()
@@ -679,6 +698,7 @@ test("owner actions recover from a failed request and refresh stale decisions", 
   ).toHaveLength(2)
   await seed({ staleNext: true })
   await page.reload()
+  await expect(page.locator("dialog[data-offers-panel]")).toBeVisible()
   await page
     .getByRole("button", { name: "Refuser l’offre", exact: true })
     .click()
@@ -1316,9 +1336,10 @@ test("newest three unique alerts replace the oldest without resetting existing t
       path: "/",
     },
   ])
-  await page.goto("/chats")
+  await page.goto("/")
+  await page.locator("[data-chat-trigger]").filter({ visible: true }).click()
   await expect(
-    page.getByRole("heading", { name: "Messages", exact: true }),
+    page.getByRole("dialog", { name: "Messages", exact: true }),
   ).toBeVisible()
   await expect(
     page.getByText(
@@ -1441,7 +1462,15 @@ for (const locale of ["fr", "ar"] as const) {
       { name: "vestio_token", value: token, domain: "localhost", path: "/" },
       { name: "vestio_locale", value: locale, domain: "localhost", path: "/" },
     ])
-    await page.goto(`/chats/${chat.id}`)
+    await page.goto("/")
+    await page.locator("[data-chat-trigger]").filter({ visible: true }).click()
+    await page
+      .getByRole("navigation", {
+        name: locale === "fr" ? "Discussions" : "المحادثات",
+        exact: true,
+      })
+      .getByRole("button", { name: new RegExp(chat.listingTitle) })
+      .click()
     const history = page.getByRole("region", {
       name: locale === "fr" ? "Historique des messages" : "سجل الرسائل",
     })
@@ -1584,7 +1613,11 @@ test.describe("chat calendar-day labels", () => {
       ])
       const errors: string[] = []
       page.on("pageerror", (error) => errors.push(error.message))
-      await page.goto("/chats")
+      await page.goto("/")
+      await page
+        .locator("[data-chat-trigger]")
+        .filter({ visible: true })
+        .click()
       const nav = page.getByRole("navigation", {
         name: locale === "fr" ? "Discussions" : "المحادثات",
         exact: true,
@@ -1603,7 +1636,7 @@ test.describe("chat calendar-day labels", () => {
           hourCycle: "h23",
         }).format(new Date(dateTime))
       for (const item of cases) {
-        const row = nav.getByRole("link", { name: new RegExp(item.title) })
+        const row = nav.getByRole("button", { name: new RegExp(item.title) })
         await expect(row.locator("time")).toHaveText(item.label)
         await expect(row.locator("time")).toHaveAttribute(
           "datetime",
@@ -1649,14 +1682,14 @@ test.describe("chat calendar-day labels", () => {
       }
       await expect(nav.locator("ul")).toHaveCSS("padding-top", "12px")
       await expect(nav.locator("ul")).toHaveCSS("padding-bottom", "12px")
-      await nav.getByRole("link", { name: /Recent message/ }).click()
+      await nav.getByRole("button", { name: /Recent message/ }).click()
       await expect(history.locator("time")).toHaveText(
         at(today, clock(cases[0].dateTime)),
       )
       await page.screenshot({ path: `/tmp/vestio-chat-dates-${locale}.png` })
       await page.clock.fastForward(31 * 60 * 1000) // Local midnight changes Today to Yesterday.
       await expect(
-        nav.getByRole("link", { name: /Recent message/ }).locator("time"),
+        nav.getByRole("button", { name: /Recent message/ }).locator("time"),
       ).toHaveText(yesterday)
       await expect(history.locator("time")).toHaveText(
         at(yesterday, clock(cases[0].dateTime)),
@@ -1752,7 +1785,7 @@ for (const locale of ["fr", "ar"] as const) {
       name: locale === "fr" ? "Discussions" : "المحادثات",
       exact: true,
     })
-    await nav.getByRole("link", { name: /Drawer jacket/ }).click()
+    await nav.getByRole("button", { name: /Drawer jacket/ }).click()
     const history = dialog.getByRole("region", {
       name: locale === "fr" ? "Historique des messages" : "سجل الرسائل",
       exact: true,
@@ -1777,7 +1810,7 @@ for (const locale of ["fr", "ar"] as const) {
     await page.screenshot({
       path: `/tmp/vestio-chat-drawer-${locale}-desktop.png`,
     })
-    await nav.getByRole("link", { name: /Drawer shoes/ }).click()
+    await nav.getByRole("button", { name: /Drawer shoes/ }).click()
     await expect(history).toContainText("Hello about Drawer shoes")
     await page.goBack()
     await expect(dialog).toHaveCount(0)
@@ -1827,7 +1860,7 @@ for (const locale of ["fr", "ar"] as const) {
     await page.locator("#header-mobile-toggle").click()
     await page
       .locator("#header-mobile-menu")
-      .getByRole("link", {
+      .getByRole("button", {
         name: locale === "fr" ? "Messages" : "الرسائل",
         exact: true,
       })
@@ -1835,7 +1868,7 @@ for (const locale of ["fr", "ar"] as const) {
     await expect(dialog).toBeVisible()
     await expect(dialog).toHaveCSS("transform", "none")
     expect((await dialog.boundingBox())!.width).toBe(390)
-    await nav.getByRole("link", { name: /Drawer jacket/ }).click()
+    await nav.getByRole("button", { name: /Drawer jacket/ }).click()
     await expect(history).toContainText("Reply in the panel")
     await page.screenshot({
       path: `/tmp/vestio-chat-drawer-${locale}-mobile.png`,
@@ -1846,7 +1879,7 @@ for (const locale of ["fr", "ar"] as const) {
       ),
     ).toBeTruthy()
     await dialog
-      .getByRole("link", {
+      .getByRole("button", {
         name: locale === "fr" ? "Toutes les conversations" : "جميع المحادثات",
         exact: true,
       })
