@@ -5,7 +5,7 @@ export default async function ListingNotFound() {
   const t = await getTranslations("listingDetail")
 
   return (
-    <main className="main-container grid min-h-[60vh] place-items-center py-12 text-center">
+    <main className="main-container grid min-h-[60vh] place-items-center pt-6 pb-12 text-center">
       <div>
         <h1 className="text-4xl font-black tracking-tight">
           {t("missingTitle")}

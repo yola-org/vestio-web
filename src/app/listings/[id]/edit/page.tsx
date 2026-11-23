@@ -30,7 +30,7 @@ export default function EditListingPage({
   return (
     <div className="flex min-h-screen flex-col bg-background text-primary">
       <Header />
-      <main className="main-container flex-1 py-10">
+      <main className="main-container flex-1 pt-6 pb-10">
         <h1 className="mb-8 text-center text-3xl font-black">{t("edit")}</h1>
         {loading ? (
           <SellFormSkeleton />

@@ -34,7 +34,7 @@ export default function Page() {
   if (loading) {
     return (
       <PageSkeleton>
-        <main className="main-container space-y-10 py-12">
+        <main className="main-container space-y-10 pt-6 pb-12">
           <SkeletonGroup className="space-y-5">
             <Skeleton className="h-56 rounded-3xl" />
             <Skeleton className="h-8 w-48" />

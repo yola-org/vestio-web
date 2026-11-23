@@ -90,7 +90,7 @@ export default async function ListingBrowsePage({
         searchCategoryId={category?.id}
         searchAction={path}
       />
-      <main id="shop" className="main-container py-12">
+      <main id="shop" className="main-container pt-6 pb-12">
         {category && (
           <nav
             aria-label={t("listingDetail.categoryBreadcrumb")}

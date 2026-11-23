@@ -53,7 +53,7 @@ function ProfileContent() {
 
   if (profileQuery.loading) {
     return (
-      <main className="main-container py-12">
+      <main className="main-container pt-6 pb-12">
         <ProfileContentSkeleton />
       </main>
     )
@@ -61,7 +61,7 @@ function ProfileContent() {
 
   if (!profile) {
     return (
-      <main className="main-container py-20 text-center">
+      <main className="main-container pt-6 pb-20 text-center">
         <h1 className="mb-4 text-2xl font-bold">{t("profile.notFound")}</h1>
         <Link
           href="/login"
@@ -74,7 +74,7 @@ function ProfileContent() {
   }
 
   return (
-    <main className="py-12 main-container">
+    <main className="pt-6 pb-12 main-container">
       {imageModalOpen && (
         <Modal
           title={t("settings.changeImage")}

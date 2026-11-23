@@ -91,7 +91,7 @@ export default async function ListingPage({
   return (
     <div className="flex min-h-screen flex-col bg-background text-primary">
       <Header />
-      <main className="main-container flex-1 py-7 sm:py-10">
+      <main className="main-container flex-1 pt-6 pb-7 sm:pb-10">
         <Link
           href="/search"
           className="mb-6 inline-flex items-center gap-2 text-sm font-bold hover:underline sm:mb-8"

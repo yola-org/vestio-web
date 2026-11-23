@@ -12,7 +12,7 @@ export default function NewListingPage() {
     <div className="min-h-screen bg-[#f7f3ea] text-[#151515]">
       <Header />
 
-      <main className="py-12 main-container">
+      <main className="pt-6 pb-12 main-container">
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-black tracking-tight mb-3 sm:text-5xl">
             {t("sell.pageTitle")}

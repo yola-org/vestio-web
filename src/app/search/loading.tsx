@@ -9,7 +9,7 @@ import Skeleton from "@/components/shared/Skeleton"
 export default function Loading() {
   return (
     <PageSkeleton>
-      <main className="main-container py-12">
+      <main className="main-container pt-6 pb-12">
         <Skeleton className="mb-8 h-10 w-64 max-w-full" />
         <div className="flex flex-col gap-10 lg:flex-row">
           <FilterPanelSkeleton />

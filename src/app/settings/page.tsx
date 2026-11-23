@@ -67,7 +67,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#f7f3ea] text-[#151515]">
       <Header />
 
-      <main className="py-12 main-container">
+      <main className="pt-6 pb-12 main-container">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-4xl font-black tracking-tight mb-8">
             {t("settings.title")}

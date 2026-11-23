@@ -49,7 +49,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background text-primary">
       <Header />
-      <main className="py-20 main-container">
+      <main className="pt-6 pb-20 main-container">
         <div className="mx-auto max-w-md bg-white p-8 shadow-sm rounded-2xl">
           <h1 className="text-4xl font-black tracking-tight mb-2">
             {t("auth.login.title")}
