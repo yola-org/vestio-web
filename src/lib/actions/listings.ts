@@ -4,7 +4,6 @@
 
 import { z } from "zod"
 
-import { getCitiesAction, getSizesAction } from "@/lib/actions/profile"
 import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
 import { request } from "@/lib/api/request.ts"
 import type {
@@ -14,6 +13,7 @@ import type {
 } from "@/lib/api/schemas"
 import { ContactTypeSchema, ListingInputSchema } from "@/lib/api/schemas"
 import { parseInput } from "@/lib/api/validation"
+
 const ListingResponseSchema = z.object({
   category: z.object({ id: z.string() }).nullish(),
   cities: z
@@ -29,74 +29,16 @@ const ListingResponseSchema = z.object({
 
 type ListingResponse = z.infer<typeof ListingResponseSchema>
 
-function normalizeListing(
-  data: ListingResponse,
-  cityNamesById: ReadonlyMap<string, string>,
-): Listing {
-  const cityIds = data.cities?.map((city) => city.id) ?? data.cityIds ?? []
-  const nestedCityNames = new Map(
-    data.cities?.map((city) => [city.id, city.name]),
-  )
-
+function normalizeListing(data: ListingResponse): Listing {
   return {
     ...data,
     categoryId: data.category?.id ?? data.categoryId,
-    cityIds,
-    cityNames: data.cityNames?.some(Boolean)
-      ? data.cityNames.filter(Boolean)
-      : cityIds
-          .map((id) => nestedCityNames.get(id) || cityNamesById.get(id))
-          .filter((name): name is string => Boolean(name)),
+    cityIds: data.cities?.map((city) => city.id) ?? data.cityIds ?? [],
+    cityNames: data.cityNames?.filter(Boolean) as string[] | undefined,
     sizeIds: Array.isArray(data.sizes)
       ? data.sizes.map((size) => size.id)
       : (data.sizeIds ?? []),
   } as Listing
-}
-
-async function getCityNamesById(listings: ListingResponse[]) {
-  const needsCityNames = listings.some(
-    (listing) =>
-      !listing.cityNames?.some(Boolean) &&
-      (listing.cities
-        ? listing.cities.some((city) => !city.name)
-        : Boolean(listing.cityIds?.length)),
-  )
-  if (!needsCityNames) return new Map<string, string>()
-
-  const cities = await getCitiesAction()
-  return new Map(
-    cities.success ? cities.data.map(({ id, name }) => [id, name]) : [],
-  )
-}
-
-async function getSizeNamesById(listings: ListingResponse[]) {
-  const needsSizeNames = listings.some(
-    (listing) =>
-      !listing.sizeNames?.length &&
-      (listing.sizes?.length || listing.sizeIds?.length),
-  )
-  const groups = needsSizeNames ? await getSizesAction() : undefined
-  return new Map(
-    groups?.success
-      ? groups.data.flatMap((group) =>
-          group.sizes.map(({ id, name }) => [id, name] as const),
-        )
-      : [],
-  )
-}
-
-function withSizeNames(
-  listing: Listing,
-  sizeNamesById: ReadonlyMap<string, string>,
-) {
-  if (listing.sizeNames?.length || !sizeNamesById.size) return listing
-
-  return {
-    ...listing,
-    sizeNames: (listing.sizeIds ?? [])
-      .map((id) => sizeNamesById.get(id))
-      .filter((name): name is string => Boolean(name)),
-  }
 }
 
 export async function getListingsAction(
@@ -113,11 +55,8 @@ export async function getListingsAction(
 
     if (Array.isArray(response)) {
       const content = response.slice(page * size, (page + 1) * size)
-      const cityNamesById = await getCityNamesById(content)
       return {
-        content: content.map((listing) =>
-          normalizeListing(listing, cityNamesById),
-        ),
+        content: content.map(normalizeListing),
         totalElements: response.length,
         totalPages: Math.ceil(response.length / size),
         number: page,
@@ -126,12 +65,9 @@ export async function getListingsAction(
     }
 
     const content = Array.isArray(response?.content) ? response.content : []
-    const cityNamesById = await getCityNamesById(content)
     return {
       ...response,
-      content: content.map((listing) =>
-        normalizeListing(listing, cityNamesById),
-      ),
+      content: content.map(normalizeListing),
     }
   })
 }
@@ -152,13 +88,7 @@ export async function searchListingsAction(
       {},
       false,
     )
-    const [cityNamesById, sizeNamesById] = await Promise.all([
-      getCityNamesById(listings),
-      getSizeNamesById(listings),
-    ])
-    return listings.map((listing) =>
-      withSizeNames(normalizeListing(listing, cityNamesById), sizeNamesById),
-    )
+    return listings.map(normalizeListing)
   })
 }
 
@@ -171,23 +101,14 @@ export async function getListingAction(
       {},
       false,
     )
-
-    const [cityNamesById, sizeNamesById] = await Promise.all([
-      getCityNamesById([response]),
-      getSizeNamesById([response]),
-    ])
-    return withSizeNames(
-      normalizeListing(response, cityNamesById),
-      sizeNamesById,
-    )
+    return normalizeListing(response)
   })
 }
 
 export async function getFavoritesAction(): Promise<ApiResult<Listing[]>> {
   return runAction(async () => {
     const listings = await request<ListingResponse[]>("/api/listings/favorites")
-    const cityNamesById = await getCityNamesById(listings)
-    return listings.map((listing) => normalizeListing(listing, cityNamesById))
+    return listings.map(normalizeListing)
   })
 }
 
@@ -199,8 +120,7 @@ export async function getPendingListingsAction(
     const listings = await request<ListingResponse[]>(
       `/api/listings/pending?page=${page}&size=${size}`,
     )
-    const cityNamesById = await getCityNamesById(listings)
-    return listings.map((listing) => normalizeListing(listing, cityNamesById))
+    return listings.map(normalizeListing)
   })
 }
 

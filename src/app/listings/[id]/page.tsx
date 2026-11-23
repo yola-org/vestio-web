@@ -33,7 +33,14 @@ export default async function ListingPage({
   const { id } = await params
   if (!/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(id)) notFound()
 
-  const result = await getListingAction(id)
+  const [result, t, format, cookieStore, categories] = await Promise.all([
+    getListingAction(id),
+    getTranslations(),
+    getFormatter(),
+    cookies(),
+    getCategoriesAction(),
+  ])
+
   if (!result.success) {
     if (result.error.status === 404) notFound()
     throw new Error("Failed to load listing")
@@ -50,14 +57,8 @@ export default async function ListingPage({
 
   const photos = getListingImageUrls(listing)
   const legacyPhotos = getListingImageUrls(listing, "original", "nested")
-  const [t, format, cookieStore, categories] = await Promise.all([
-    getTranslations(),
-    getFormatter(),
-    cookies(),
-    listing.categoryId ? getCategoriesAction() : undefined,
-  ])
   const categoryPath = findCategoryPath(
-    categories?.success ? categories.data : [],
+    categories.success ? categories.data : [],
     listing.categoryId,
   )
   const breadcrumbs = categoryPath.length
