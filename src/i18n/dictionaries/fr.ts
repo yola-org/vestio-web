@@ -340,6 +340,7 @@ const fr = {
     },
   },
   productCard: {
+    viewImage: "Agrandir la photo de {title}",
     citySeparator: ", ",
     moreCities: "{count, plural, one {+ # autre} other {+ # autres}}",
     addFavorite: "Ajouter {title} aux favoris",

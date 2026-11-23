@@ -332,6 +332,7 @@ const ar: Dictionary = {
     },
   },
   productCard: {
+    viewImage: "عرض صورة {title}",
     citySeparator: "، ",
     moreCities:
       "{count, plural, one {+ مدينة أخرى} two {+ مدينتان أخريان} few {+ # مدن أخرى} other {+ # مدينة أخرى}}",

@@ -337,6 +337,7 @@ const en: Dictionary = {
     },
   },
   productCard: {
+    viewImage: "View image of {title}",
     citySeparator: ", ",
     moreCities: "{count, plural, one {+ # more} other {+ # more}}",
     addFavorite: "Add {title} to favorites",

@@ -9,12 +9,14 @@ export default function Modal({
   description,
   onClose,
   dismissDisabled = false,
+  size = "default",
   children,
 }: {
   title: string
   description?: string
   onClose: () => void
   dismissDisabled?: boolean
+  size?: "default" | "full"
   children: ReactNode
 }) {
   const t = useTranslations("common")
@@ -27,14 +29,17 @@ export default function Modal({
     if (!dialog) return
 
     const previousFocus = document.activeElement
+    const previousOverflow = document.body.style.overflow
+    if (size === "full") document.body.style.overflow = "hidden"
     dialog.showModal()
     return () => {
       dialog.close()
+      if (size === "full") document.body.style.overflow = previousOverflow
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
         previousFocus.focus()
       }
     }
-  }, [])
+  }, [size])
 
   return (
     <dialog
@@ -45,11 +50,23 @@ export default function Modal({
         event.preventDefault()
         if (!dismissDisabled) onClose()
       }}
-      className="fixed inset-0 m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-3xl bg-white p-6 text-primary shadow-xl backdrop:bg-black/45 sm:p-8"
+      onClick={(event) => {
+        if (
+          size === "full" &&
+          event.target === event.currentTarget &&
+          !dismissDisabled
+        )
+          onClose()
+      }}
+      className={
+        size === "full"
+          ? "fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-black/95 p-4 text-white backdrop:bg-black/80 open:flex open:flex-col sm:p-6"
+          : "fixed inset-0 m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-3xl bg-white p-6 text-primary shadow-xl backdrop:bg-black/45 sm:p-8"
+      }
     >
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="mb-5 flex shrink-0 items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 id={titleId} className="text-xl font-black">
+          <h2 id={titleId} className="line-clamp-2 text-xl font-black">
             {title}
           </h2>
           {description && (
@@ -66,12 +83,20 @@ export default function Modal({
           aria-label={t("close")}
           disabled={dismissDisabled}
           onClick={onClose}
-          className="-me-1 -mt-1 grid size-9 shrink-0 place-items-center rounded-full enabled:hover:bg-primary/5 disabled:opacity-60"
+          className={`-me-1 -mt-1 grid size-9 shrink-0 place-items-center rounded-full disabled:opacity-60 ${
+            size === "full"
+              ? "enabled:hover:bg-white/15"
+              : "enabled:hover:bg-primary/5"
+          }`}
         >
           <CloseIcon aria-hidden="true" className="size-5" />
         </button>
       </div>
-      {children}
+      {size === "full" ? (
+        <div className="min-h-0 flex-1">{children}</div>
+      ) : (
+        children
+      )}
     </dialog>
   )
 }

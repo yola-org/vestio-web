@@ -2,6 +2,7 @@ import { assetsBaseUrl } from "./assets"
 import type { Listing } from "@/lib/api/schemas"
 
 const suffixes = {
+  // Optimizer outputs: original 2560px, desktop 960px, mobile 480px (longest edge).
   original: [".webp", "/original.webp"],
   thumbnail: ["_thumbnail.webp", "/original-thumbnail.webp"],
   mobile: ["_thumbnail_mobile.webp", "/original-thumbnail-mobile.webp"],
