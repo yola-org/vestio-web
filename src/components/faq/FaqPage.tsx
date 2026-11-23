@@ -4,8 +4,14 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { ChevronIcon } from "@/components/shared/Icons"
 
-type FaqItem = { q: string a: string }
-type FaqSection = { title: string items: FaqItem[] }
+type FaqItem = {
+  q: string
+  a: string
+}
+type FaqSection = {
+  title: string
+  items: FaqItem[]
+}
 
 function Accordion({ items }: { items: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(null)
