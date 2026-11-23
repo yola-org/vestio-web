@@ -154,6 +154,29 @@ export const ListingSchema = z.object({
   brandId: z.uuid().nullish(),
 })
 
+/** Browse responses contain only the fields used by listing cards. */
+export const ListingSummarySchema = ListingSchema.pick({
+  categoryName: true,
+  id: true,
+  title: true,
+  price: true,
+  condition: true,
+  status: true,
+  userId: true,
+  sellerFirstName: true,
+  sellerLastName: true,
+  sellerProfileImageKey: true,
+  createdAt: true,
+}).extend({
+  descriptionPreview: z.string().nullable(),
+  coverAssetKey: z.uuid().nullable(),
+  colors: z.array(z.string()),
+  cityNames: z.array(z.string()),
+  sizeNames: z.array(z.string()),
+})
+
+export type ListingSummary = z.infer<typeof ListingSummarySchema>
+
 export const AccountDisplayNameSchema = z.object({
   profileImageKey: z.string().nullish(),
   firstName: z.string().nullish(),

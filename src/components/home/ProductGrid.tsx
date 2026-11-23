@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { ArrowIcon } from "@/components/shared/Icons"
-import { listingsApi, Listing } from "@/lib/api"
+import { listingsApi, ListingSummary } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
 import ListingGrid from "@/components/shared/ListingGrid"
 import Pagination from "@/components/shared/Pagination"
@@ -35,7 +35,7 @@ export default function ProductGrid({
     { deps: [currentPage, limit], loading: false },
   )
 
-  const listings: Listing[] = data?.content ?? []
+  const listings: ListingSummary[] = data?.content ?? []
   const totalPages = data?.totalPages ?? 0
 
   return (

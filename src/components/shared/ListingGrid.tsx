@@ -1,17 +1,17 @@
 "use client"
 
 import ProductCard from "./ProductCard"
-import type { Listing } from "@/lib/api/schemas"
+import type { ListingSummary } from "@/lib/api/schemas"
 import { ListingGridSkeleton } from "./ListingSkeletons"
 import { useTranslations } from "next-intl"
 
 interface ListingGridProps {
-  listings: Listing[]
+  listings: ListingSummary[]
   isLoading?: boolean
   columns?: string
   emptyMessage?: string
   savedIds?: string[]
-  onToggleSave?: (listing: Listing) => void
+  onToggleSave?: (listing: ListingSummary) => void
   saveDisabled?: boolean
 }
 

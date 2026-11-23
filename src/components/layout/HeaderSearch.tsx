@@ -6,7 +6,7 @@ import Form from "next/form"
 import { useFormatter, useTranslations } from "next-intl"
 import { ArrowIcon, PinIcon, SearchIcon } from "@/components/shared/Icons"
 import { searchListingsAction } from "@/lib/actions/listings"
-import type { Listing } from "@/lib/api/schemas"
+import type { ListingSummary } from "@/lib/api/schemas"
 
 interface HeaderSearchProps {
   initialQuery: string
@@ -30,7 +30,7 @@ export default function HeaderSearch({
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<{
     key: string
-    listings: Listing[] | null
+    listings: ListingSummary[] | null
   }>()
   const term = query.trim()
   const showPreview = open && term.length >= 2
@@ -153,9 +153,9 @@ export default function HeaderSearch({
                         {format.number(listing.price)} {t("common.currency")}
                       </p>
                     </div>
-                    {listing.description?.trim() && (
+                    {listing.descriptionPreview?.trim() && (
                       <p className="mt-1 line-clamp-1 text-xs text-black/65">
-                        {listing.description}
+                        {listing.descriptionPreview}
                       </p>
                     )}
                     <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-black/65">

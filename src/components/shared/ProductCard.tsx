@@ -3,7 +3,7 @@
 import { PinIcon, ClockIcon } from "@/components/shared/Icons"
 import FavoriteButton from "@/components/shared/FavoriteButton"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
-import type { Condition, Listing } from "@/lib/api/schemas"
+import type { Condition, ListingSummary } from "@/lib/api/schemas"
 import { getListingImageUrls } from "@/lib/listing-images"
 import { getProfileImageUrl } from "@/lib/profile-images"
 import { useTranslations } from "next-intl"
@@ -14,7 +14,7 @@ const fallbackImage = "/listing-image-unavailable.png"
 const visibleCityLimit = 2
 
 interface ProductCardProps {
-  product: Listing | {
+  product: ListingSummary | {
     title: string
     size: string
     condition?: Condition
@@ -78,16 +78,25 @@ export default function ProductCard({
       : listing?.status === "PENDING"
         ? t("pendingListings.pendingBadge")
         : undefined
-  const flatImage = listing
-    ? getListingImageUrls(listing, "thumbnail")[0]
+  const imageSource = listing
+    ? {
+        id: listing.id,
+        status: listing.status,
+        assetKeys: listing.coverAssetKey ? [listing.coverAssetKey] : [],
+      }
+    : undefined
+  const flatImage = imageSource
+    ? getListingImageUrls(imageSource, "thumbnail")[0]
     : undefined
   const layout =
     flatImage && failedImages.includes(flatImage) ? "nested" : "flat"
-  const image = listing
-    ? getListingImageUrls(listing, "thumbnail", layout)[0]
-    : product.image?.trim()
-  const mobileImage = listing
-    ? getListingImageUrls(listing, "mobile", layout)[0]
+  const image = imageSource
+    ? getListingImageUrls(imageSource, "thumbnail", layout)[0]
+    : "image" in product
+      ? product.image?.trim()
+      : undefined
+  const mobileImage = imageSource
+    ? getListingImageUrls(imageSource, "mobile", layout)[0]
     : undefined
   const showFallback = !image || failedImages.includes(image)
   const responsive = !showFallback && mobileImage && mobileImage !== image

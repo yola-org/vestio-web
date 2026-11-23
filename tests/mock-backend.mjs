@@ -120,6 +120,14 @@ const categoryNames = Object.fromEntries(
   ),
 )
 
+function listingSummary(listing) {
+  const { id, title, price, condition, status, userId, sellerFirstName, sellerLastName,
+    sellerProfileImageKey, createdAt, categoryName } = listing
+  return { id, title, price, condition, status, userId, sellerFirstName, sellerLastName,
+    sellerProfileImageKey, createdAt, categoryName, descriptionPreview: listing.description?.slice(0, 160) ?? null, coverAssetKey: listing.assetKeys?.[0] ?? null,
+    colors: listing.colors ?? [], cityNames: listing.cityNames ?? [], sizeNames: listing.sizeNames ?? [] }
+}
+
 const favoriteIds = new Set()
 const listings = [
   {
@@ -530,7 +538,7 @@ async function handle(req, res, pathname, query) {
     }
 
     if (listsFavorites) {
-      return json(res, 200, [...favoriteIds].reverse().map(findListing))
+      return json(res, 200, [...favoriteIds].reverse().map(findListing).filter(Boolean).map(listingSummary))
     }
 
     const id = favoriteMatch[1]
@@ -695,7 +703,7 @@ async function handle(req, res, pathname, query) {
       return json(
         res,
         200,
-        pendingListings.slice(page * size, (page + 1) * size),
+        pendingListings.slice(page * size, (page + 1) * size).map(listingSummary),
       )
     }
 
@@ -732,14 +740,14 @@ async function handle(req, res, pathname, query) {
           listing.price >= minPrice &&
           listing.price <= maxPrice,
       )
-      return json(res, 200, matches.slice(page * size, (page + 1) * size))
+      return json(res, 200, matches.slice(page * size, (page + 1) * size).map(listingSummary))
     }
 
     case "GET /api/listings": {
       const page = Number(query.get("page") ?? "0")
       const size = Number(query.get("size") ?? "12")
       const start = page * size
-      const content = listings.slice(start, start + size)
+      const content = listings.slice(start, start + size).map(listingSummary)
       return json(res, 200, {
         content,
         totalPages: Math.max(1, Math.ceil(listings.length / size)),

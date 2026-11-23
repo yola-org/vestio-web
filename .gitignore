@@ -27,3 +27,11 @@ test-results/
 tests/
 test-results/
 playwright-report/
+# Keep the listing-summary contract regression in source control.
+!tests/
+tests/*
+!tests/e2e/
+tests/e2e/*
+!tests/e2e/listings/
+tests/e2e/listings/*
+!tests/e2e/listings/summary.spec.ts

@@ -5,13 +5,13 @@ import { useTranslations } from "next-intl"
 import ListingGrid from "@/components/shared/ListingGrid"
 import { searchGridColumns } from "@/components/shared/ListingSkeletons"
 import { useFavorites } from "@/hooks/use-favorites"
-import type { Listing } from "@/lib/api/schemas"
+import type { ListingSummary } from "@/lib/api/schemas"
 
 export default function SearchResults({
   listings,
   authenticated,
 }: {
-  listings: Listing[]
+  listings: ListingSummary[]
   authenticated: boolean
 }) {
   const t = useTranslations("favorites")

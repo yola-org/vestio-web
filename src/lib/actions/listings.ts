@@ -9,9 +9,15 @@ import { request } from "@/lib/api/request.ts"
 import type {
   Listing,
   ListingInput,
+  ListingSummary,
   PaginatedResponse,
 } from "@/lib/api/schemas"
-import { ContactTypeSchema, ListingInputSchema } from "@/lib/api/schemas"
+import {
+  ContactTypeSchema,
+  ListingInputSchema,
+  ListingSummarySchema,
+  paginatedResponseSchema,
+} from "@/lib/api/schemas"
 import { parseInput } from "@/lib/api/validation"
 
 const ListingResponseSchema = z.object({
@@ -44,31 +50,14 @@ function normalizeListing(data: ListingResponse): Listing {
 export async function getListingsAction(
   page = 0,
   size = 12,
-): Promise<ApiResult<PaginatedResponse<Listing>>> {
+): Promise<ApiResult<PaginatedResponse<ListingSummary>>> {
   return runAction(async () => {
-    const response =
-      await request<ListingResponse[] | PaginatedResponse<ListingResponse>>(
-        `/api/listings?page=${page}&size=${size}`,
-        {},
-        false,
-      )
-
-    if (Array.isArray(response)) {
-      const content = response.slice(page * size, (page + 1) * size)
-      return {
-        content: content.map(normalizeListing),
-        totalElements: response.length,
-        totalPages: Math.ceil(response.length / size),
-        number: page,
-        size,
-      }
-    }
-
-    const content = Array.isArray(response?.content) ? response.content : []
-    return {
-      ...response,
-      content: content.map(normalizeListing),
-    }
+    const response = await request<unknown>(
+      `/api/listings?page=${page}&size=${size}`,
+      {},
+      false,
+    )
+    return paginatedResponseSchema(ListingSummarySchema).parse(response)
   })
 }
 
@@ -76,19 +65,18 @@ export async function searchListingsAction(
   filters: Record<string, string>,
   page: number,
   size: number,
-): Promise<ApiResult<Listing[]>> {
+): Promise<ApiResult<ListingSummary[]>> {
   return runAction(async () => {
     const params = new URLSearchParams({
       ...filters,
       page: String(page),
       size: String(size),
     })
-    const listings = await request<ListingResponse[]>(
-      `/api/listings/search?${params}`,
-      {},
-      false,
-    )
-    return listings.map(normalizeListing)
+    return z
+      .array(ListingSummarySchema)
+      .parse(
+        await request<unknown>(`/api/listings/search?${params}`, {}, false),
+      )
   })
 }
 
@@ -105,23 +93,23 @@ export async function getListingAction(
   })
 }
 
-export async function getFavoritesAction(): Promise<ApiResult<Listing[]>> {
-  return runAction(async () => {
-    const listings = await request<ListingResponse[]>("/api/listings/favorites")
-    return listings.map(normalizeListing)
-  })
+export async function getFavoritesAction(): Promise<ApiResult<ListingSummary[]>> {
+  return runAction(async () =>
+    z.array(ListingSummarySchema).parse(
+      await request<unknown>("/api/listings/favorites"),
+    ),
+  )
 }
 
 export async function getPendingListingsAction(
   page: number,
   size: number,
-): Promise<ApiResult<Listing[]>> {
-  return runAction(async () => {
-    const listings = await request<ListingResponse[]>(
-      `/api/listings/pending?page=${page}&size=${size}`,
-    )
-    return listings.map(normalizeListing)
-  })
+): Promise<ApiResult<ListingSummary[]>> {
+  return runAction(async () =>
+    z.array(ListingSummarySchema).parse(
+      await request<unknown>(`/api/listings/pending?page=${page}&size=${size}`),
+    ),
+  )
 }
 
 const FavoriteInputSchema = z.object({ id: z.uuid(), saved: z.boolean() })

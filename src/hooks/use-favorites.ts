@@ -5,12 +5,14 @@ import { useTranslations } from "next-intl"
 import { useNotifications } from "@/components/shared/NotificationProvider"
 import { useApiAction } from "@/hooks/use-api-action"
 import { useApiQuery } from "@/hooks/use-api-query"
-import { listingsApi, type Listing } from "@/lib/api"
+import { listingsApi, type Listing, type ListingSummary } from "@/lib/api"
+
+import { toListingSummary } from "@/lib/listing-summary"
 
 export function useFavorites(enabled = true) {
   const t = useTranslations("favorites")
   const { notify } = useNotifications()
-  const [listings, setListings] = useState<Listing[]>([])
+  const [listings, setListings] = useState<ListingSummary[]>([])
   const saving = useRef(false)
   const query = useApiQuery(listingsApi.favorites, {
     enabled,
@@ -31,7 +33,7 @@ export function useFavorites(enabled = true) {
   })
   const savedIds = listings.map(({ id }) => id)
 
-  async function toggle(listing: Listing) {
+  async function toggle(listing: Listing | ListingSummary) {
     if (
       !enabled ||
       !query.data ||
@@ -48,7 +50,7 @@ export function useFavorites(enabled = true) {
       if (result.success) {
         setListings((current) =>
           save
-            ? [listing, ...current]
+            ? [toListingSummary(listing), ...current]
             : current.filter(({ id }) => id !== listing.id),
         )
       }

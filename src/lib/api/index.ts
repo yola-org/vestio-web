@@ -21,6 +21,7 @@ import type {
   Category,
   City,
   Listing,
+  ListingSummary,
   ListingInput,
   LoginInput,
   SignupInput,
@@ -77,7 +78,7 @@ export const profileApi = {
   ...metadataApi,
 }
 
-export type { Listing }
+export type { Listing, ListingSummary }
 export { callApi } from "@/lib/api/call"
 export type {
   ApiCallOptions,
