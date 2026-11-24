@@ -9,7 +9,13 @@ import {
   setFavoriteAction,
   updateListingAction,
 } from "@/lib/actions/listings"
-import { loginAction, logoutAction, signupAction } from "@/lib/actions/auth"
+import {
+  loginAction,
+  logoutAction,
+  signupAction,
+  forgotPasswordAction,
+  resetPasswordAction,
+} from "@/lib/actions/auth"
 import {
   getPreferencesAction,
   getProfileAction,
@@ -25,6 +31,7 @@ import type {
   ListingInput,
   LoginInput,
   SignupInput,
+  ResetPasswordInput,
   UserPreferencesInput,
   UserProfile,
 } from "@/lib/api/schemas"
@@ -37,6 +44,8 @@ export const authApi = {
   login: (credentials: LoginInput) => loginAction(credentials),
   /** Sign up new user */
   signup: (credentials: SignupInput) => signupAction(credentials),
+  forgotPassword: (email: string) => forgotPasswordAction(email),
+  resetPassword: (input: ResetPasswordInput) => resetPasswordAction(input),
   /** Logout current session */
   logout: () => logoutAction(),
 }

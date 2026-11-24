@@ -17,11 +17,15 @@ import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
   const [signupEmail, setSignupEmail] = useState("")
+  const [signupName, setSignupName] = useState("")
+  const [signupPassword, setSignupPassword] = useState("")
+  const [signupError, setSignupError] = useState("")
   const t = useTranslations()
   const router = useRouter()
   const { notify } = useNotifications()
   const { formAction, pending } = useApiForm(
     (formData) => {
+      setSignupError("")
       const [firstName = "", ...lastName] = String(formData.get("name") ?? "")
         .trim()
         .split(/\s+/)
@@ -35,6 +39,20 @@ export default function RegisterPage() {
     },
     {
       loading: false,
+      errors: {
+        VALIDATION_ERROR: {
+          message: t("auth.invalidFields"),
+          action: (error) => setSignupError(error.message),
+        },
+        VALIDATION_FAILED: {
+          message: t("auth.invalidFields"),
+          action: (error) => setSignupError(error.message),
+        },
+        ERR_EMAIL_ALREADY_ASSOCIATED_WITH_ANOTHER_ACCOUNT: {
+          message: t("auth.register.emailInUse"),
+          action: (error) => setSignupError(error.message),
+        },
+      },
       onSuccess: () => {
         notify.success(t("auth.register.success"))
         router.push("/confirm-email?email=" + encodeURIComponent(signupEmail))
@@ -52,12 +70,19 @@ export default function RegisterPage() {
           </h1>
           <p className="text-black/60 mb-8">{t("auth.register.subtitle")}</p>
 
-          <form className="space-y-5" action={formAction}>
+          <form
+            className="space-y-5"
+            action={formAction}
+            onChange={() => setSignupError("")}
+            aria-describedby={signupError ? "signup-error" : undefined}
+          >
             <Field id="name" label={t("auth.register.fullName")}>
               <Input
                 type="text"
                 id="name"
                 name="name"
+                value={signupName}
+                onChange={(event) => setSignupName(event.target.value)}
                 placeholder={t("auth.register.fullNamePlaceholder")}
               />
             </Field>
@@ -76,10 +101,21 @@ export default function RegisterPage() {
               <PasswordInput
                 id="password"
                 name="password"
+                value={signupPassword}
+                onChange={(event) => setSignupPassword(event.target.value)}
                 autoComplete="new-password"
                 placeholder={t("auth.register.passwordPlaceholder")}
               />
             </Field>
+            {signupError && (
+              <p
+                id="signup-error"
+                role="alert"
+                className="text-sm font-medium text-red-700"
+              >
+                {signupError}
+              </p>
+            )}
             <Button
               type="submit"
               loading={pending}

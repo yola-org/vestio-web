@@ -30,6 +30,8 @@ test.describe("Login", () => {
       "Email ou mot de passe incorrect.",
     )
     await expect(page).toHaveURL("/login")
+    await expect(page.locator("form #login-error")).toBeVisible()
+    await expect(page.locator('[data-toast-kind="error"]')).toHaveCount(0)
   })
 
   test("should login successfully with valid credentials", async ({ page }) => {

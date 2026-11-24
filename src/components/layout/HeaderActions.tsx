@@ -65,8 +65,12 @@ export default function HeaderActions({
         href={authenticated ? "/listings/new" : "/register"}
         className="ms-1 flex h-10 shrink-0 items-center gap-2 rounded-full bg-accent px-4 pt-0.5 text-xs font-bold text-white shadow-sm shadow-accent/15 transition hover:-translate-y-0.5 hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:h-11 lg:px-5 lg:text-sm"
       >
-        <UploadIcon className="hidden size-4 sm:block" />
-        {t("header.sell")}
+        {authenticated ? (
+          <UploadIcon className="hidden size-4 sm:block" />
+        ) : (
+          <UserIcon className="hidden size-4 sm:block" />
+        )}
+        {t(authenticated ? "header.sell" : "header.createAccount")}
       </Link>
       <button
         id="header-mobile-toggle"

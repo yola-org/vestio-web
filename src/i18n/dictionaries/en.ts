@@ -66,6 +66,7 @@ const en: Dictionary = {
     seeMore: "See more",
   },
   header: {
+    createAccount: "Create account",
     banner: "Shop locally • Chat directly • No delivery fees",
     homeAria: "Vestio home",
     allCities: "All cities",
@@ -358,6 +359,33 @@ const en: Dictionary = {
     removeFavorite: "Remove {title} from favorites",
   },
   auth: {
+    invalidFields: "Please check your details and correct the invalid fields.",
+    reset: {
+      emailNotFound: "Your email wasn't found.",
+      forgotLink: "Forgot password?",
+      requestTitle: "Reset your password",
+      requestDescription: "Enter your account email to request a reset PIN.",
+      email: "Email",
+      send: "Send reset PIN",
+      sent: "If an eligible account exists, a reset PIN has been sent. Please wait one minute before requesting another code.",
+      backToLogin: "Back to sign in",
+      title: "Choose a new password",
+      description:
+        "Enter the six-digit PIN from your latest reset email. It expires in 10 minutes.",
+      pin: "Reset PIN",
+      newPassword: "New password",
+      confirmPassword: "Confirm new password",
+      requirements:
+        "Use 12–256 characters with uppercase, lowercase, a number and a symbol, with no spaces.",
+      mismatch: "Passwords must match.",
+      invalid:
+        "Invalid or expired reset PIN. Use the latest reset email or request another PIN.",
+      policyError:
+        "Choose a password that meets the requirements and has not been used recently.",
+      submit: "Reset password",
+      resend: "Send another PIN",
+      success: "Password reset. Sign in with your new password.",
+    },
     showPassword: "Show password",
     hidePassword: "Hide password",
     confirm: {
@@ -385,6 +413,7 @@ const en: Dictionary = {
       join: "Join the Vestio community",
     },
     register: {
+      emailInUse: "This email is already associated with an account. Sign in or reset your password.",
       title: "Welcome!",
       subtitle: "Join Vestio and start keeping style moving in Morocco.",
       fullName: "Full name",

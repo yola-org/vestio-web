@@ -34,7 +34,7 @@ export default function Hero() {
               href="/register"
               className="rounded-full border border-black/20 px-6 py-3.5 text-sm font-bold transition-colors hover:border-[#173fdb] hover:bg-[#173fdb]/5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173fdb]"
             >
-              {t("home.hero.emptyCloset")}
+              {t("header.createAccount")}
             </Link>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-black/10 pt-5 text-[10px] font-bold tracking-wider text-black/60 uppercase sm:text-xs">

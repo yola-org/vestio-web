@@ -3,7 +3,7 @@ import { z } from "zod"
 export const FieldValidationErrorSchema = z.object({
   field: z.string(),
   message: z.string(),
-  rejectedValue: z.unknown(),
+  rejectedValue: z.unknown().optional(),
 })
 
 export const ApiErrorResponseSchema = z.object({
@@ -19,6 +19,25 @@ export const LoginInputSchema = z.object({
   email: z.email().trim(),
   password: z.string().min(1),
 })
+
+export const ForgotPasswordInputSchema = z.object({
+  email: z.string().trim().pipe(z.email()),
+})
+
+export const ResetPasswordInputSchema = ForgotPasswordInputSchema.extend({
+  pin: z.string().regex(/^[0-9]{6}$/),
+  newPassword: z
+    .string()
+    .min(12)
+    .max(256)
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s])\S+$/),
+  confirmPassword: z.string(),
+}).refine((input) => input.newPassword === input.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwords must match",
+})
+
+export type ResetPasswordInput = z.infer<typeof ResetPasswordInputSchema>
 
 export const SignupInputSchema = LoginInputSchema.extend({
   firstName: z.string().trim().min(1),

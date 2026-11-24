@@ -40,6 +40,7 @@ tests/e2e/listings/*
 !tests/e2e/auth/
 tests/e2e/auth/*
 !tests/e2e/auth/confirmation.spec.ts
+!tests/e2e/auth/reset-password.spec.ts
 !tests/e2e/header/
 tests/e2e/header/*
 !tests/e2e/header/language-switcher.spec.ts
