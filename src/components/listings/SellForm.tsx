@@ -30,6 +30,7 @@ import {
   type ListingInput,
   type Listing,
 } from "@/lib/api/schemas"
+import { listingSizeGroup, sizeSystemOptions } from "@/lib/category-sizes"
 import styles from "./SellForm.module.css"
 import { getListingImageUrls } from "@/lib/listing-images"
 
@@ -151,11 +152,12 @@ export default function SellForm({ listing }: { listing?: Listing }) {
   const selectedCategory =
     subcategories.find((category) => category.id === formData.categoryId) ??
     (selectedParent?.id === formData.categoryId ? selectedParent : undefined)
-  const availableSizes =
-    selectedCategory?.sizeGroup?.sizes ??
-    sizesQuery.data?.find((group) => group.id === selectedCategory?.sizeGroupId)
-      ?.sizes ??
-    []
+  const selectedSizeGroup = listingSizeGroup(
+    selectedCategory,
+    sizesQuery.data ?? [],
+  )
+  const availableSizes = selectedSizeGroup?.sizes ?? []
+  const sizeSystems = sizeSystemOptions(availableSizes)
   useEffect(() => {
     if (!listing || !categoriesQuery.data) return
     const category = categoriesQuery.data.find(
@@ -632,23 +634,23 @@ export default function SellForm({ listing }: { listing?: Listing }) {
                       {t("sell.subcategory")}
                       <RequiredMark />
                     </legend>
-                    <div className="flex flex-wrap gap-2">
+                    <NativeSelect
+                      aria-label={t("sell.subcategory")}
+                      value={formData.categoryId}
+                      onChange={(event) =>
+                        changeDetails({
+                          categoryId: event.target.value,
+                          sizeIds: [],
+                        })
+                      }
+                    >
+                      <option value="">{t("sell.chooseSubcategory")}</option>
                       {subcategories.map((category) => (
-                        <Choice
-                          key={category.id}
-                          selected={formData.categoryId === category.id}
-                          onClick={() => {
-                            if (formData.categoryId !== category.id)
-                              changeDetails({
-                                categoryId: category.id,
-                                sizeIds: [],
-                              })
-                          }}
-                        >
+                        <option key={category.id} value={category.id}>
                           {category.name}
-                        </Choice>
+                        </option>
                       ))}
-                    </div>
+                    </NativeSelect>
                   </fieldset>
                 )}
                 {availableSizes.length > 0 && (
@@ -656,24 +658,38 @@ export default function SellForm({ listing }: { listing?: Listing }) {
                     <legend className="mb-3 text-sm font-bold">
                       {t("sell.size")}
                     </legend>
-                    <div className="flex flex-wrap gap-2">
-                      {availableSizes.map((size) => (
-                        <Choice
-                          key={size.id}
-                          selected={
-                            formData.sizeIds?.includes(size.id) ?? false
-                          }
-                          onClick={() =>
-                            changeDetails({
-                              sizeIds: toggleSelection(
-                                formData.sizeIds ?? [],
-                                size.id,
-                              ),
-                            })
-                          }
-                        >
-                          {size.name}
-                        </Choice>
+                    <p className="mb-4 text-sm text-black/60">
+                      {t("sell.sizeHint")}
+                    </p>
+                    <div className="space-y-4">
+                      {sizeSystems.map(({ system, sizes }) => (
+                        <div key={system}>
+                          {sizeSystems.length > 1 && (
+                            <p className="mb-2 text-xs font-bold text-black/60">
+                              {t(`sell.sizeSystems.${system}`)}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap gap-2">
+                            {sizes.map((size) => (
+                              <Choice
+                                key={size.id}
+                                selected={
+                                  formData.sizeIds?.includes(size.id) ?? false
+                                }
+                                onClick={() =>
+                                  changeDetails({
+                                    sizeIds: toggleSelection(
+                                      formData.sizeIds ?? [],
+                                      size.id,
+                                    ),
+                                  })
+                                }
+                              >
+                                {size.name}
+                              </Choice>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </fieldset>

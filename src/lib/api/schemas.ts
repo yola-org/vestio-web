@@ -101,7 +101,7 @@ export interface Category {
   id: string
   name: string
   description?: string | null
-  image?: string
+  image?: string | null
   parentId?: string | null
   sizeGroupId?: string | null
   sizeGroup?: SizeGroup | null
@@ -113,7 +113,7 @@ export const CategorySchema: z.ZodType<Category> = z.lazy(() =>
     id: z.string(),
     name: z.string(),
     description: z.string().nullish(),
-    image: z.string().optional(),
+    image: z.string().nullish(),
     parentId: z.string().nullish(),
     sizeGroupId: z.string().nullish(),
     sizeGroup: SizeGroupSchema.nullish(),
@@ -214,6 +214,7 @@ export const UserProfileSchema = z.object({
   cityId: z.string().nullish(),
   cityName: z.string().nullish(),
   createdAt: z.iso.datetime({ offset: true }).optional(),
+  emailVerified: z.boolean().optional(),
 })
 
 export const paginatedResponseSchema = <T extends z.ZodType>(item: T) =>

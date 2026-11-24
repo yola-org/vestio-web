@@ -599,6 +599,13 @@ async function handle(req, res, pathname, query) {
         tokenType: "Bearer",
       })
 
+    case "POST /api/auth/confirm-email":
+      if (body?.pin !== "012345") return apiError(res, 400, "ERR_INVALID_VERIFICATION_PIN", "Invalid or expired PIN", pathname)
+      return json(res, 200, "Email verified")
+
+    case "POST /api/auth/resend-confirmation":
+      return json(res, 200, "Confirmation sent")
+
     case "POST /api/auth/signup":
       return json(res, 200, "Registration successful")
 

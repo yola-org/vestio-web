@@ -63,7 +63,7 @@ export interface ApiCallOptions<T = unknown> {
   /**
    * Marks the call as critical (must-have / static data). When a critical
    * call fails without a custom handler in `errors`, a severe error
-   * notification is shown and the browser is sent to the `/500` error page.
+   * notification is shown and the browser is sent to the `/error` error page.
    * Non-critical calls only show the default error notification.
    */
   critical?: boolean

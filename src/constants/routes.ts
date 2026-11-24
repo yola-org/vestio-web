@@ -4,7 +4,8 @@ export const PUBLIC_PATHS = [
   "/categories",
   "/login",
   "/register",
-  "/500",
+  "/confirm-email",
+  "/error",
 ]
 
 export function isPublicPath(pathname: string) {

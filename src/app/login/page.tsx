@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { ArrowIcon } from "@/components/shared/Icons"
 import Input from "@/components/shared/forms/Input"
+import PasswordInput from "@/components/shared/forms/PasswordInput"
 import Field from "@/components/shared/forms/Field"
 import Button from "@/components/shared/Button"
 import { authApi } from "@/lib/api"
@@ -32,6 +33,10 @@ export default function LoginPage() {
     {
       loading: false,
       errors: {
+        ERR_EMAIL_NOT_VERIFIED: {
+          action: () =>
+            router.push("/confirm-email?email=" + encodeURIComponent(email)),
+        },
         ERR_UNAUTHORIZED: {
           message: t("auth.login.invalidCredentials"),
           action: (error) => setLoginError(error.message),
@@ -79,8 +84,7 @@ export default function LoginPage() {
               />
             </Field>
             <Field id="password" label={t("auth.register.password")}>
-              <Input
-                type="password"
+              <PasswordInput
                 id="password"
                 name="password"
                 placeholder="••••••••"

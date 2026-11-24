@@ -32,3 +32,33 @@ export function categorySizeGroups(
   }
   return [...selected.values()].filter((group) => group.sizes.length > 0)
 }
+
+/** Selling uses only the selected category's sizes, never its descendants'. */
+export function listingSizeGroup(
+  category: Category | undefined,
+  groups: SizeGroup[],
+) {
+  return (
+    category?.sizeGroup ??
+    groups.find((group) => group.id === category?.sizeGroupId)
+  )
+}
+
+/** Keep sizing systems distinct: EU numbers are not letter-size conversions. */
+export function sizeSystemOptions(sizes: SizeGroup["sizes"]) {
+  const systems =
+    new Map<"international" | "eu" | "waist" | "other", SizeGroup["sizes"]>()
+  for (const size of sizes) {
+    const system = /^EU \d/.test(size.name)
+      ? "eu"
+      : /^W\d/.test(size.name)
+        ? "waist"
+        : /^(X{0,3}S|M|L|X{1,3}L|[4-6]XL)$/.test(size.name)
+          ? "international"
+          : "other"
+    const items = systems.get(system) ?? []
+    items.push(size)
+    systems.set(system, items)
+  }
+  return [...systems].map(([system, sizes]) => ({ system, sizes }))
+}

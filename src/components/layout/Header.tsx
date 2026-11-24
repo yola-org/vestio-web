@@ -250,13 +250,16 @@ export default function Header({
                           <div
                             key={parent.id}
                             className={
-                              index < 5 ? "border-e border-black/10 pe-4" : ""
+                              index < 5
+                                ? "min-w-0 border-e border-black/10 pe-4"
+                                : "min-w-0"
                             }
                           >
                             <Link
                               href={categoryHref(parent.name)}
+                              title={parent.name}
                               onClick={() => setMegaOpen(false)}
-                              className="mb-4 block text-base font-black tracking-tight normal-case text-primary hover:text-deep-accent"
+                              className="mb-4 block truncate text-base font-black tracking-tight normal-case text-primary hover:text-deep-accent"
                             >
                               {parent.name}
                             </Link>
@@ -265,8 +268,9 @@ export default function Header({
                                 <li key={child.id}>
                                   <Link
                                     href={categoryHref(parent.name, child.name)}
+                                    title={child.name}
                                     onClick={() => setMegaOpen(false)}
-                                    className="hover:text-deep-accent hover:underline"
+                                    className="block truncate hover:text-deep-accent hover:underline"
                                   >
                                     {child.name}
                                   </Link>

@@ -2,7 +2,6 @@
 // Helper to handle both mock data and real API Listing
 import { PinIcon, ClockIcon } from "@/components/shared/Icons"
 import FavoriteButton from "@/components/shared/FavoriteButton"
-import ImageLightbox from "@/components/shared/ImageLightbox"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
 import type { Condition, ListingSummary } from "@/lib/api/schemas"
 import { getListingImageUrls } from "@/lib/listing-images"
@@ -40,7 +39,6 @@ export default function ProductCard({
   saveDisabled,
 }: ProductCardProps) {
   const t = useTranslations()
-  const [imageOpen, setImageOpen] = useState(false)
   const [failedImages, setFailedImages] = useState<string[]>([])
   const displaySize =
     "sizeNames" in product
@@ -117,7 +115,7 @@ export default function ProductCard({
       className={
         showFallback
           ? "h-full w-full object-contain"
-          : "h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/image:scale-110 motion-safe:group-focus-visible/image:scale-110"
+          : "h-full w-full object-cover"
       }
     />
   )
@@ -128,19 +126,7 @@ export default function ProductCard({
           showFallback ? "bg-[#e9ecf0]" : "bg-[#e9e4d9]"
         }`}
       >
-        {showFallback ? (
-          cardImage
-        ) : (
-          <button
-            type="button"
-            aria-label={t("productCard.viewImage", { title: product.title })}
-            aria-haspopup="dialog"
-            onClick={() => setImageOpen(true)}
-            className="group/image relative z-[1] block h-full w-full cursor-zoom-in focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-deep-accent"
-          >
-            {cardImage}
-          </button>
-        )}
+        {cardImage}
         {pendingLabel && (
           <span className="pointer-events-none absolute start-3 top-3 z-[2] inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border border-primary/15 bg-sub-accent px-3 py-1.5 text-xs font-bold text-primary shadow-sm">
             <ClockIcon className="size-3.5 shrink-0" aria-hidden="true" />
@@ -232,20 +218,6 @@ export default function ProductCard({
           )}
         </div>
       </div>
-      {imageOpen && !showFallback && image && (
-        <ImageLightbox
-          title={product.title}
-          sources={
-            imageSource
-              ? [
-                  ...getListingImageUrls(imageSource, "original", "flat"),
-                  ...getListingImageUrls(imageSource, "original", "nested"),
-                ]
-              : [image]
-          }
-          onClose={() => setImageOpen(false)}
-        />
-      )}
     </article>
   )
 }

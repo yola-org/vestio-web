@@ -1,4 +1,11 @@
 const fr = {
+  errorPage: {
+    title: "Un petit contretemps",
+    description:
+      "Nous n’avons pas pu charger cette page. Réessayez dans un instant ou revenez à l’accueil.",
+    retry: "Réessayer",
+    home: "Retour à l’accueil",
+  },
   chats: {
     close: "Fermer les messages",
     time: {
@@ -114,6 +121,7 @@ const fr = {
       fees: "0% frais de mise en ligne",
     },
     banner: {
+      eyebrow: "De belles pièces. De nouvelles histoires.",
       alt: "Bannière Vestio",
       titlePrefix: "La mode",
       titleHighlight: "circule",
@@ -212,7 +220,10 @@ const fr = {
     retry: "Réessayer",
   },
   listings: {
-    empty: "Aucun article trouvé.",
+    empty: "Aucune annonce trouvée",
+    emptyDescription:
+      "Soyez la première personne à ajouter un article et offrez-lui une seconde vie.",
+    addProduct: "Ajouter un article",
   },
   listingDetail: {
     updateError: "Impossible d’enregistrer les modifications. Réessayez.",
@@ -260,6 +271,11 @@ const fr = {
     seller: "Vendeur",
     publishedAgo: "Publié {relative}",
     publishedOn: "Publié le {date}",
+    share: "Share",
+    shareWhatsapp: "Share on WhatsApp",
+    shareFacebook: "Share on Facebook",
+    shareEmail: "Share by email",
+    shareMore: "More",
   },
   search: {
     previewTitle: "Aperçu des résultats",
@@ -340,13 +356,29 @@ const fr = {
     },
   },
   productCard: {
-    viewImage: "Agrandir la photo de {title}",
     citySeparator: ", ",
     moreCities: "{count, plural, one {+ # autre} other {+ # autres}}",
     addFavorite: "Ajouter {title} aux favoris",
     removeFavorite: "Retirer {title} des favoris",
   },
   auth: {
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe",
+    confirm: {
+      invalid:
+        "Code invalide ou expiré. Utilisez le dernier e-mail ou demandez un nouveau code.",
+      rateLimited:
+        "Veuillez patienter une minute avant de demander un autre code.",
+      title: "Confirmez votre e-mail",
+      description:
+        "Saisissez le code à six chiffres du dernier e-mail. Il expire dans 10 minutes. Vous pouvez demander un autre code après une minute.",
+      email: "E-mail",
+      pin: "Code de confirmation",
+      submit: "Confirmer",
+      resend: "Renvoyer un code",
+      success: "E-mail confirmé. Vous pouvez vous connecter.",
+      sent: "Si votre compte nécessite une confirmation, un nouveau code a été envoyé.",
+    },
     login: {
       title: "Bon retour !",
       subtitle: "Connectez-vous pour accéder à votre dressing et vos favoris.",
@@ -369,7 +401,7 @@ const fr = {
       passwordPlaceholder: "8 caractères minimum",
       submit: "Créer mon compte",
       success:
-        "Compte créé avec succès. Vous pouvez maintenant vous connecter.",
+        "Compte créé. Consultez votre e-mail pour obtenir le code de confirmation.",
       alreadyMember: "Déjà membre ?",
       loginLink: "Se connecter à mon compte",
     },
@@ -471,6 +503,15 @@ const fr = {
       "Décrivez votre article (matière, état, défauts éventuels...)",
     mainCategory: "Catégorie principale",
     subcategory: "Sous-catégorie",
+    chooseSubcategory: "Choisir un type d’article",
+    sizeHint:
+      "Utilisez la taille indiquée sur l’étiquette. Les tailles EU et les lettres sont des systèmes distincts ; sélectionnez uniquement les tailles disponibles pour cet article.",
+    sizeSystems: {
+      international: "International",
+      eu: "Europe (EU)",
+      waist: "Tour de taille (pouces)",
+      other: "Autres tailles",
+    },
     size: "Taille / Pointure",
     selectSubcategoryFirst: "Sélectionnez d’abord une sous-catégorie",
     noSizes: "Aucune taille disponible pour cette catégorie",
@@ -555,7 +596,7 @@ const fr = {
       "Une erreur réseau est survenue. Veuillez réessayer ou actualiser la page.",
     sessionExpired: "Votre session a expiré. Veuillez vous reconnecter.",
     criticalMessage:
-      "Une erreur critique est survenue. Nos équipes ont été informées.",
+      "Nous n’avons pas pu charger cette page. Veuillez réessayer.",
   },
   loading: {
     message: "Chargement en cours...",
