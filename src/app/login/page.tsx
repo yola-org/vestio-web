@@ -25,14 +25,24 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState("")
 
   const { formAction, pending } = useApiForm(
-    (formData) =>
-      authApi.login({
+    (formData) => {
+      setLoginError("")
+      return authApi.login({
         email: String(formData.get("email") ?? ""),
         password: String(formData.get("password") ?? ""),
-      }),
+      })
+    },
     {
       loading: false,
       errors: {
+        VALIDATION_ERROR: {
+          message: t("auth.invalidFields"),
+          action: (error) => setLoginError(error.message),
+        },
+        VALIDATION_FAILED: {
+          message: t("auth.invalidFields"),
+          action: (error) => setLoginError(error.message),
+        },
         ERR_EMAIL_NOT_VERIFIED: {
           action: () =>
             router.push("/confirm-email?email=" + encodeURIComponent(email)),
@@ -99,6 +109,15 @@ export default function LoginPage() {
                 }}
               />
             </Field>
+            {loginError && (
+              <p
+                id="login-error"
+                role="alert"
+                className="text-sm font-medium text-red-700"
+              >
+                {loginError}
+              </p>
+            )}
             <Button
               type="submit"
               loading={pending}
@@ -106,16 +125,17 @@ export default function LoginPage() {
             >
               {t("auth.login.submit")} <ArrowIcon className="h-5 w-5" />
             </Button>
-          </form>
-          {loginError && (
-            <p
-              id="login-error"
-              role="alert"
-              className="mt-4 text-sm font-medium text-red-700"
+            <Link
+              href={
+                email
+                  ? "/forgot-password?email=" + encodeURIComponent(email)
+                  : "/forgot-password"
+              }
+              className="block text-center text-sm font-bold text-deep-accent hover:underline"
             >
-              {loginError}
-            </p>
-          )}
+              {t("auth.reset.forgotLink")}
+            </Link>
+          </form>
 
           <div className="mt-8 pt-8 border-t border-black/10 text-center">
             <p className="text-sm text-black/60 mb-4">

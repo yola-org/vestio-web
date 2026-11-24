@@ -6,8 +6,15 @@ import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
 import { request } from "@/lib/api/request.ts"
 import { clearAuthCookies, startAuthSession } from "@/lib/api/auth-cookies"
 import { getTranslations } from "next-intl/server"
-import type { JwtResponse, LoginInput, SignupInput } from "@/lib/api/schemas"
+import type {
+  JwtResponse,
+  LoginInput,
+  SignupInput,
+  ResetPasswordInput,
+} from "@/lib/api/schemas"
 import {
+  ForgotPasswordInputSchema,
+  ResetPasswordInputSchema,
   JwtResponseSchema,
   LoginInputSchema,
   SignupInputSchema,
@@ -93,4 +100,41 @@ export async function resendConfirmationAction(
       false,
     ),
   )
+}
+
+export async function forgotPasswordAction(
+  email: string,
+): Promise<ApiResult<string>> {
+  return runAction(() => {
+    const input = parseInput(ForgotPasswordInputSchema, { email })
+    return request<string>(
+      "/api/auth/forgot-password",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      },
+      false,
+    )
+  })
+}
+
+export async function resetPasswordAction(
+  credentials: ResetPasswordInput,
+): Promise<ApiResult<string>> {
+  return runAction(async () => {
+    const { confirmPassword, ...input } = parseInput(
+      ResetPasswordInputSchema,
+      credentials,
+    )
+    const message = await request<string>(
+      "/api/auth/reset-password",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      },
+      false,
+    )
+    clearAuthCookies(await cookies())
+    return message
+  })
 }

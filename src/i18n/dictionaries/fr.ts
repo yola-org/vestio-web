@@ -65,6 +65,7 @@ const fr = {
     seeMore: "Voir plus",
   },
   header: {
+    createAccount: "Créer un compte",
     banner:
       "Achetez près de chez vous • Discutez directement • Aucun frais de livraison",
     homeAria: "Accueil Vestio",
@@ -362,6 +363,36 @@ const fr = {
     removeFavorite: "Retirer {title} des favoris",
   },
   auth: {
+    invalidFields:
+      "Vérifiez vos informations et corrigez les champs invalides.",
+    reset: {
+      emailNotFound: "Votre adresse e-mail est introuvable.",
+      forgotLink: "Mot de passe oublié ?",
+      requestTitle: "Réinitialiser votre mot de passe",
+      requestDescription:
+        "Saisissez l’e-mail de votre compte pour recevoir un code.",
+      email: "E-mail",
+      send: "Envoyer un code",
+      sent: "Si un compte éligible existe, un code a été envoyé. Veuillez attendre une minute avant de demander un autre code.",
+      backToLogin: "Retour à la connexion",
+      title: "Choisissez un nouveau mot de passe",
+      description:
+        "Saisissez le code à six chiffres du dernier e-mail de réinitialisation. Il expire dans 10 minutes.",
+      pin: "Code de réinitialisation",
+      newPassword: "Nouveau mot de passe",
+      confirmPassword: "Confirmer le nouveau mot de passe",
+      requirements:
+        "Utilisez 12 à 256 caractères avec une majuscule, une minuscule, un chiffre et un symbole, sans espaces.",
+      mismatch: "Les mots de passe doivent être identiques.",
+      invalid:
+        "Code de réinitialisation invalide ou expiré. Utilisez le dernier e-mail ou demandez un autre code.",
+      policyError:
+        "Choisissez un mot de passe conforme aux critères et non utilisé récemment.",
+      submit: "Réinitialiser le mot de passe",
+      resend: "Renvoyer un code",
+      success:
+        "Mot de passe réinitialisé. Connectez-vous avec votre nouveau mot de passe.",
+    },
     showPassword: "Afficher le mot de passe",
     hidePassword: "Masquer le mot de passe",
     confirm: {
@@ -390,6 +421,8 @@ const fr = {
       join: "Rejoindre la communauté Vestio",
     },
     register: {
+      emailInUse:
+        "Cette adresse e-mail est déjà associée à un compte. Connectez-vous ou réinitialisez votre mot de passe.",
       title: "Bienvenue !",
       subtitle:
         "Rejoignez Vestio et commencez à faire circuler le style au Maroc.",

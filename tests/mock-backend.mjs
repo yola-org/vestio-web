@@ -19,6 +19,11 @@ const testUser = {
   password: "Password123!",
 }
 
+// Isolated synthetic accounts keep password-reset scenarios from mutating the shared login fixture.
+const authAccounts = new Map()
+const resetPins = new Map()
+let resetPinSequence = 800000
+
 const cities = [
   { id: "1", name: "Casablanca" },
   { id: "2", name: "Rabat" },
@@ -560,9 +565,11 @@ async function handle(req, res, pathname, query) {
       return json(res, 200, { ok: true })
 
     case "POST /api/auth/login": {
+      if (body?.email === "service-error@example.com") return apiError(res, 500, "ERR_INTERNAL_SERVER_ERROR", "Provider unavailable", pathname)
+      const account = authAccounts.get(body?.email?.toLowerCase())
       if (
-        body?.email === testUser.email &&
-        body?.password === testUser.password
+        (body?.email === testUser.email && body?.password === testUser.password) ||
+        (account?.verified && body?.password === account.password)
       ) {
         return json(res, 200, {
           accessToken: "mock-access-token",
@@ -601,13 +608,61 @@ async function handle(req, res, pathname, query) {
 
     case "POST /api/auth/confirm-email":
       if (body?.pin !== "012345") return apiError(res, 400, "ERR_INVALID_VERIFICATION_PIN", "Invalid or expired PIN", pathname)
+      if (authAccounts.has(body?.email?.toLowerCase())) authAccounts.get(body.email.toLowerCase()).verified = true
       return json(res, 200, "Email verified")
 
     case "POST /api/auth/resend-confirmation":
       return json(res, 200, "Confirmation sent")
 
-    case "POST /api/auth/signup":
+    case "POST /api/auth/signup": {
+      if (body?.email === "service-error@example.com") return apiError(res, 500, "ERR_INTERNAL_SERVER_ERROR", "Provider unavailable", pathname)
+      const email = body.email.trim().toLowerCase()
+      if (authAccounts.has(email) || email === testUser.email) {
+        return apiError(res, 400, "ERR_EMAIL_ALREADY_ASSOCIATED_WITH_ANOTHER_ACCOUNT", "This email is already associated with an account.", pathname)
+      }
+      authAccounts.set(email, { password: body.password, verified: false })
       return json(res, 200, "Registration successful")
+    }
+
+    case "GET /__test/password-reset":
+      return json(res, 200, resetPins.get(query.get("email")) ?? null)
+
+    case "PUT /__test/password-reset": {
+      const pin = resetPins.get(query.get("email"))
+      if (pin) {
+        pin.createdAt = Date.now() - 61000
+        if (body?.expired) pin.expiresAt = Date.now() - 1
+      }
+      return json(res, 200, { ok: true })
+    }
+
+    case "POST /api/auth/forgot-password": {
+      const email = body?.email?.trim().toLowerCase()
+      const account = authAccounts.get(email) ?? (email === testUser.email ? { verified: true, password: testUser.password } : undefined)
+      if (!account) return apiError(res, 400, "ERR_EMAIL_NOT_FOUND", "Your email wasn't found.", pathname)
+      const previous = resetPins.get(email)
+      if (account?.verified && (!previous || previous.createdAt + 60000 <= Date.now())) {
+        resetPins.set(email, { pin: String(++resetPinSequence), createdAt: Date.now(), expiresAt: Date.now() + 600000, attempts: 0 })
+      }
+      return json(res, 200, "If an eligible account exists, a password reset PIN has been sent.")
+    }
+
+    case "POST /api/auth/reset-password": {
+      const email = body?.email?.trim().toLowerCase()
+      if (!authAccounts.has(email) && email !== testUser.email) return apiError(res, 400, "ERR_EMAIL_NOT_FOUND", "Your email wasn't found.", pathname)
+      const pin = resetPins.get(email)
+      if (!pin || pin.expiresAt <= Date.now() || pin.attempts >= 5 || body?.pin !== pin.pin) {
+        if (pin) pin.attempts++
+        return apiError(res, 400, "ERR_INVALID_RESET_PIN", "Invalid or expired reset PIN", pathname)
+      }
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s])\S{12,256}$/.test(body?.newPassword ?? "")) {
+        return apiError(res, 400, "ERR_PASSWORD_POLICY", "Invalid password", pathname)
+      }
+      if (authAccounts.has(email)) authAccounts.get(email).password = body.newPassword
+      else testUser.password = body.newPassword
+      resetPins.delete(email)
+      return json(res, 200, "Password reset. Please sign in with your new password.")
+    }
 
     case "GET /api/profile":
       if (
