@@ -14,7 +14,7 @@ import { conditions, contactTypes } from "@/constants/data"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { profileApi } from "@/lib/api"
 import { findCategoryPath, findCategoryPathBySlug } from "@/lib/category-utils"
-import { categorySizeGroups } from "@/lib/category-sizes"
+import { categorySizeGroups, sizeSystemOptions } from "@/lib/category-sizes"
 
 const colorOptions = [
   { value: "Black", swatch: "#171717", label: "black" },
@@ -214,13 +214,19 @@ export default function FilterPanel({
           <MultiSelect
             name="sizeIds"
             label={t("filters.size")}
-            options={sizeGroups.map((group) => ({
-              label: group.name,
-              options: group.sizes.map((size) => ({
-                value: size.id,
-                label: size.name,
-              })),
-            }))}
+            options={sizeGroups.flatMap((group) => {
+              const systems = sizeSystemOptions(group.sizes)
+              return systems.map(({ system, sizes }) => ({
+                label:
+                  systems.length > 1
+                    ? `${group.name} · ${t(`sell.sizeSystems.${system}`)}`
+                    : group.name,
+                options: sizes.map((size) => ({
+                  value: size.id,
+                  label: size.name,
+                })),
+              }))
+            })}
             value={
               data
                 ? sizeIds.filter((id) =>

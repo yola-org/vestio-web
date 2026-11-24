@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { cookies } from "next/headers"
 import { runAction, type ApiResult } from "@/lib/api/action-result.ts"
 import { request } from "@/lib/api/request.ts"
@@ -56,4 +57,40 @@ export async function logoutAction(): Promise<ApiResult<null>> {
     clearAuthCookies(await cookies())
     return null
   })
+}
+
+export async function confirmEmailAction(
+  email: string,
+  pin: string,
+): Promise<ApiResult<string>> {
+  return runAction(() =>
+    request<string>(
+      "/api/auth/confirm-email",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: parseInput(LoginInputSchema.shape.email, email),
+          pin: parseInput(z.string().regex(/^[0-9]{6}$/), pin),
+        }),
+      },
+      false,
+    ),
+  )
+}
+
+export async function resendConfirmationAction(
+  email: string,
+): Promise<ApiResult<string>> {
+  return runAction(() =>
+    request<string>(
+      "/api/auth/resend-confirmation",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: parseInput(LoginInputSchema.shape.email, email),
+        }),
+      },
+      false,
+    ),
+  )
 }

@@ -18,7 +18,7 @@
  * ```ts
  * const { data: categories, loading } = useApiQuery(
  *   profileApi.getCategories,
- *   { critical: true, loading: false } // must-have data: failure shows a severe error and goes to /500
+ *   { critical: true, loading: false } // must-have data: failure shows a severe error and goes to /error
  * );
  *
  * const { data: listings, loading } = useApiQuery(

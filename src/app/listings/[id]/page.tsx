@@ -24,6 +24,7 @@ import { getCategoriesAction } from "@/lib/actions/profile"
 import { ContactTypeSchema } from "@/lib/api/schemas"
 import { categoryHref, findCategoryPath } from "@/lib/category-utils"
 import { getListingImageUrls } from "@/lib/listing-images"
+import ListingShare from "@/components/listings/ListingShare"
 
 export default async function ListingPage({
   params,
@@ -160,6 +161,8 @@ export default async function ListingPage({
                 authenticated={authenticated}
               />
             </div>
+
+            <ListingShare key={listing.id} title={listing.title} />
 
             {(listing.sellerFirstName || listing.sellerLastName) && (
               <div className="mt-4 flex items-center gap-2 border-t border-black/10 pt-4">

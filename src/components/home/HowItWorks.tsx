@@ -1,11 +1,10 @@
 "use client"
 
-import {
-  CameraIcon,
-  MessageIcon,
-  PinIcon,
-  ArrowIcon,
-} from "@/components/shared/Icons"
+import Image from "next/image"
+import { ArrowIcon } from "@/components/shared/Icons"
+import sellIllustration from "../../../public/sell-your-finds-illustration.png"
+import chatIllustration from "../../../public/chat-illustration.png"
+import completeIllustration from "../../../public/complete-sell-illustration.png"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 
@@ -17,22 +16,19 @@ export default function HowItWorks() {
       number: "01",
       title: t("home.how.step1Title"),
       body: t("home.how.step1Body"),
-      icon: <CameraIcon className="h-10 w-10" />,
-      color: "bg-background",
+      image: sellIllustration,
     },
     {
       number: "02",
       title: t("home.how.step2Title"),
       body: t("home.how.step2Body"),
-      icon: <MessageIcon className="h-10 w-10" />,
-      color: "bg-[#e8f0fe]",
+      image: chatIllustration,
     },
     {
       number: "03",
       title: t("home.how.step3Title"),
       body: t("home.how.step3Body"),
-      icon: <PinIcon className="h-10 w-10" />,
-      color: "bg-[#f0fdf4]",
+      image: completeIllustration,
     },
   ]
 
@@ -65,19 +61,24 @@ export default function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="group relative overflow-hidden border-b border-black/10 py-12 md:border-b-0 md:border-e md:px-10 md:first:ps-0 md:last:border-e-0"
+              className="group relative border-b border-black/10 py-12 md:border-b-0 md:border-e md:px-10 md:first:ps-0 md:last:border-e-0"
             >
-              <div className="mb-20 flex items-start justify-between">
-                <span className="text-4xl font-black italic tracking-tighter text-black/5">
-                  {step.number}
-                </span>
-                <div
-                  className={`rounded-2xl ${step.color} p-5 text-deep-accent transition-transform duration-500 group-hover:scale-110`}
-                >
-                  {step.icon}
-                </div>
+              <span className="text-xs font-black tracking-[0.2em] text-deep-accent">
+                {step.number}
+              </span>
+              <div
+                aria-hidden="true"
+                className="relative mx-auto my-5 h-72 w-full max-w-sm overflow-hidden"
+              >
+                <Image
+                  src={step.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1280px) 384px, (min-width: 768px) 30vw, 90vw"
+                  className="scale-125 object-contain"
+                />
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-primary">
+              <h3 className="text-2xl font-black tracking-tight text-primary rtl:tracking-normal">
                 {step.title}
               </h3>
               <p className="mt-4 text-base leading-7 text-black/50">

@@ -1,6 +1,13 @@
 import type { Dictionary } from "."
 
 const en: Dictionary = {
+  errorPage: {
+    title: "A little hiccup",
+    description:
+      "We couldn’t load this page. Try again in a moment, or head back home.",
+    retry: "Try again",
+    home: "Back to home",
+  },
   chats: {
     close: "Close messages",
     time: {
@@ -114,6 +121,7 @@ const en: Dictionary = {
       fees: "0% listing fees",
     },
     banner: {
+      eyebrow: "Good finds. New stories.",
       alt: "Vestio banner",
       titlePrefix: "Keep fashion",
       titleHighlight: "moving",
@@ -210,7 +218,9 @@ const en: Dictionary = {
     retry: "Try again",
   },
   listings: {
-    empty: "No items found.",
+    empty: "No listings found",
+    emptyDescription: "Be the first to add a product and give it a new home.",
+    addProduct: "Add a product",
   },
   listingDetail: {
     updateError: "Unable to save your changes. Try again.",
@@ -257,6 +267,11 @@ const en: Dictionary = {
     seller: "Seller",
     publishedAgo: "Published {relative}",
     publishedOn: "Published on {date}",
+    share: "Share",
+    shareWhatsapp: "Share on WhatsApp",
+    shareFacebook: "Share on Facebook",
+    shareEmail: "Share by email",
+    shareMore: "More",
   },
   search: {
     previewTitle: "Results preview",
@@ -337,13 +352,28 @@ const en: Dictionary = {
     },
   },
   productCard: {
-    viewImage: "View image of {title}",
     citySeparator: ", ",
     moreCities: "{count, plural, one {+ # more} other {+ # more}}",
     addFavorite: "Add {title} to favorites",
     removeFavorite: "Remove {title} from favorites",
   },
   auth: {
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    confirm: {
+      invalid:
+        "Invalid or expired PIN. Use the latest email or request a new PIN.",
+      rateLimited: "Please wait one minute before requesting another PIN.",
+      title: "Confirm your email",
+      description:
+        "Enter the six-digit PIN from your latest email. It expires in 10 minutes. You can request another code after one minute.",
+      email: "Email",
+      pin: "Confirmation PIN",
+      submit: "Confirm email",
+      resend: "Send another PIN",
+      success: "Email verified. You can now sign in.",
+      sent: "If your account needs verification, a new PIN has been sent.",
+    },
     login: {
       title: "Welcome back!",
       subtitle: "Sign in to access your wardrobe and favorites.",
@@ -364,7 +394,7 @@ const en: Dictionary = {
       password: "Password",
       passwordPlaceholder: "At least 8 characters",
       submit: "Create my account",
-      success: "Account created successfully. You can now sign in.",
+      success: "Account created. Check your email for your confirmation PIN.",
       alreadyMember: "Already a member?",
       loginLink: "Sign in to my account",
     },
@@ -463,6 +493,15 @@ const en: Dictionary = {
       "Describe your item (material, condition, any flaws...)",
     mainCategory: "Main category",
     subcategory: "Subcategory",
+    chooseSubcategory: "Choose an item type",
+    sizeHint:
+      "Use the size on the label. EU and letter sizes are separate systems; select only the sizes available for this item.",
+    sizeSystems: {
+      international: "International",
+      eu: "European (EU)",
+      waist: "Waist (inches)",
+      other: "Other sizes",
+    },
     size: "Clothing / Shoe size",
     selectSubcategoryFirst: "Select a subcategory first",
     noSizes: "No sizes available for this category",
@@ -542,7 +581,7 @@ const en: Dictionary = {
     networkError:
       "A network error occurred. Please try again or refresh the page.",
     sessionExpired: "Your session has expired. Please sign in again.",
-    criticalMessage: "A critical error occurred. Our team has been notified.",
+    criticalMessage: "We couldn’t load this page. Please try again.",
   },
   loading: {
     message: "Loading...",

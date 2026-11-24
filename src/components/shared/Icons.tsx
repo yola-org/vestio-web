@@ -168,3 +168,16 @@ export const BellIcon = (props: IconProps) => (
     <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
   </Icon>
 )
+
+export const EyeIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </Icon>
+)
+
+export const EyeOffIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="m3 3 18 18M10.6 5.1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 4.1M6.1 6.1A18 18 0 0 0 2 12s3.5 7 10 7a12 12 0 0 0 5.9-1.9M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+  </Icon>
+)

@@ -35,8 +35,11 @@ export default function CategoryGrid() {
   }, [emblaApi])
 
   return (
-    <section className="py-20 main-container" id="shop">
-      <div className="mb-10 flex items-end justify-between">
+    <section
+      className="main-container -mt-16 pt-6 pb-20 sm:-mt-32 sm:pt-8"
+      id="shop"
+    >
+      <div className="mb-6 flex items-end justify-between sm:mb-8">
         <div>
           <p className="mb-2 text-xs font-black tracking-[0.16em] text-accent uppercase">
             {t("home.categories.eyebrow")}

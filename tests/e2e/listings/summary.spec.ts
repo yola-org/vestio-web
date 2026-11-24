@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 for (const legacyThumbnail of [false, true]) {
-  test(`cards open the largest rendition with ${
+  test(`card images open the listing page with ${
     legacyThumbnail ? "legacy" : "current"
   } thumbnails`, async ({ page, request }) => {
     const title = `Summary cover ${
@@ -52,72 +52,55 @@ for (const legacyThumbnail of [false, true]) {
       ])
       await page.goto(`/search?query=${encodeURIComponent(title)}`)
       const cover = page.getByRole("img", { name: title, exact: true })
-      await expect(cover).toHaveAttribute(
-        "src",
-        new RegExp(
-          `${first}${
-            legacyThumbnail ? "/original-thumbnail" : "_thumbnail"
-          }[.]webp$`,
-        ),
-      )
-      await expect(cover).toHaveAttribute(
-        "srcset",
-        new RegExp(
-          `${first}${
-            legacyThumbnail ? "/original-thumbnail-mobile" : "_thumbnail_mobile"
-          }[.]webp`,
-        ),
-      )
-      await cover.hover()
-      await expect
-        .poll(() =>
-          cover.evaluate(
-            (image) => Number.parseFloat(getComputedStyle(image).scale) || 1,
+      const waitForCover = async () => {
+        await expect(cover).toHaveAttribute(
+          "src",
+          new RegExp(
+            `${first}${
+              legacyThumbnail ? "/original-thumbnail" : "_thumbnail"
+            }[.]webp$`,
           ),
         )
-        .toBeGreaterThan(1.05)
-      const preview = page.getByRole("button", {
-        name: `View image of ${title}`,
-        exact: true,
-      })
-      await preview.click()
-      const dialog = page.getByRole("dialog", { name: title, exact: true })
-      await expect(dialog).toBeVisible()
-      await expect(
-        dialog.getByRole("img", { name: title, exact: true }),
-      ).toHaveAttribute("src", new RegExp(`${first}\\.webp$`))
-      expect((await dialog.boundingBox())!.width).toBeGreaterThanOrEqual(
-        page.viewportSize()!.width - 2,
+        await expect(cover).toHaveAttribute(
+          "srcset",
+          new RegExp(
+            `${first}${
+              legacyThumbnail
+                ? "/original-thumbnail-mobile"
+                : "_thumbnail_mobile"
+            }[.]webp`,
+          ),
+        )
+        await expect(cover).toHaveJSProperty("complete", true)
+        await expect(cover).not.toHaveJSProperty("naturalWidth", 0)
+      }
+      await waitForCover()
+      await cover.scrollIntoViewIfNeeded()
+      const desktopImage = (await cover.boundingBox())!
+      await page.mouse.move(
+        desktopImage.x + desktopImage.width / 2,
+        desktopImage.y + desktopImage.height / 2,
       )
-      await expect
-        .poll(() => page.evaluate(() => document.body.style.overflow))
-        .toBe("hidden")
-      await page.screenshot({
-        path: "/tmp/vestio-card-image-modal-desktop.png",
-      })
-      await dialog.getByRole("button", { name: "Close", exact: true }).click()
-      await expect(dialog).toHaveCount(0)
-      await expect(preview).toBeFocused()
-      await expect
-        .poll(() => page.evaluate(() => document.body.style.overflow))
-        .toBe("")
-      await preview.press("Enter")
-      await expect(dialog).toBeVisible()
-      await page.keyboard.press("Escape")
-      await expect(dialog).toHaveCount(0)
-      await expect(preview).toBeFocused()
+      await expect(cover).toHaveCSS("scale", "none")
+      await page.mouse.click(
+        desktopImage.x + desktopImage.width / 2,
+        desktopImage.y + desktopImage.height / 2,
+      )
+      await expect(page).toHaveURL(`/listings/${id}`)
+      await expect(page.getByRole("dialog")).toHaveCount(0)
+      await expect(page.getByText(description, { exact: true })).toBeVisible()
 
       await page.setViewportSize({ width: 390, height: 844 })
-      await preview.click()
-      await expect(dialog).toBeVisible()
-      expect((await dialog.boundingBox())!.width).toBeGreaterThanOrEqual(388)
-      await page.screenshot({ path: "/tmp/vestio-card-image-modal-mobile.png" })
-      await page.keyboard.press("Escape")
-      await expect(dialog).toHaveCount(0)
-      await page.emulateMedia({ reducedMotion: "reduce" })
-      await cover.hover()
-      await expect(cover).toHaveCSS("scale", "none")
-      await page.getByRole("link", { name: title, exact: true }).click()
+      await page.goto(`/search?query=${encodeURIComponent(title)}`)
+      await waitForCover()
+      await cover.scrollIntoViewIfNeeded()
+      const mobileImage = (await cover.boundingBox())!
+      await page.mouse.click(
+        mobileImage.x + mobileImage.width / 2,
+        mobileImage.y + mobileImage.height / 2,
+      )
+      await expect(page).toHaveURL(`/listings/${id}`)
+      await expect(page.getByRole("dialog")).toHaveCount(0)
       await expect(page.getByText(description, { exact: true })).toBeVisible()
       const detail = await (
         await request.get(`http://localhost:8081/api/listings/${id}`)

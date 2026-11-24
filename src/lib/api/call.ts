@@ -43,7 +43,7 @@ function messageFor(error: ApiError, config?: ApiErrorConfig): ApiError {
  * - 401: clears local auth state and notifies listeners; if the user was
  *   logged in, an error notification asks them to log in again
  * - dispatches an error notification (unless a custom handler exists):
- *   - `critical: true` calls navigate to the `/500` error page afterwards
+ *   - `critical: true` calls navigate to the `/error` error page afterwards
  * - logs unhandled errors
  *
  * @example
@@ -127,13 +127,15 @@ export async function callApi<T>(
         )
       }
     } else if (options.critical) {
-      // Must-have data failed: severe notification, then head to the 500 page.
+      // Must-have data failed: severe notification, then open the recovery page.
       window.dispatchEvent(
         new CustomEvent("vestio:notification", {
           detail: { type: "error", key: "errors.criticalMessage" },
         }),
       )
-      window.location.replace("/500")
+      const returnTo =
+        window.location.pathname + window.location.search + window.location.hash
+      window.location.replace(`/error?${new URLSearchParams({ returnTo })}`)
     } else {
       window.dispatchEvent(
         new CustomEvent("vestio:notification", {

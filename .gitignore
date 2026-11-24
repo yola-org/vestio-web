@@ -35,3 +35,14 @@ tests/e2e/*
 !tests/e2e/listings/
 tests/e2e/listings/*
 !tests/e2e/listings/summary.spec.ts
+
+# Keep authentication, metadata, and translation regressions in source control.
+!tests/e2e/auth/
+tests/e2e/auth/*
+!tests/e2e/auth/confirmation.spec.ts
+!tests/e2e/header/
+tests/e2e/header/*
+!tests/e2e/header/language-switcher.spec.ts
+!tests/e2e/home/
+tests/e2e/home/*
+!tests/e2e/home/metadata.spec.ts

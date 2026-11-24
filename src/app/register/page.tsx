@@ -1,10 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { ArrowIcon } from "@/components/shared/Icons"
 import Input from "@/components/shared/forms/Input"
+import PasswordInput from "@/components/shared/forms/PasswordInput"
 import Field from "@/components/shared/forms/Field"
 import Button from "@/components/shared/Button"
 import { authApi } from "@/lib/api"
@@ -14,6 +16,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
+  const [signupEmail, setSignupEmail] = useState("")
   const t = useTranslations()
   const router = useRouter()
   const { notify } = useNotifications()
@@ -34,7 +37,7 @@ export default function RegisterPage() {
       loading: false,
       onSuccess: () => {
         notify.success(t("auth.register.success"))
-        router.push("/login")
+        router.push("/confirm-email?email=" + encodeURIComponent(signupEmail))
       },
     },
   )
@@ -63,14 +66,17 @@ export default function RegisterPage() {
                 type="email"
                 id="email"
                 name="email"
+                required
+                value={signupEmail}
+                onChange={(event) => setSignupEmail(event.target.value)}
                 placeholder={t("auth.register.emailPlaceholder")}
               />
             </Field>
             <Field id="password" label={t("auth.register.password")}>
-              <Input
-                type="password"
+              <PasswordInput
                 id="password"
                 name="password"
+                autoComplete="new-password"
                 placeholder={t("auth.register.passwordPlaceholder")}
               />
             </Field>

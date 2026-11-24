@@ -1,6 +1,13 @@
 import type { Dictionary } from "./index"
 
 const ar: Dictionary = {
+  errorPage: {
+    title: "عطل بسيط",
+    description:
+      "تعذّر تحميل هذه الصفحة. حاول مرة أخرى بعد قليل، أو عُد إلى الصفحة الرئيسية.",
+    retry: "حاول مرة أخرى",
+    home: "العودة إلى الرئيسية",
+  },
   chats: {
     close: "إغلاق الرسائل",
     time: {
@@ -113,6 +120,7 @@ const ar: Dictionary = {
       fees: "0% رسوم نشر",
     },
     banner: {
+      eyebrow: "قطع مميزة. حكايات جديدة.",
       alt: "لافتة فيستيو",
       titlePrefix: "الموضة",
       titleHighlight: "تتنقل",
@@ -208,7 +216,9 @@ const ar: Dictionary = {
     retry: "إعادة المحاولة",
   },
   listings: {
-    empty: "لم يتم العثور على أي قطعة.",
+    empty: "لم يتم العثور على أي إعلانات",
+    emptyDescription: "كن أول من يضيف منتجًا ويمنحه فرصة جديدة.",
+    addProduct: "أضف منتجًا",
   },
   listingDetail: {
     updateError: "تعذر حفظ التغييرات. حاول مجددًا.",
@@ -253,6 +263,11 @@ const ar: Dictionary = {
     seller: "البائع",
     publishedAgo: "نُشر {relative}",
     publishedOn: "نُشر في {date}",
+    share: "مشاركة",
+    shareWhatsapp: "المشاركة عبر واتساب",
+    shareFacebook: "المشاركة على فيسبوك",
+    shareEmail: "المشاركة عبر البريد الإلكتروني",
+    shareMore: "المزيد",
   },
   search: {
     previewTitle: "معاينة النتائج",
@@ -332,7 +347,6 @@ const ar: Dictionary = {
     },
   },
   productCard: {
-    viewImage: "عرض صورة {title}",
     citySeparator: "، ",
     moreCities:
       "{count, plural, one {+ مدينة أخرى} two {+ مدينتان أخريان} few {+ # مدن أخرى} other {+ # مدينة أخرى}}",
@@ -340,6 +354,22 @@ const ar: Dictionary = {
     removeFavorite: "أزل {title} من المفضلة",
   },
   auth: {
+    showPassword: "إظهار كلمة المرور",
+    hidePassword: "إخفاء كلمة المرور",
+    confirm: {
+      invalid:
+        "الرمز غير صالح أو منتهي الصلاحية. استخدم أحدث رسالة أو اطلب رمزًا جديدًا.",
+      rateLimited: "يرجى الانتظار دقيقة قبل طلب رمز آخر.",
+      title: "تأكيد البريد الإلكتروني",
+      description:
+        "أدخل الرمز المكون من ستة أرقام من أحدث رسالة. تنتهي صلاحيته بعد 10 دقائق. يمكنك طلب رمز آخر بعد دقيقة.",
+      email: "البريد الإلكتروني",
+      pin: "رمز التأكيد",
+      submit: "تأكيد البريد",
+      resend: "إرسال رمز آخر",
+      success: "تم تأكيد البريد. يمكنك الآن تسجيل الدخول.",
+      sent: "إذا كان حسابك يحتاج إلى تأكيد، فقد تم إرسال رمز جديد.",
+    },
     login: {
       title: "مرحباً بعودتك!",
       subtitle: "سجّل الدخول للوصول إلى خزانتك ومفضلاتك.",
@@ -360,7 +390,7 @@ const ar: Dictionary = {
       password: "كلمة المرور",
       passwordPlaceholder: "8 أحرف على الأقل",
       submit: "إنشاء حسابي",
-      success: "تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.",
+      success: "تم إنشاء الحساب. تحقق من بريدك للحصول على رمز التأكيد.",
       alreadyMember: "عضو بالفعل؟",
       loginLink: "تسجيل الدخول إلى حسابي",
     },
@@ -456,6 +486,15 @@ const ar: Dictionary = {
     descriptionPlaceholder: "صف قطعتك (المادة، الحالة، العيوب المحتملة...)",
     mainCategory: "الفئة الرئيسية",
     subcategory: "الفئة الفرعية",
+    chooseSubcategory: "اختر نوع القطعة",
+    sizeHint:
+      "اختر المقاس المكتوب على الملصق. المقاسات الأوروبية والحروف أنظمة مختلفة؛ حدد فقط المقاسات المتوفرة لهذه القطعة.",
+    sizeSystems: {
+      international: "دولي",
+      eu: "أوروبي (EU)",
+      waist: "محيط الخصر (بوصة)",
+      other: "مقاسات أخرى",
+    },
     size: "المقاس / رقم الحذاء",
     selectSubcategoryFirst: "اختر الفئة الفرعية أولاً",
     noSizes: "لا توجد مقاسات متاحة لهذه الفئة",
@@ -534,7 +573,7 @@ const ar: Dictionary = {
     backHome: "العودة إلى الرئيسية",
     networkError: "حدث خطأ في الشبكة. يرجى المحاولة مرة أخرى أو تحديث الصفحة.",
     sessionExpired: "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
-    criticalMessage: "حدث خطأ حرج. تم إبلاغ فريقنا التقني.",
+    criticalMessage: "تعذّر تحميل هذه الصفحة. يُرجى المحاولة مرة أخرى.",
   },
   loading: {
     message: "جارٍ التحميل...",
