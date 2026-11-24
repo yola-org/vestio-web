@@ -413,7 +413,8 @@ const en: Dictionary = {
       join: "Join the Vestio community",
     },
     register: {
-      emailInUse: "This email is already associated with an account. Sign in or reset your password.",
+      emailInUse:
+        "This email is already associated with an account. Sign in or reset your password.",
       title: "Welcome!",
       subtitle: "Join Vestio and start keeping style moving in Morocco.",
       fullName: "Full name",

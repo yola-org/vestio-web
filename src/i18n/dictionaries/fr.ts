@@ -363,7 +363,8 @@ const fr = {
     removeFavorite: "Retirer {title} des favoris",
   },
   auth: {
-    invalidFields: "Vérifiez vos informations et corrigez les champs invalides.",
+    invalidFields:
+      "Vérifiez vos informations et corrigez les champs invalides.",
     reset: {
       emailNotFound: "Votre adresse e-mail est introuvable.",
       forgotLink: "Mot de passe oublié ?",
@@ -420,7 +421,8 @@ const fr = {
       join: "Rejoindre la communauté Vestio",
     },
     register: {
-      emailInUse: "Cette adresse e-mail est déjà associée à un compte. Connectez-vous ou réinitialisez votre mot de passe.",
+      emailInUse:
+        "Cette adresse e-mail est déjà associée à un compte. Connectez-vous ou réinitialisez votre mot de passe.",
       title: "Bienvenue !",
       subtitle:
         "Rejoignez Vestio et commencez à faire circuler le style au Maroc.",

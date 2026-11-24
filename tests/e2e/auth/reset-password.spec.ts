@@ -140,16 +140,14 @@ for (const [locale, messages] of Object.entries({ en, fr, ar })) {
     request,
   }) => {
     const email = `missing-${randomUUID()}@example.com`
-    await page
-      .context()
-      .addCookies([
-        {
-          name: "vestio_locale",
-          value: locale,
-          domain: "localhost",
-          path: "/",
-        },
-      ])
+    await page.context().addCookies([
+      {
+        name: "vestio_locale",
+        value: locale,
+        domain: "localhost",
+        path: "/",
+      },
+    ])
     await page.goto("/forgot-password")
     await page
       .getByLabel(messages.auth.reset.email, { exact: true })
