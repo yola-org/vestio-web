@@ -60,6 +60,8 @@ const fr = {
     loading: "Chargement...",
     previous: "Précédent",
     next: "Suivant",
+    pagination: "Pagination",
+    pageNumber: "Page {current}",
     pagePrevious: "Page précédente",
     pageNext: "Page suivante",
     seeMore: "Voir plus",

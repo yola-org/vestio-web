@@ -55,7 +55,7 @@ export default function HeaderSearch({
         if (active) {
           setPreview({
             key: previewKey,
-            listings: result.success ? result.data : null,
+            listings: result.success ? result.data.items : null,
           })
         }
       } catch {

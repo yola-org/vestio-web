@@ -76,12 +76,10 @@ test("searches from the mobile menu with a city", async ({ page }) => {
   expect(new URL(page.url()).searchParams.get("cityIds")).toBe("2")
 })
 
-test("keeps a previous page link when a shared page has no results", async ({
+test("returns to the last valid page when a shared page has no results", async ({
   page,
 }) => {
   await page.goto("/search?query=cuir+vintage&page=1")
-  await expect(page.getByRole("main").filter({ visible: true }).getByRole("heading", { name: "Aucune annonce trouvée", exact: true })).toBeVisible()
-  await page.getByRole("link", { name: "Page précédente" }).click()
   await expect(
     page.getByRole("heading", { name: "Sac en cuir vintage" }),
   ).toBeVisible()
@@ -204,7 +202,7 @@ for (const locale of ["en", "ar"] as const) {
     const nextPage = new URL(page.url())
     nextPage.searchParams.set("page", "1")
     await page.goto(nextPage.toString())
-    await page.locator('main nav a').filter({ hasText: locale === "en" ? "Previous page" : "الصفحة السابقة" }).click()
+    await expect(page).not.toHaveURL(/[?&]page=/)
     await expect(page.getByRole("heading", { name: "Hoodie gris essentiel" })).toBeVisible()
     expect(selected(page.url(), "sizeIds")).toEqual(["s1", "s2"])
     for (const [name, values] of Object.entries({ ...selections, sizeIds: ["s1", "s2"] })) {
@@ -337,7 +335,7 @@ for (const locale of ["en", "ar"] as const) {
     const nextPage = new URL(page.url())
     nextPage.searchParams.set("page", "1")
     await page.goto(nextPage.toString())
-    await page.getByRole("link", { name: locale === "en" ? "Previous page" : "الصفحة السابقة", exact: true }).click()
+    await expect(page).not.toHaveURL(/[?&]page=/)
     await expect(page.getByRole("heading", { name: "Hoodie gris essentiel" })).toBeVisible()
     expect(selected(page.url(), "colors")).toEqual(["Blue", "Brown", "Gray"])
     await color("").locator("..").click()

@@ -65,18 +65,16 @@ export async function searchListingsAction(
   filters: Record<string, string>,
   page: number,
   size: number,
-): Promise<ApiResult<ListingSummary[]>> {
+): Promise<ApiResult<PaginatedResponse<ListingSummary>>> {
   return runAction(async () => {
     const params = new URLSearchParams({
       ...filters,
       page: String(page),
       size: String(size),
     })
-    return z
-      .array(ListingSummarySchema)
-      .parse(
-        await request<unknown>(`/api/listings/search?${params}`, {}, false),
-      )
+    return paginatedResponseSchema(ListingSummarySchema).parse(
+      await request<unknown>(`/api/listings/search?${params}`, {}, false),
+    )
   })
 }
 
@@ -93,21 +91,51 @@ export async function getListingAction(
   })
 }
 
-export async function getFavoritesAction(): Promise<ApiResult<ListingSummary[]>> {
-  return runAction(async () =>
-    z.array(ListingSummarySchema).parse(
-      await request<unknown>("/api/listings/favorites"),
-    ),
-  )
+export async function getFavoritesAction(
+  page = 0,
+  size = 12,
+  listingIds?: string[],
+): Promise<ApiResult<PaginatedResponse<ListingSummary>>> {
+  return runAction(async () => {
+    if (listingIds?.length === 0)
+      return {
+        items: [],
+        totalPages: 0,
+        totalElements: 0,
+        page,
+        size,
+      }
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    })
+    if (listingIds) params.set("listingIds", listingIds.join(","))
+    return paginatedResponseSchema(ListingSummarySchema).parse(
+      await request<unknown>(`/api/listings/favorites?${params}`),
+    )
+  })
 }
 
 export async function getPendingListingsAction(
   page: number,
   size: number,
-): Promise<ApiResult<ListingSummary[]>> {
+): Promise<ApiResult<PaginatedResponse<ListingSummary>>> {
   return runAction(async () =>
-    z.array(ListingSummarySchema).parse(
+    paginatedResponseSchema(ListingSummarySchema).parse(
       await request<unknown>(`/api/listings/pending?page=${page}&size=${size}`),
+    ),
+  )
+}
+
+export async function getMyListingsAction(
+  page = 0,
+  size = 12,
+): Promise<ApiResult<PaginatedResponse<ListingSummary>>> {
+  return runAction(async () =>
+    paginatedResponseSchema(ListingSummarySchema).parse(
+      await request<unknown>(
+        `/api/listings/mine?page=${page}&size=${size}&status=AVAILABLE`,
+      ),
     ),
   )
 }

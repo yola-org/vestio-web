@@ -24,7 +24,9 @@ for (const legacyThumbnail of [false, true]) {
           params: { query: title },
         },
       )
-      const [summary] = await response.json()
+      const {
+        items: [summary],
+      } = await response.json()
       expect(summary.coverAssetKey).toBe(first)
       expect(summary).not.toHaveProperty("assetKeys")
       expect(summary).not.toHaveProperty("description")

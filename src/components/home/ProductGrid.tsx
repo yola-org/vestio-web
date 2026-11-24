@@ -7,6 +7,7 @@ import { useApiQuery } from "@/hooks/use-api-query"
 import ListingGrid from "@/components/shared/ListingGrid"
 import Pagination from "@/components/shared/Pagination"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useFavorites } from "@/hooks/use-favorites"
 
@@ -28,15 +29,25 @@ export default function ProductGrid({
   const t = useTranslations()
   const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
-  const favorites = useFavorites(authenticated)
 
   const { data, loading } = useApiQuery(
     () => listingsApi.list(currentPage - 1, limit),
-    { deps: [currentPage, limit], loading: false },
+    {
+      deps: [currentPage, limit],
+      loading: false,
+      onSuccess: (result) => {
+        if (currentPage > result.totalPages)
+          setCurrentPage(Math.max(1, result.totalPages))
+      },
+    },
   )
 
-  const listings: ListingSummary[] = data?.content ?? []
+  const listings: ListingSummary[] = data?.items ?? []
   const totalPages = data?.totalPages ?? 0
+  const favorites = useFavorites(
+    authenticated,
+    listings.map(({ id }) => id),
+  )
 
   return (
     <section
@@ -53,12 +64,12 @@ export default function ProductGrid({
           </h2>
         </div>
         {!compact && (
-          <a
-            href="#"
+          <Link
+            href="/search"
             className="hidden items-center gap-2 text-sm font-bold sm:flex"
           >
             {t("common.seeMore")} <ArrowIcon className="h-5 w-5" />
-          </a>
+          </Link>
         )}
       </div>
 
@@ -95,14 +106,12 @@ export default function ProductGrid({
         }
       />
 
-      {!compact && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          isLoading={loading}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        isLoading={loading}
+      />
     </section>
   )
 }

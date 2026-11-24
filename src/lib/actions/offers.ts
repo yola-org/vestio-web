@@ -4,7 +4,11 @@ import { z } from "zod"
 import { runAction } from "@/lib/api/action-result"
 import { parseInput } from "@/lib/api/validation"
 import { request } from "@/lib/api/request"
-import { ContactTypeSchema, ListingStatusSchema } from "@/lib/api/schemas"
+import {
+  ContactTypeSchema,
+  ListingStatusSchema,
+  paginatedResponseSchema,
+} from "@/lib/api/schemas"
 
 const OfferSummarySchema = z.object({
   offer: z.object({
@@ -24,12 +28,16 @@ const OfferSummarySchema = z.object({
   listingDeliveryTypes: z.array(ContactTypeSchema).nullish(),
 })
 
-export async function getOffersAction(direction: "sent" | "received") {
+export async function getOffersAction(
+  direction: "sent" | "received",
+  page = 0,
+  size = 12,
+) {
   return runAction(async () => {
     const type = z.enum(["sent", "received"]).parse(direction)
-    return z
-      .array(OfferSummarySchema)
-      .parse(await request<unknown>(`/api/offers/${type}`))
+    return paginatedResponseSchema(OfferSummarySchema).parse(
+      await request<unknown>(`/api/offers/${type}?page=${page}&size=${size}`),
+    )
   })
 }
 

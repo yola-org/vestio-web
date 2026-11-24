@@ -16,7 +16,10 @@ export default function SearchResults({
 }) {
   const t = useTranslations("favorites")
   const router = useRouter()
-  const favorites = useFavorites(authenticated)
+  const favorites = useFavorites(
+    authenticated,
+    listings.map(({ id }) => id),
+  )
 
   return (
     <>

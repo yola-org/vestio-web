@@ -228,7 +228,7 @@ export function ListingDetailFavorite({
   authenticated: boolean
 }) {
   const t = useTranslations()
-  const favorites = useFavorites(authenticated)
+  const favorites = useFavorites(authenticated, [listing.id])
   const saved = favorites.savedIds.includes(listing.id)
   if (favorites.error) {
     return (

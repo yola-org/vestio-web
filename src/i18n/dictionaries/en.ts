@@ -61,6 +61,8 @@ const en: Dictionary = {
     loading: "Loading...",
     previous: "Previous",
     next: "Next",
+    pagination: "Pagination",
+    pageNumber: "Page {current}",
     pagePrevious: "Previous page",
     pageNext: "Next page",
     seeMore: "See more",

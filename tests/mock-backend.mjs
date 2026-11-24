@@ -125,6 +125,12 @@ const categoryNames = Object.fromEntries(
   ),
 )
 
+function paginated(items, query) {
+  const page = Number(query.get("page") ?? "0")
+  const size = Number(query.get("size") ?? "12")
+  return { items: items.slice(page * size, (page + 1) * size), totalPages: Math.ceil(items.length / size), totalElements: items.length, size, page }
+}
+
 function listingSummary(listing) {
   const { id, title, price, condition, status, userId, sellerFirstName, sellerLastName,
     sellerProfileImageKey, createdAt, categoryName } = listing
@@ -385,9 +391,9 @@ async function handle(req, res, pathname, query) {
       return json(
         res,
         200,
-        state.items.filter(
+        paginated(state.items.filter(
           (item) => (item.direction || "received") === direction,
-        ),
+        ), query),
       )
     }
     if (req.method === "PUT" && decisionMatch) {
@@ -543,7 +549,9 @@ async function handle(req, res, pathname, query) {
     }
 
     if (listsFavorites) {
-      return json(res, 200, [...favoriteIds].reverse().map(findListing).filter(Boolean).map(listingSummary))
+      const ids = query.get("listingIds")?.split(",")
+      const saved = [...favoriteIds].reverse().map(findListing).filter((listing) => listing && listing.status === "AVAILABLE" && (!ids || ids.includes(listing.id)))
+      return json(res, 200, paginated(saved.map(listingSummary), query))
     }
 
     const id = favoriteMatch[1]
@@ -765,7 +773,7 @@ async function handle(req, res, pathname, query) {
       return json(
         res,
         200,
-        pendingListings.slice(page * size, (page + 1) * size).map(listingSummary),
+        paginated([...pendingListings, ...listings.filter((listing) => listing.userId === profile.id && ["PENDING", "AWAITING_ASSETS"].includes(listing.status))].map(listingSummary), query),
       )
     }
 
@@ -802,21 +810,17 @@ async function handle(req, res, pathname, query) {
           listing.price >= minPrice &&
           listing.price <= maxPrice,
       )
-      return json(res, 200, matches.slice(page * size, (page + 1) * size).map(listingSummary))
+      return json(res, 200, paginated(matches.map(listingSummary), query))
+    }
+
+    case "GET /api/listings/mine": {
+      if (!req.headers.authorization) return apiError(res, 401, "ERR_UNAUTHORIZED", "Authentication required", pathname)
+      const status = query.get("status")
+      return json(res, 200, paginated(listings.filter((listing) => listing.userId === profile.id && (!status || listing.status === status)).map(listingSummary), query))
     }
 
     case "GET /api/listings": {
-      const page = Number(query.get("page") ?? "0")
-      const size = Number(query.get("size") ?? "12")
-      const start = page * size
-      const content = listings.slice(start, start + size).map(listingSummary)
-      return json(res, 200, {
-        content,
-        totalPages: Math.max(1, Math.ceil(listings.length / size)),
-        totalElements: listings.length,
-        size,
-        number: page,
-      })
+      return json(res, 200, paginated(listings.filter((listing) => listing.status === "AVAILABLE").map(listingSummary), query))
     }
 
     case "POST /api/listings": {
