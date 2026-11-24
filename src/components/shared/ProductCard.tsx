@@ -1,5 +1,6 @@
 "use client"
 // Helper to handle both mock data and real API Listing
+// A server-rendered image can fail before hydration attaches onError.
 import { PinIcon, ClockIcon } from "@/components/shared/Icons"
 import FavoriteButton from "@/components/shared/FavoriteButton"
 import ProfileAvatar from "@/components/shared/ProfileAvatar"
@@ -8,7 +9,7 @@ import { getListingImageUrls } from "@/lib/listing-images"
 import { getProfileImageUrl } from "@/lib/profile-images"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const fallbackImage = "/listing-image-unavailable.png"
 const visibleCityLimit = 2
@@ -40,6 +41,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const t = useTranslations()
   const [failedImages, setFailedImages] = useState<string[]>([])
+  const imageRef = useRef<HTMLImageElement>(null)
   const displaySize =
     "sizeNames" in product
       ? product.sizeNames?.join(", ") || ""
@@ -100,9 +102,25 @@ export default function ProductCard({
     : undefined
   const showFallback = !image || failedImages.includes(image)
   const responsive = !showFallback && mobileImage && mobileImage !== image
+
+  useEffect(() => {
+    const element = imageRef.current
+    if (
+      !showFallback &&
+      image &&
+      element?.complete &&
+      element.naturalWidth === 0
+    ) {
+      setFailedImages((failed) =>
+        failed.includes(image) ? failed : [...failed, image],
+      )
+    }
+  }, [image, showFallback])
+
   const cardImage = (
     <img
       key={image}
+      ref={imageRef}
       src={showFallback ? fallbackImage : image}
       srcSet={responsive ? `${mobileImage} 480w, ${image} 960w` : undefined}
       sizes={responsive ? "(max-width: 639px) 50vw, 480px" : undefined}

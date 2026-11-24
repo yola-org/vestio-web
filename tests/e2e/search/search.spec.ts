@@ -47,7 +47,7 @@ test("searches from the desktop header and applies filters to the same query", a
 
   await limitPrice(page)
   await page.getByRole("button", { name: "Appliquer les filtres" }).click()
-  await expect(page.getByRole("main").filter({ visible: true }).getByText("Aucun article trouvé.")).toBeVisible()
+  await expect(page.getByRole("main").filter({ visible: true }).getByRole("heading", { name: "Aucune annonce trouvée", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Réinitialiser les filtres" }).click()
   await expect(
@@ -80,7 +80,7 @@ test("keeps a previous page link when a shared page has no results", async ({
   page,
 }) => {
   await page.goto("/search?query=cuir+vintage&page=1")
-  await expect(page.getByRole("main").filter({ visible: true }).getByText("Aucun article trouvé.")).toBeVisible()
+  await expect(page.getByRole("main").filter({ visible: true }).getByRole("heading", { name: "Aucune annonce trouvée", exact: true })).toBeVisible()
   await page.getByRole("link", { name: "Page précédente" }).click()
   await expect(
     page.getByRole("heading", { name: "Sac en cuir vintage" }),
@@ -147,7 +147,7 @@ test("browses a category and returns from a subcategory to its parent", async ({
   await limitPrice(page)
   await main.getByRole("button", { name: "Appliquer les filtres" }).click()
   await expect(page).toHaveURL(/\/categories\/homme\/t-shirts\?/)
-  await expect(main.getByText("Aucun article trouvé.")).toBeVisible()
+  await expect(main.getByRole("heading", { name: "Aucune annonce trouvée", exact: true })).toBeVisible()
 
   await main.getByRole("link", { name: "Homme", exact: true }).click()
   await expect(page).toHaveURL(/\/categories\/homme$/)

@@ -52,22 +52,29 @@ for (const legacyThumbnail of [false, true]) {
       ])
       await page.goto(`/search?query=${encodeURIComponent(title)}`)
       const cover = page.getByRole("img", { name: title, exact: true })
-      await expect(cover).toHaveAttribute(
-        "src",
-        new RegExp(
-          `${first}${
-            legacyThumbnail ? "/original-thumbnail" : "_thumbnail"
-          }[.]webp$`,
-        ),
-      )
-      await expect(cover).toHaveAttribute(
-        "srcset",
-        new RegExp(
-          `${first}${
-            legacyThumbnail ? "/original-thumbnail-mobile" : "_thumbnail_mobile"
-          }[.]webp`,
-        ),
-      )
+      const waitForCover = async () => {
+        await expect(cover).toHaveAttribute(
+          "src",
+          new RegExp(
+            `${first}${
+              legacyThumbnail ? "/original-thumbnail" : "_thumbnail"
+            }[.]webp$`,
+          ),
+        )
+        await expect(cover).toHaveAttribute(
+          "srcset",
+          new RegExp(
+            `${first}${
+              legacyThumbnail
+                ? "/original-thumbnail-mobile"
+                : "_thumbnail_mobile"
+            }[.]webp`,
+          ),
+        )
+        await expect(cover).toHaveJSProperty("complete", true)
+        await expect(cover).not.toHaveJSProperty("naturalWidth", 0)
+      }
+      await waitForCover()
       await cover.scrollIntoViewIfNeeded()
       const desktopImage = (await cover.boundingBox())!
       await page.mouse.move(
@@ -85,6 +92,7 @@ for (const legacyThumbnail of [false, true]) {
 
       await page.setViewportSize({ width: 390, height: 844 })
       await page.goto(`/search?query=${encodeURIComponent(title)}`)
+      await waitForCover()
       await cover.scrollIntoViewIfNeeded()
       const mobileImage = (await cover.boundingBox())!
       await page.mouse.click(
