@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
+import Pagination from "@/components/shared/Pagination"
 import ListingGrid from "@/components/shared/ListingGrid"
 import { useFavorites } from "@/hooks/use-favorites"
 
@@ -51,6 +52,12 @@ export default function FavoritesPage() {
               savedIds={favorites.savedIds}
               saveDisabled={favorites.saving}
               onToggleSave={favorites.toggle}
+            />
+            <Pagination
+              currentPage={favorites.page + 1}
+              totalPages={favorites.totalPages}
+              onPageChange={(page) => favorites.setPage(page - 1)}
+              isLoading={favorites.loading || favorites.saving}
             />
             {!favorites.loading && favorites.listings.length === 0 && (
               <div className="mt-6 text-center">

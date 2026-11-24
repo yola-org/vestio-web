@@ -9,17 +9,31 @@ import { listingsApi, type Listing, type ListingSummary } from "@/lib/api"
 
 import { toListingSummary } from "@/lib/listing-summary"
 
-export function useFavorites(enabled = true) {
+export function useFavorites(enabled = true, visibleIds?: string[]) {
   const t = useTranslations("favorites")
   const { notify } = useNotifications()
   const [listings, setListings] = useState<ListingSummary[]>([])
   const saving = useRef(false)
-  const query = useApiQuery(listingsApi.favorites, {
-    enabled,
-    deps: [enabled],
-    loading: false,
-    onSuccess: setListings,
-  })
+  const [page, setPage] = useState(0)
+  const idsKey = visibleIds?.join(",")
+  const query = useApiQuery(
+    () =>
+      listingsApi.favorites(
+        visibleIds ? 0 : page,
+        visibleIds ? 100 : 12,
+        visibleIds,
+      ),
+    {
+      enabled,
+      deps: [enabled, page, idsKey],
+      loading: false,
+      onSuccess: (result) => {
+        setListings(result.items)
+        if (!visibleIds && page > 0 && page >= result.totalPages)
+          setPage(Math.max(0, result.totalPages - 1))
+      },
+    },
+  )
   const mutation = useApiAction(listingsApi.setFavorite, {
     loading: false,
     errors: {
@@ -53,6 +67,10 @@ export function useFavorites(enabled = true) {
             ? [toListingSummary(listing), ...current]
             : current.filter(({ id }) => id !== listing.id),
         )
+        if (!visibleIds) {
+          if (!save && listings.length === 1 && page > 0) setPage(page - 1)
+          else await query.refetch()
+        }
       }
     } finally {
       saving.current = false
@@ -61,6 +79,9 @@ export function useFavorites(enabled = true) {
 
   return {
     listings,
+    page,
+    setPage,
+    totalPages: query.data?.totalPages ?? 0,
     savedIds,
     loading: query.loading,
     error: query.error,

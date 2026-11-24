@@ -15,6 +15,7 @@ import {
 import Skeleton from "@/components/shared/Skeleton"
 import { profileApi, listingsApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
+import Pagination from "@/components/shared/Pagination"
 import ListingGrid from "@/components/shared/ListingGrid"
 import { SettingsIcon, CameraIcon, HeartIcon } from "@/components/shared/Icons"
 import { useTranslations } from "next-intl"
@@ -36,20 +37,25 @@ function ProfileContent() {
   const t = useTranslations()
   const [activeTab, setActiveTab] =
     useState<typeof listingTabs[number]>("articles")
+  const [page, setPage] = useState(0)
   const [imageModalOpen, setImageModalOpen] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
   const [uploadedImageKey, setUploadedImageKey] = useState<string | null>()
   const profileQuery = useApiQuery(profileApi.get, { loading: false })
-  const listingsQuery = useApiQuery(() => listingsApi.list(0, 50), {
+  const listingsQuery = useApiQuery(() => listingsApi.mine(page, 12), {
+    deps: [page],
+    onSuccess: (result) => {
+      if (page > 0 && page >= result.totalPages)
+        setPage(Math.max(0, result.totalPages - 1))
+    },
     loading: false,
   })
 
   const profile = profileQuery.data
   const imageKey =
     uploadedImageKey !== undefined ? uploadedImageKey : profile?.profileImageKey
-  const listings = (listingsQuery.data?.content ?? []).filter(
-    (listing) => listing.status === "AVAILABLE",
-  )
+  const listings = listingsQuery.data?.items ?? []
+  const totalListings = listingsQuery.data?.totalElements ?? 0
 
   if (profileQuery.loading) {
     return (
@@ -141,7 +147,7 @@ function ProfileContent() {
                 {listingsQuery.loading ? (
                   <Skeleton className="inline-block h-4 w-5 align-middle" />
                 ) : (
-                  <span className="font-bold">{listings.length}</span>
+                  <span className="font-bold">{totalListings}</span>
                 )}{" "}
                 <span className="text-black/50">
                   {t("profile.statsListings")}
@@ -204,7 +210,7 @@ function ProfileContent() {
                 {tab === "articles"
                   ? listingsQuery.loading
                     ? t("profile.statsListings")
-                    : t("profile.tabListings", { count: listings.length })
+                    : t("profile.tabListings", { count: totalListings })
                   : t("pendingListings.title")}
               </button>
             ))}
@@ -225,22 +231,47 @@ function ProfileContent() {
         tabIndex={0}
         hidden={activeTab !== "articles"}
       >
+        {listingsQuery.error && (
+          <div
+            role="alert"
+            className="mb-4 rounded-xl border border-black/10 bg-white p-5"
+          >
+            <p>{t("search.loadError")}</p>
+            <button
+              type="button"
+              className="mt-3 font-bold text-deep-accent"
+              onClick={() => void listingsQuery.refetch()}
+            >
+              {t("errors.retry")}
+            </button>
+          </div>
+        )}
         <ListingGrid
           listings={listings}
           isLoading={listingsQuery.loading}
           columns={profileListingColumns}
           emptyMessage={t("profile.emptyListings")}
         />
-        {!listingsQuery.loading && listings.length === 0 && (
-          <div className="mt-6 text-center">
-            <Link
-              href="/listings/new"
-              className="inline-block bg-[#ff5d39] text-white px-8 py-4 rounded-full font-bold hover:bg-[#e94422] transition"
-            >
-              {t("profile.sellFirst")}
-            </Link>
-          </div>
+        {!listingsQuery.error && (
+          <Pagination
+            currentPage={page + 1}
+            totalPages={listingsQuery.data?.totalPages ?? 0}
+            onPageChange={(page) => setPage(page - 1)}
+            isLoading={listingsQuery.loading}
+          />
         )}
+        {!listingsQuery.loading &&
+          !listingsQuery.error &&
+          listings.length === 0 && (
+            <div className="mt-6 text-center">
+              <Link
+                href="/listings/new"
+                className="inline-block bg-[#ff5d39] text-white px-8 py-4 rounded-full font-bold hover:bg-[#e94422] transition"
+              >
+                {t("profile.sellFirst")}
+              </Link>
+            </div>
+          )}
       </div>
       <div
         id="profile-pending-panel"

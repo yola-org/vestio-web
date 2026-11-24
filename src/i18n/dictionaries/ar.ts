@@ -60,6 +60,8 @@ const ar: Dictionary = {
     loading: "جارٍ التحميل...",
     previous: "السابق",
     next: "التالي",
+    pagination: "التنقل بين الصفحات",
+    pageNumber: "الصفحة {current}",
     pagePrevious: "الصفحة السابقة",
     pageNext: "الصفحة التالية",
     seeMore: "عرض المزيد",

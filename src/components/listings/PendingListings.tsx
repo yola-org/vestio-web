@@ -4,20 +4,22 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useRealtimeNotifications } from "@/components/shared/RealtimeProvider"
 import { useTranslations } from "next-intl"
+import Pagination from "@/components/shared/Pagination"
 import ListingGrid from "@/components/shared/ListingGrid"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { listingsApi } from "@/lib/api"
 
 const pageSize = 12
-const pageButtonClass =
-  "rounded-full border border-black/10 px-5 py-2 text-sm font-bold hover:bg-black/5 disabled:opacity-40"
-
 export default function PendingListings({ columns }: { columns?: string }) {
   const t = useTranslations()
   const [page, setPage] = useState(0)
   const pending = useApiQuery(() => listingsApi.pending(page, pageSize), {
     deps: [page],
     loading: false,
+    onSuccess: (result) => {
+      if (page > 0 && page >= result.totalPages)
+        setPage(Math.max(0, result.totalPages - 1))
+    },
   })
   const { notifications } = useRealtimeNotifications()
   const readyNotifications = notifications
@@ -27,8 +29,7 @@ export default function PendingListings({ columns }: { columns?: string }) {
   useEffect(() => {
     if (readyNotifications) void pending.refetch()
   }, [readyNotifications, pending.refetch])
-  const listings = pending.data ?? []
-  const hasNextPage = !pending.error && listings.length === pageSize
+  const listings = pending.data?.items ?? []
 
   return (
     <>
@@ -66,25 +67,13 @@ export default function PendingListings({ columns }: { columns?: string }) {
         />
       )}
 
-      {(page > 0 || hasNextPage) && pending.error?.status !== 401 && (
-        <div className="mt-8 flex justify-center gap-4">
-          <button
-            type="button"
-            className={pageButtonClass}
-            disabled={page === 0 || pending.loading}
-            onClick={() => setPage(page - 1)}
-          >
-            {t("common.pagePrevious")}
-          </button>
-          <button
-            type="button"
-            className={pageButtonClass}
-            disabled={!hasNextPage || pending.loading}
-            onClick={() => setPage(page + 1)}
-          >
-            {t("common.pageNext")}
-          </button>
-        </div>
+      {!pending.error && (
+        <Pagination
+          currentPage={page + 1}
+          totalPages={pending.data?.totalPages ?? 0}
+          onPageChange={(page) => setPage(page - 1)}
+          isLoading={pending.loading}
+        />
       )}
     </>
   )

@@ -238,11 +238,11 @@ export const UserProfileSchema = z.object({
 
 export const paginatedResponseSchema = <T extends z.ZodType>(item: T) =>
   z.object({
-    content: z.array(item),
-    totalPages: z.number().int(),
-    totalElements: z.number().int(),
-    size: z.number().int(),
-    number: z.number().int(),
+    items: z.array(item),
+    totalPages: z.number().int().nonnegative(),
+    totalElements: z.number().int().nonnegative(),
+    size: z.number().int().positive(),
+    page: z.number().int().nonnegative(),
   })
 
 export type PaginatedResponse<T,> = z.infer<ReturnType<typeof paginatedResponseSchema<z.ZodType<T>>>>

@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation"
+import Pagination from "@/components/shared/Pagination"
+import { paginationPages } from "@/lib/pagination"
 import { Suspense } from "react"
 import { cookies } from "next/headers"
 import Link from "next/link"
@@ -218,29 +221,26 @@ async function SearchPageResults({
     return search ? `${path}?${search}` : path
   }
 
+  const totalPages = result.data.totalPages
+  if (page > 0 && page >= totalPages)
+    redirect(pageHref(Math.max(0, totalPages - 1)))
+  const pageLinks = Object.fromEntries(
+    [...paginationPages(page + 1, totalPages), page, page + 2]
+      .filter((target) => target >= 1 && target <= totalPages)
+      .map((target) => [target, pageHref(target - 1)]),
+  )
+
   return (
     <>
-      <SearchResults listings={result.data} authenticated={authenticated} />
-      {(page > 0 || result.data.length === pageSize) && (
-        <nav className="mt-8 flex flex-wrap gap-3">
-          {page > 0 && (
-            <Link
-              href={pageHref(page - 1)}
-              className="rounded-full border border-black/15 px-5 py-2 text-sm font-bold"
-            >
-              {t("common.pagePrevious")}
-            </Link>
-          )}
-          {result.data.length === pageSize && page < 2147483647 && (
-            <Link
-              href={pageHref(page + 1)}
-              className="rounded-full border border-black/15 px-5 py-2 text-sm font-bold"
-            >
-              {t("common.pageNext")}
-            </Link>
-          )}
-        </nav>
-      )}
+      <SearchResults
+        listings={result.data.items}
+        authenticated={authenticated}
+      />
+      <Pagination
+        currentPage={page + 1}
+        totalPages={totalPages}
+        pageLinks={pageLinks}
+      />
     </>
   )
 }
