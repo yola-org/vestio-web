@@ -202,6 +202,7 @@ const ar: Dictionary = {
     status: { PENDING: "قيد الانتظار", ACCEPTED: "مقبول", REFUSED: "مرفوض" },
   },
   pendingListings: {
+    refusedBadge: "مرفوض",
     title: "الإعلانات قيد الانتظار",
     pendingBadge: "قيد الانتظار",
     processingBadge: "قيد التجهيز",

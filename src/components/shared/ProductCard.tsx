@@ -74,8 +74,10 @@ export default function ProductCard({
     ? [sellerFirstName, sellerLastName].filter(Boolean).join(" ")
     : displaySeller
   const listing = "id" in product ? product : undefined
-  const pendingLabel =
-    listing?.status === "AWAITING_ASSETS"
+  const isRefused = listing?.status === "REJECTED_CONTENT"
+  const pendingLabel = isRefused
+    ? t("pendingListings.refusedBadge")
+    : listing?.status === "AWAITING_ASSETS"
       ? t("pendingListings.processingBadge")
       : listing?.status === "PENDING"
         ? t("pendingListings.pendingBadge")
@@ -146,8 +148,16 @@ export default function ProductCard({
       >
         {cardImage}
         {pendingLabel && (
-          <span className="pointer-events-none absolute start-3 top-3 z-[2] inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border border-primary/15 bg-sub-accent px-3 py-1.5 text-xs font-bold text-primary shadow-sm">
-            <ClockIcon className="size-3.5 shrink-0" aria-hidden="true" />
+          <span
+            className={`pointer-events-none absolute start-3 top-3 z-[2] inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold shadow-sm ${
+              isRefused
+                ? "border-red-200 bg-red-50 text-red-800"
+                : "border-primary/15 bg-sub-accent text-primary"
+            }`}
+          >
+            {!isRefused && (
+              <ClockIcon className="size-3.5 shrink-0" aria-hidden="true" />
+            )}
             <span>{pendingLabel}</span>
           </span>
         )}

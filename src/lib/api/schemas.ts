@@ -71,6 +71,7 @@ export const ListingStatusSchema = z.enum([
   "AVAILABLE",
   "SOLD",
   "AWAITING_ASSETS",
+  "REJECTED_CONTENT",
   "HIDDEN",
   "PENDING",
 ])

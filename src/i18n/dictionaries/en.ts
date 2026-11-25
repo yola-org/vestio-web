@@ -204,6 +204,7 @@ const en: Dictionary = {
     status: { PENDING: "Pending", ACCEPTED: "Accepted", REFUSED: "Declined" },
   },
   pendingListings: {
+    refusedBadge: "Refused",
     title: "Pending listings",
     pendingBadge: "Pending",
     processingBadge: "Processing",
