@@ -13,6 +13,8 @@ export function getListingImageUrls(
   rendition: keyof typeof suffixes = "original",
   layout: "flat" | "nested" = "flat",
 ): string[] {
+  if (listing.status === "REJECTED_CONTENT") return []
+
   const suppliedUrls = [listing.image, ...(listing.imageUrls ?? [])]
     .map((url) => url?.trim())
     .filter((url): url is string => Boolean(url))

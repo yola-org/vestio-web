@@ -773,7 +773,7 @@ async function handle(req, res, pathname, query) {
       return json(
         res,
         200,
-        paginated([...pendingListings, ...listings.filter((listing) => listing.userId === profile.id && ["PENDING", "AWAITING_ASSETS"].includes(listing.status))].map(listingSummary), query),
+        paginated([...pendingListings, ...listings.filter((listing) => listing.userId === profile.id && ["PENDING", "AWAITING_ASSETS", "REJECTED_CONTENT"].includes(listing.status))].map(listingSummary), query),
       )
     }
 

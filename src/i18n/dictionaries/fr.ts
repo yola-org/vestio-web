@@ -206,6 +206,7 @@ const fr = {
     status: { PENDING: "En attente", ACCEPTED: "Acceptée", REFUSED: "Refusée" },
   },
   pendingListings: {
+    refusedBadge: "Refusée",
     title: "Annonces en attente",
     pendingBadge: "En attente",
     processingBadge: "En préparation",
