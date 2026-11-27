@@ -610,6 +610,8 @@ const fr = {
     listingPending:
       "Votre article « {title} » est en attente. Nous préparons ses photos.",
     listingReady: "Votre article « {title} » est prêt et en ligne.",
+    listingRefused:
+      "Votre article « {title} » a été refusé car une image enfreint notre politique de contenu.",
     viewReadyListing: "Voir mon article",
     newActivity: "Nouvelle activité sur votre compte.",
     viewListing: "Voir mes annonces en préparation",

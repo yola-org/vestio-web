@@ -587,6 +587,7 @@ const ar: Dictionary = {
     empty: "ستظهر إشعاراتك الجديدة هنا.",
     listingPending: "منتجك «{title}» قيد الانتظار. جارٍ تجهيز صوره.",
     listingReady: "منتجك «{title}» جاهز ومنشور الآن.",
+    listingRefused: "تم رفض منتجك «{title}» لأن إحدى صوره تخالف سياسة المحتوى.",
     viewReadyListing: "عرض منتجي",
     newActivity: "نشاط جديد على حسابك.",
     viewListing: "عرض إعلاناتي قيد التجهيز",

@@ -22,13 +22,16 @@ export default function PendingListings({ columns }: { columns?: string }) {
     },
   })
   const { notifications } = useRealtimeNotifications()
-  const readyNotifications = notifications
-    .filter((item) => item.type === "listing-published")
+  const statusNotifications = notifications
+    .filter(
+      (item) =>
+        item.type === "listing-published" || item.type === "listing-refused",
+    )
     .map((item) => item.id)
     .join(",")
   useEffect(() => {
-    if (readyNotifications) void pending.refetch()
-  }, [readyNotifications, pending.refetch])
+    if (statusNotifications) void pending.refetch()
+  }, [statusNotifications, pending.refetch])
   const listings = pending.data?.items ?? []
 
   return (

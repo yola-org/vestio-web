@@ -595,6 +595,8 @@ const en: Dictionary = {
     listingPending:
       "Your item “{title}” is pending. We’re preparing its photos.",
     listingReady: "Your item “{title}” is ready and live.",
+    listingRefused:
+      "Your item “{title}” was refused because an image violates our content policy.",
     viewReadyListing: "View my item",
     newActivity: "New activity on your account.",
     viewListing: "View my processing listings",

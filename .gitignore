@@ -37,6 +37,7 @@ tests/e2e/listings/*
 !tests/e2e/listings/summary.spec.ts
 !tests/e2e/listings/pagination.spec.ts
 !tests/e2e/listings/rejected-content.spec.ts
+!tests/e2e/listings/refusal-notification.spec.ts
 
 # Keep authentication, metadata, and translation regressions in source control.
 !tests/e2e/auth/

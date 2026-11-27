@@ -23,6 +23,7 @@ export function useNotificationResolver() {
 
   return (item: Notification): ResolvedNotification => {
     const isPending = item.type === "listing-created"
+    const isRefused = item.type === "listing-refused"
     const isReady = item.type === "listing-published"
     const listingId = z.uuid().safeParse(item.listingId).data
     const offerResult =
@@ -64,14 +65,21 @@ export function useNotificationResolver() {
         title: offer.listingTitle,
       })
       target = { panel: { type: "offers", direction: "received" } }
-    } else if (isPending || isReady) {
-      text = t(isReady ? "listingReady" : "listingPending", {
-        title:
-          typeof item.payload.listingTitle === "string"
-            ? item.payload.listingTitle
-            : "",
-      })
-      if (isPending || listingId) {
+    } else if (isPending || isReady || isRefused) {
+      text = t(
+        isRefused
+          ? "listingRefused"
+          : isReady
+            ? "listingReady"
+            : "listingPending",
+        {
+          title:
+            typeof item.payload.listingTitle === "string"
+              ? item.payload.listingTitle
+              : "",
+        },
+      )
+      if (isPending || isRefused || listingId) {
         target = {
           href: isReady ? `/listings/${listingId}` : "/listings/pending",
         }
